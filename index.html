@@ -3,260 +3,356 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>دفتر الغنم — PWA</title>
+<title>دفتر الغنم — المبسّط</title>
 <link rel="manifest" href="manifest.webmanifest?v=2">
-<meta name="theme-color" content="#0ea5e9">
+<meta name="theme-color" content="#10b981">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
-:root{--ink:#0f172a;--muted:#667085;--bg:#f5f7ff;--card:#ffffff;--line:#e5e7eb;--brand:#0ea5e9;--brand2:#22d3ee;--green:#22c55e;}
-*{box-sizing:border-box}html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic",Tahoma,sans-serif;color:var(--ink);background:var(--bg)}
-header{position:sticky;top:0;z-index:10;background:radial-gradient(1300px 200px at 50% -40px, #e0f2fe, transparent 60%),linear-gradient(90deg,#0ea5e9 0%, #22d3ee 100%);color:#fff;padding:12px;border-bottom:1px solid #00000018;box-shadow:0 6px 20px #0ea5e922}
-header .wrap{max-width:1200px;margin:auto;display:flex;align-items:center;gap:10px;justify-content:space-between}
-h1{margin:0;font-weight:800;font-size:20px}h1 small{font-size:12px;opacity:.9;margin-inline-start:6px}
-nav{display:flex;flex-wrap:wrap;gap:8px}.btn{border:1px solid #ffffff55;background:#ffffff18;color:#fff;border-radius:12px;padding:8px 12px;font-size:14px;cursor:pointer;transition:.2s}
-.btn:hover{background:#ffffff30}.btn.solid{background:#fff;color:#0b8fc8;border-color:#fff}.btn.green{background:#16a34a;border-color:#16a34a;color:#fff}
-main{max-width:1200px;margin:14px auto;padding:0 12px 36px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 6px 16px #0b1a4411}
-.stat .k{font-size:12px;color:var(--muted)}.stat .v{font-weight:900;font-size:26px}
-.sect{display:none}.sect.active{display:block}.table{width:100%;border-collapse:collapse}
-.table th,.table td{border-bottom:1px solid var(--line);padding:10px;text-align:right;font-size:14px}
-input,select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:12px;background:#fff}
-label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px}
-.cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.cols-2{grid-template-columns:repeat(2,1fr)}.cols-3{grid-template-columns:repeat(3,1fr)}
-.pill{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.tab{border:1px solid var(--line);padding:6px 12px;border-radius:999px;cursor:pointer;font-size:13px;background:#fff}
-.tab.active{background:#111827;color:#fff;border-color:#111827}
-.stickybar{position:sticky;bottom:0;display:flex;justify-content:flex-end;gap:8px;background:linear-gradient(180deg,rgba(246,247,251,0),#f6f7fb 40%);padding:10px;border-radius:0 0 14px 14px}
-.mini{font-size:12px;color:var(--muted)}.badge{display:inline-flex;align-items:center;gap:6px;background:#eef2ff;border:1px solid #c7d2fe;color:#3730a3;border-radius:999px;padding:2px 8px;font-size:12px}
-@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.cols{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.grid{grid-template-columns:1fr}.cols,.cols-2,.cols-3{grid-template-columns:1fr}}
+:root{
+  --brand:#10b981;--brand2:#34d399;--ink:#0f172a;--muted:#6b7280;
+  --bg:#f6f7fb;--card:#fff;--line:#e5e7eb;--danger:#ef4444;--warn:#f59e0b;
+}
+*{box-sizing:border-box} html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic",Tahoma,sans-serif;background:var(--bg);color:var(--ink)}
+/* رأس صغير */
+.top{position:sticky;top:0;z-index:9;background:linear-gradient(90deg,var(--brand),var(--brand2));color:#fff;padding:10px 14px}
+.top h1{margin:0;font-size:18px;font-weight:800}
+.top small{opacity:.9;font-size:12px}
+/* قائمة */
+.wrap{max-width:900px;margin:auto;padding:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 16px #0b1a4411}
+.list{overflow:auto}
+.item{display:flex;align-items:center;gap:10px;padding:12px;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.badge{font-size:12px;background:#ecfeff;border:1px solid #a5f3fc;padding:2px 8px;border-radius:999px;color:#155e75}
+.row{display:flex;justify-content:space-between;align-items:center}
+.k{font-size:12px;color:var(--muted)}
+.btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:8px 12px;cursor:pointer}
+.btn.solid{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.warn{background:var(--warn);border-color:var(--warn);color:#fff}
+.btn.ghost{background:#f9fafb}
+.actions{display:flex;gap:8px}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff}
+/* أسفل: تبويب */
+.nav{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr)}
+.nav button{padding:10px 6px;background:#fff;border:0;border-inline:1px solid #0000}
+.nav button.active{color:var(--brand);font-weight:700}
+/* زر عائم */
+.fab{position:fixed;right:16px;bottom:74px;background:var(--brand);color:#fff;border:none;width:58px;height:58px;border-radius:50%;font-size:26px;box-shadow:0 10px 30px #10b98155;cursor:pointer}
 .hidden{display:none}
+.mini{font-size:12px;color:var(--muted)}
+/* بطاقات صغيرة أعلى القائمة */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:10px}
+.stat{padding:12px;border-radius:12px;color:#064e3b;background:linear-gradient(135deg,#d1fae5,#ecfdf5)}
+@media(min-width:720px){.stats{grid-template-columns:repeat(4,1fr)}}
 </style>
 </head>
 <body>
-<header><div class="wrap">
-  <h1>🐑 دفتر الغنم <small class="badge">PWA • يعمل بدون نت</small></h1>
-  <nav>
-    <button class="btn" onclick="show('dash')">لوحة</button>
-    <button class="btn" onclick="show('flock')">القطيع</button>
-    <button class="btn" onclick="show('events')">السجلات</button>
-    <button class="btn" onclick="show('lineage')">الأنساب</button>
-    <button class="btn" onclick="show('finance')">الأعلاف والتكاليف</button>
-    <button class="btn solid" onclick="show('settings')">إعدادات</button>
-  </nav>
-</div></header>
 
-<main>
-  <section id="dash" class="sect active">
-    <div class="grid">
-      <div class="card stat" style="background:linear-gradient(135deg,#e0f2fe,#fff)"><div class="k">إجمالي الرؤوس (حية)</div><div class="v" id="s_total">0</div></div>
-      <div class="card stat" style="background:linear-gradient(135deg,#dcfce7,#fff)"><div class="k">أمهات</div><div class="v" id="s_ewes">0</div></div>
-      <div class="card stat" style="background:linear-gradient(135deg,#ffedd5,#fff)"><div class="k">مواليد آخر 30 يوم</div><div class="v" id="s_birth30">0</div></div>
-      <div class="card stat" style="background:linear-gradient(135deg,#fae8ff,#fff)"><div class="k">تكلفة العلف (30 يوم)</div><div class="v" id="s_feed30">0</div></div>
-    </div>
-    <div style="margin:12px 0;display:flex;flex-wrap:wrap;gap:8px">
-      <button class="btn solid" onclick="openSheep()">➕ إضافة رأس</button>
-      <button class="btn" onclick="openBirth()">🍼 ولادة</button>
-      <button class="btn" onclick="openVac()">💉 تطعيم</button>
-      <button class="btn" style="background:#f97316;border-color:#f97316" onclick="openMove()">🔁 بيع/شراء/نفوق</button>
-      <button class="btn" style="background:#8b5cf6;border-color:#8b5cf6" onclick="openWeightQuick()">⚖️ وزن</button>
-      <button class="btn green" onclick="openFeed()">🌾 علف/مصروف</button>
-      <button class="btn" onclick="exportData()">⬇️ تصدير</button>
-      <label class="btn" style="cursor:pointer">⬆️ استيراد<input type="file" accept=".json" class="hidden" id="imp" onchange="importData(event)"></label>
-    </div>
-    <div class="card mini">لإضافة التطبيق على شاشة iPad: افتحه بـ <b>Safari</b> ← <b>مشاركة</b> ← <b>إضافة إلى الشاشة الرئيسية</b>.</div>
-  </section>
-
-  <section id="flock" class="sect">
-    <div class="card">
-      <div class="cols-3">
-        <div><label>بحث</label><input id="q" oninput="renderFlock()" placeholder="وسم/مجموعة/حالة"></div>
-        <div><label>فرز</label>
-          <select id="sort" onchange="renderFlock()">
-            <option value="created">الأحدث</option><option value="id">الوسم</option>
-            <option value="dob">تاريخ الميلاد</option><option value="group">المجموعة</option><option value="status">الحالة</option>
-          </select>
-        </div>
-        <div><label>&nbsp;</label><button class="btn solid" onclick="openSheep()">➕ إضافة رأس</button></div>
-      </div>
-      <div style="overflow:auto;margin-top:10px">
-        <table class="table" id="tblF">
-          <thead><tr><th>#</th><th>الوسم</th><th>الحالة</th><th>الجنس</th><th>المجموعة</th><th>الميلاد</th><th>الأم</th><th>آخر وزن</th><th>ملاحظات</th><th>إجراءات</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <section id="events" class="sect">
-    <div class="card">
-      <div class="pill" id="evtTabs">
-        <div class="tab active" data-t="all" onclick="switchEvt(event)">الكل</div>
-        <div class="tab" data-t="birth" onclick="switchEvt(event)">ولادة</div>
-        <div class="tab" data-t="vaccination" onclick="switchEvt(event)">تطعيم</div>
-        <div class="tab" data-t="movement" onclick="switchEvt(event)">بيع/شراء</div>
-        <div class="tab" data-t="feed" onclick="switchEvt(event)">علف/مصروف</div>
-        <div class="tab" data-t="weight" onclick="switchEvt(event)">أوزان</div>
-      </div>
-      <table class="table" id="tblE"><thead><tr><th>التاريخ</th><th>النوع</th><th>المعرفات</th><th>تفاصيل</th></tr></thead><tbody></tbody></table>
-    </div>
-  </section>
-
-  <section id="lineage" class="sect">
-    <div class="card">
-      <div class="cols-2">
-        <div><label>فلترة أم (وسم)</label><input id="motherFilter" oninput="renderLineage()" placeholder="مثال: 45"></div>
-        <div><label>عرض</label><select id="linView" onchange="renderLineage()"><option value="table">جدول</option><option value="trees">أشجار</option></select></div>
-      </div>
-      <div id="linWrap" style="margin-top:8px"></div>
-    </div>
-  </section>
-
-  <section id="finance" class="sect">
-    <div class="grid">
-      <div class="card">
-        <h3 style="margin:4px 0">تسجيل علف/مصروف</h3>
-        <div class="cols-3">
-          <div><label>النوع</label><select id="f_type"><option>شراء علف</option><option>صرف علف</option><option>مصروف آخر</option></select></div>
-          <div><label>الاسم/الوصف</label><input id="f_name" placeholder="شعير، برسيم..."></div>
-          <div><label>التاريخ</label><input id="f_date" type="date"></div>
-          <div><label>الكمية (كجم)</label><input id="f_qty" type="number" step="0.01"></div>
-          <div><label>التكلفة الإجمالية (ريال)</label><input id="f_cost" type="number" step="0.01"></div>
-          <div><label>ملاحظات</label><input id="f_notes"></div>
-        </div>
-        <div class="stickybar"><button class="btn green" onclick="saveFeed()">حفظ</button></div>
-      </div>
-      <div class="card">
-        <h3 style="margin:4px 0">ملخص مالي سريع</h3>
-        <div class="grid" style="grid-template-columns:repeat(2,1fr)">
-          <div class="stat"><div class="k">تكلفة العلف (30 يوم)</div><div class="v" id="m_feed30">0</div></div>
-          <div class="stat"><div class="k">إيراد المبيعات (30 يوم)</div><div class="v" id="m_rev30">0</div></div>
-          <div class="stat"><div class="k">صافي (30 يوم)</div><div class="v" id="m_net30">0</div></div>
-          <div class="stat"><div class="k">تكلفة/رأس (30 يوم)</div><div class="v" id="m_perhead">0</div></div>
-        </div>
-        <p class="mini">الإيراد يُحسب من عمليات <b>بيع</b> التي تسجل قيمتها في حركة البيع.</p>
-      </div>
-      <div class="card">
-        <h3 style="margin:4px 0">سجل الأعلاف/المصروفات</h3>
-        <table class="table" id="tblFEE"><thead><tr><th>التاريخ</th><th>النوع</th><th>الاسم</th><th>كمية</th><th>التكلفة (ريال)</th><th>ملاحظات</th></tr></thead><tbody></tbody></table>
-      </div>
-    </div>
-  </section>
-
-  <section id="settings" class="sect">
-    <div class="grid">
-      <div class="card">
-        <h3 style="margin:4px 0">إعدادات</h3>
-        <div class="cols-2">
-          <div><label>اسم المزرعة</label><input id="farm" oninput="saveSettings()"></div>
-          <div><label>مجموعات (افصل بفاصلة)</label><input id="groups" oninput="saveSettings()" placeholder="أمهات, فحول, مواليد, تسمين, للبيع"></div>
-        </div>
-        <p class="mini">بياناتك محفوظة داخل جهازك (localStorage). للتبديل بين الأجهزة استخدم التصدير/الاستيراد.</p>
-      </div>
-    </div>
-  </section>
-</main>
-
-<dialog id="dlgSheep" style="width:min(760px,96%);border:0;border-radius:14px;padding:0"><form method="dialog" onsubmit="return false">
-  <div class="card" style="border:0;border-radius:14px">
-    <div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">إضافة/تعديل رأس</h3><button class="btn" type="button" onclick="dlgSheep.close()">إغلاق</button></div>
-    <div class="cols">
-      <div><label>الوسم</label><input id="s_id"></div>
-      <div><label>الجنس</label><select id="s_sex"><option></option><option>أنثى</option><option>ذكر</option></select></div>
-      <div><label>المجموعة</label><input id="s_group" list="dlGroups"><datalist id="dlGroups"></datalist></div>
-      <div><label>الحالة</label><select id="s_status"><option>حية</option><option>مباعة</option><option>نافقة</option></select></div>
-      <div><label>تاريخ الميلاد</label><input id="s_dob" type="date"></div>
-      <div><label>الأم (وسم)</label><input id="s_mother" placeholder="وسم الأم"></div>
-      <div><label>الأب (وسم)</label><input id="s_father" placeholder="وسم الأب"></div>
-      <div><label>آخر وزن (كجم)</label><input id="s_lastw" type="number" step="0.01"></div>
-      <div style="grid-column:1/-1"><label>ملاحظات</label><textarea id="s_notes" rows="2"></textarea></div>
-    </div>
-    <div class="stickybar"><button class="btn" type="button" onclick="dlgSheep.close()">إلغاء</button><button class="btn solid" type="button" onclick="saveSheep()">حفظ</button></div>
+<div class="top">
+  <div class="row">
+    <h1>🐑 دفتر الغنم <small>الإصدار المبسّط (PWA)</small></h1>
+    <button class="btn" onclick="exportData()">تصدير</button>
   </div>
-</form></dialog>
+  <div class="mini">لأفضل تجربة: افتح بـ Safari ← مشاركة ← إضافة إلى الشاشة الرئيسية.</div>
+</div>
 
-<dialog id="dlgBirth" style="width:min(640px,96%);border:0;border-radius:14px;padding:0"><form method="dialog" onsubmit="return false">
-  <div class="card" style="border:0;border-radius:14px">
-    <div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">🍼 تسجيل ولادة</h3><button class="btn" type="button" onclick="dlgBirth.close()">إغلاق</button></div>
-    <div class="cols-2">
-      <div><label>الأم (وسم)</label><input id="b_mom"></div>
-      <div><label>عدد المواليد</label><input id="b_cnt" type="number" min="1" value="1"></div>
-      <div><label>التاريخ</label><input id="b_date" type="date"></div>
-      <div><label>ملاحظات</label><input id="b_notes"></div>
+<div class="wrap">
+  <!-- شاشة القطيع (الرئيسية) -->
+  <section id="tab-herd" class="card">
+    <div style="padding:12px">
+      <div class="stats">
+        <div class="stat"><div class="k">إجمالي (حية)</div><div id="s_total" style="font-weight:800;font-size:22px">0</div></div>
+        <div class="stat"><div class="k">أمهات</div><div id="s_ewes" style="font-weight:800;font-size:22px">0</div></div>
+        <div class="stat"><div class="k">مواليد 30 يوم</div><div id="s_birth30" style="font-weight:800;font-size:22px">0</div></div>
+        <div class="stat"><div class="k">تكلفة العلف 30 يوم</div><div id="s_feed30" style="font-weight:800;font-size:22px">0</div></div>
+      </div>
+      <div class="row" style="gap:10px;margin-top:4px">
+        <input id="q" oninput="renderList()" placeholder="بحث بالوسم/المجموعة/الحالة">
+        <select id="sort" onchange="renderList()">
+          <option value="created">الأحدث</option>
+          <option value="id">الوسم</option>
+          <option value="dob">الميلاد</option>
+          <option value="group">المجموعة</option>
+        </select>
+      </div>
     </div>
-    <div class="stickybar"><button class="btn solid" type="button" onclick="saveBirth()">حفظ</button></div>
-  </div>
-</form></dialog>
+    <div class="list" id="list"></div>
+  </section>
 
-<dialog id="dlgVac" style="width:min(720px,96%);border:0;border-radius:14px;padding:0"><form method="dialog" onsubmit="return false">
-  <div class="card" style="border:0;border-radius:14px">
-    <div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">💉 تسجيل تطعيم</h3><button class="btn" type="button" onclick="dlgVac.close()">إغلاق</button></div>
-    <div class="cols-3">
-      <div><label>الوسوم (افصل بفاصلة)</label><input id="v_ids" placeholder="12, 45, 78"></div>
-      <div><label>اسم اللقاح</label><input id="v_name"></div>
-      <div><label>التاريخ</label><input id="v_date" type="date"></div>
-      <div><label>الموعد القادم</label><input id="v_next" type="date"></div>
-      <div style="grid-column:1/-1"><label>ملاحظات</label><input id="v_notes"></div>
-    </div>
-    <div class="stickybar"><button class="btn solid" type="button" onclick="saveVac()">حفظ</button></div>
-  </div>
-</form></dialog>
+  <!-- شاشة إضافة سريعة -->
+  <section id="tab-add" class="card hidden">
+    <div style="padding:14px;display:grid;gap:10px">
+      <h3 style="margin:0">➕ إضافة سريعة</h3>
+      <div><label class="k">الوسم</label><input id="f_id" placeholder="مثال: 105"></div>
+      <div class="row" style="gap:10px">
+        <div style="flex:1"><label class="k">الجنس</label>
+          <select id="f_sex"><option>أنثى</option><option>ذكر</option></select></div>
+        <div style="flex:1"><label class="k">المجموعة</label>
+          <input id="f_group" list="dlGroups" placeholder="أمهات/مواليد/فحول">
+          <datalist id="dlGroups"></datalist>
+        </div>
+      </div>
+      <div class="row" style="gap:10px">
+        <div style="flex:1"><label class="k">تاريخ الميلاد</label><input id="f_dob" type="date"></div>
+        <div style="flex:1"><label class="k">آخر وزن (كجم)</label><input id="f_w" type="number" step="0.01" placeholder="اختياري"></div>
+      </div>
+      <div class="row" style="gap:10px">
+        <div style="flex:1"><label class="k">الأم (وسم)</label><input id="f_mom" placeholder="اختياري"></div>
+        <div style="flex:1"><label class="k">الأب (وسم)</label><input id="f_dad" placeholder="اختياري"></div>
+      </div>
+      <div><label class="k">ملاحظات</label><textarea id="f_notes" rows="2" placeholder="اختياري"></textarea></div>
+      <div class="row" style="justify-content:flex-end;gap:8px">
+        <button class="btn" onclick="clearQuick()">مسح</button>
+        <button class="btn solid" onclick="saveQuick()">حفظ</button>
+      </div>
 
-<dialog id="dlgMove" style="width:min(720px,96%);border:0;border-radius:14px;padding:0"><form method="dialog" onsubmit="return false">
-  <div class="card" style="border:0;border-radius:14px">
-    <div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">🔁 بيع/شراء/نفوق</h3><button class="btn" type="button" onclick="dlgMove.close()">إغلاق</button></div>
-    <div class="cols-3">
-      <div><label>النوع</label><select id="m_type"><option>بيع</option><option>شراء</option><option>نفوق</option><option>نقل مجموعة</option></select></div>
-      <div><label>الوسوم (افصل بفاصلة)</label><input id="m_ids"></div>
-      <div><label>التاريخ</label><input id="m_date" type="date"></div>
-      <div><label>القيمة (ريال) — للبيع/الشراء</label><input id="m_amt" type="number" step="0.01"></div>
-      <div><label>المجموعة (للـ نقل)</label><input id="m_to"></div>
-      <div style="grid-column:1/-1"><label>ملاحظات</label><input id="m_notes"></div>
+      <hr style="border:none;border-top:1px solid var(--line)">
+      <div class="row" style="gap:10px">
+        <button class="btn ghost" onclick="openBirth()">🍼 تسجيل ولادة</button>
+        <button class="btn ghost" onclick="openWeightPrompt()">⚖️ وزن سريع</button>
+        <button class="btn ghost" onclick="openVacc()">💉 تطعيم</button>
+        <button class="btn warn" onclick="openMove()">بيع/شراء/نفوق</button>
+      </div>
     </div>
-    <div class="stickybar"><button class="btn solid" type="button" onclick="saveMove()">حفظ</button></div>
-  </div>
-</form></dialog>
+  </section>
+
+  <!-- شاشة السجلات -->
+  <section id="tab-events" class="card hidden">
+    <div style="padding:12px">
+      <div class="row" style="gap:8px">
+        <button class="btn" data-t="all"  onclick="filterEv(this)" class="active">الكل</button>
+        <button class="btn" data-t="birth" onclick="filterEv(this)">ولادة</button>
+        <button class="btn" data-t="weight" onclick="filterEv(this)">أوزان</button>
+        <button class="btn" data-t="vaccination" onclick="filterEv(this)">تطعيم</button>
+        <button class="btn" data-t="movement" onclick="filterEv(this)">بيع/شراء</button>
+        <button class="btn" data-t="feed" onclick="filterEv(this)">علف</button>
+      </div>
+    </div>
+    <div class="list" id="events"></div>
+  </section>
+
+  <!-- شاشة الإعدادات -->
+  <section id="tab-settings" class="card hidden">
+    <div style="padding:14px;display:grid;gap:10px">
+      <h3 style="margin:0">إعدادات</h3>
+      <div class="row" style="gap:10px">
+        <div style="flex:1"><label class="k">اسم المزرعة</label><input id="farm" oninput="saveSettings()"></div>
+        <div style="flex:1"><label class="k">مجموعات (افصل بفاصلة)</label><input id="groups" oninput="saveSettings()" placeholder="أمهات, فحول, مواليد, تسمين, للبيع"></div>
+      </div>
+      <div class="mini">البيانات محفوظة داخليًا في جهازك. لنقلها لجهاز آخر استخدم التصدير/الاستيراد.</div>
+      <div class="row" style="gap:10px">
+        <label class="btn">⬆️ استيراد<input id="imp" type="file" accept=".json" class="hidden" onchange="importData(event)"></label>
+        <button class="btn" onclick="exportData()">⬇️ تصدير</button>
+        <button class="btn warn" onclick="if(confirm('متأكد؟')){localStorage.removeItem(KEY);location.reload()}">تفريغ البيانات</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- زر عائم للإضافة -->
+<button class="fab" onclick="go('tab-add')">＋</button>
+
+<!-- شريط تبويب سفلي -->
+<div class="nav">
+  <button id="b-herd" class="active" onclick="go('tab-herd')">القطيع</button>
+  <button id="b-add" onclick="go('tab-add')">إضافة</button>
+  <button id="b-events" onclick="go('tab-events')">السجلات</button>
+  <button id="b-settings" onclick="go('tab-settings')">إعدادات</button>
+</div>
 
 <script>
+/* ========== البيانات في localStorage ========== */
 const KEY='sheep_data_pwa_v2';
 let DB = (()=>{ try{ const t=localStorage.getItem(KEY); return t?JSON.parse(t):null }catch{ return null } })()
    || {sheep:{},events:[],finance:[],settings:{farm:'',groups:'أمهات, فحول, مواليد, تسمين, للبيع'}};
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)); }catch(e){ alert('تعذّر الحفظ: مساحة المتصفح ممتلئة أو محظورة.'); } }
+
+/* ========== تنقّل بسيط ========== */
+function go(id){
+  document.querySelectorAll('.card').forEach(s=>s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  ({'tab-herd':'b-herd','tab-add':'b-add','tab-events':'b-events','tab-settings':'b-settings'})[id] && 
+  document.getElementById({'tab-herd':'b-herd','tab-add':'b-add','tab-events':'b-events','tab-settings':'b-settings'}[id]).classList.add('active');
+  if(id==='tab-herd') renderList();
+  if(id==='tab-events') renderEvents();
+  if(id==='tab-settings') renderSettings();
+  statsToUI();
+}
+
+/* ========== أدوات مساعدة ========== */
 function byId(x){return document.getElementById(x)}
 function dstr(){return new Date().toISOString().slice(0,10)}
 function fmt(d){if(!d) return '—'; try{return new Date(d).toLocaleDateString('ar')}catch(e){return d}}
-function show(id){document.querySelectorAll('.sect').forEach(s=>s.classList.remove('active')); byId(id).classList.add('active'); if(id==='finance') renderFinance(); if(id==='lineage') renderLineage();}
-function stats(){const alive=Object.values(DB.sheep).filter(s=>s.status!=='مباعة'&&s.status!=='نافقة'); const ewes=alive.filter(s=>s.sex==='أنثى').length; const since=new Date(); since.setDate(since.getDate()-30); const birth30=DB.events.filter(e=>e.type==='birth'&&new Date(e.date)>=since).length; const feed30=DB.finance.filter(f=>new Date(f.date)>=since).reduce((a,b)=>a+(+b.cost||0),0); return {total:alive.length, ewes, birth30, feed30}}
-function renderDash(){const s=stats(); byId('s_total').textContent=s.total; byId('s_ewes').textContent=s.ewes; byId('s_birth30').textContent=s.birth30; byId('s_feed30').textContent=s.feed30.toFixed(0)}
-function renderSettings(){ byId('farm').value=DB.settings.farm||''; byId('groups').value=DB.settings.groups||''; const dl=byId('dlGroups'); dl.innerHTML=''; (DB.settings.groups||'').split(',').map(x=>x.trim()).filter(Boolean).forEach(g=>{const o=document.createElement('option');o.value=g;dl.appendChild(o);}) }
-function saveSettings(){DB.settings.farm=byId('farm').value; DB.settings.groups=byId('groups').value; save(); renderSettings()}
-let editing=null;
-function renderFlock(){const q=(byId('q').value||'').toLowerCase(), sort=byId('sort').value; let arr=Object.values(DB.sheep); if(q){arr=arr.filter(s=>(s.id||'').toLowerCase().includes(q)||(s.group||'').toLowerCase().includes(q)||(s.status||'').toLowerCase().includes(q))} arr.sort((a,b)=>{if(sort==='id') return (a.id||'').localeCompare(b.id||''); if(sort==='dob') return (b.dob||'').localeCompare(a.dob||''); if(sort==='group') return (a.group||'').localeCompare(b.group||''); if(sort==='status') return (a.status||'').localeCompare(b.status||''); return (b.createdAt||'').localeCompare(a.createdAt||'')}); const tb=byId('tblF').querySelector('tbody'); tb.innerHTML=''; arr.forEach((s,i)=>{const tr=document.createElement('tr'); tr.innerHTML=`<td>${i+1}</td><td><b>${s.id||''}</b></td><td>${s.status||'حية'}</td><td>${s.sex||''}</td><td>${s.group||''}</td><td>${fmt(s.dob)}</td><td>${s.motherId||''}</td><td>${s.lastWeight!=null?s.lastWeight+' كجم':'—'}</td><td>${s.notes||''}</td><td><button class="btn" style="font-size:12px" onclick="editSheep('${s.id}')">تعديل</button> <button class="btn" style="font-size:12px;background:#8b5cf6;border-color:#8b5cf6" onclick="quickW('${s.id}')">وزن</button></td>`; tb.appendChild(tr);})}
-function openSheep(){editing=null;['s_id','s_sex','s_group','s_dob','s_mother','s_father','s_lastw','s_notes'].forEach(i=>byId(i).value=''); byId('s_status').value='حية'; byId('dlgSheep').showModal()}
-function editSheep(id){const s=DB.sheep[id]; if(!s) return; editing=id; byId('s_id').value=s.id||''; byId('s_sex').value=s.sex||''; byId('s_group').value=s.group||''; byId('s_status').value=s.status||'حية'; byId('s_dob').value=s.dob||''; byId('s_mother').value=s.motherId||''; byId('s_father').value=s.fatherId||''; byId('s_lastw').value=s.lastWeight!=null?s.lastWeight:''; byId('s_notes').value=s.notes||''; byId('dlgSheep').showModal()}
-function saveSheep(){const id=(byId('s_id').value||'').trim(); if(!id) return alert('اكتب الوسم'); const s={id, sex:byId('s_sex').value||'', group:byId('s_group').value||'', status:byId('s_status').value||'حية', dob:byId('s_dob').value||'', motherId:byId('s_mother').value||'', fatherId:byId('s_father').value||'', lastWeight: byId('s_lastw').value?parseFloat(byId('s_lastw').value):null, notes:byId('s_notes').value||'', createdAt:DB.sheep[id]?.createdAt||new Date().toISOString(), updatedAt:new Date().toISOString()}; if(editing&&editing!==id){ if(DB.sheep[id]) return alert('وسم موجود'); delete DB.sheep[editing] } DB.sheep[id]=s; save(); alert('تم الحفظ ✅'); byId('dlgSheep').close(); renderAll()}
-function quickW(id){const s=DB.sheep[id]; if(!s) return; const v=prompt('أدخل الوزن (كجم):'); if(v==null) return; const w=parseFloat(v); if(!isFinite(w)) return alert('قيمة غير صحيحة'); s.lastWeight=w; s.updatedAt=new Date().toISOString(); DB.events.push({type:'weight',ids:[id],date:dstr(),details:`${w} كجم`}); save(); renderAll()}
-function switchEvt(e){document.querySelectorAll('#evtTabs .tab').forEach(t=>t.classList.remove('active')); e.target.classList.add('active'); renderEvents()}
-function mapType(t){return ({birth:'ولادة',vaccination:'تطعيم',movement:'حركة',weight:'وزن',feed:'علف/مصروف'})[t]||t}
-function renderEvents(){const t=document.querySelector('#evtTabs .tab.active')?.dataset.t||'all'; let arr=DB.events.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')); if(t!=='all') arr=arr.filter(e=>e.type===t); const tb=byId('tblE').querySelector('tbody'); tb.innerHTML=''; arr.forEach(ev=>{const tr=document.createElement('tr'); tr.innerHTML=`<td>${fmt(ev.date)}</td><td>${mapType(ev.type)}</td><td>${(ev.ids||[]).join(', ')||'—'}</td><td>${ev.details||'—'}</td>`; tb.appendChild(tr);})}
-function openBirth(){byId('b_mom').value=''; byId('b_cnt').value='1'; byId('b_date').value=dstr(); byId('b_notes').value=''; byId('dlgBirth').showModal()}
-function saveBirth(){const mom=(byId('b_mom').value||'').trim(); const cnt=parseInt(byId('b_cnt').value||'1'); const date=byId('b_date').value||dstr(); const notes=byId('b_notes').value||''; if(!mom) return alert('أدخل وسم الأم'); DB.events.push({type:'birth',ids:[mom],date,details:`${cnt} مولود — ${notes}`}); save(); renderAll(); byId('dlgBirth').close()}
-function openVac(){byId('v_ids').value=''; byId('v_name').value=''; byId('v_date').value=dstr(); byId('v_next').value=''; byId('v_notes').value=''; byId('dlgVac').showModal()}
-function saveVac(){const ids=(byId('v_ids').value||'').split(',').map(s=>s.trim()).filter(Boolean); const name=(byId('v_name').value||'').trim(); const date=byId('v_date').value||dstr(); const next=byId('v_next').value||''; const notes=byId('v_notes').value||''; if(!ids.length||!name) return alert('الوسوم واسم اللقاح'); ids.forEach(id=>{ if(DB.sheep[id]){ DB.sheep[id].vaccinations=(DB.sheep[id].vaccinations||[]); DB.sheep[id].vaccinations.push({name,date,next}); }}); DB.events.push({type:'vaccination',ids,date,details:`${name}${next? ' — القادم: '+fmt(next):''} ${notes}`}); save(); renderAll(); byId('dlgVac').close()}
-function openMove(){byId('m_type').value='بيع'; byId('m_ids').value=''; byId('m_date').value=dstr(); byId('m_amt').value=''; byId('m_to').value=''; byId('m_notes').value=''; byId('dlgMove').showModal()}
-function saveMove(){const type=byId('m_type').value; const ids=(byId('m_ids').value||'').split(',').map(s=>s.trim()).filter(Boolean); const date=byId('m_date').value||dstr(); const amt=byId('m_amt').value?parseFloat(byId('m_amt').value):null; const to=byId('m_to').value||''; const notes=byId('m_notes').value||''; if(!ids.length) return alert('أدخل الوسوم'); ids.forEach(id=>{const s=DB.sheep[id]; if(!s) return; if(type==='بيع') s.status='مباعة'; else if(type==='شراء') s.status='حية'; else if(type==='نفوق') s.status='نافقة'; else if(type==='نقل مجموعة') s.group=to; s.updatedAt=new Date().toISOString();}); let det=type; if(amt!=null) det+=` — ${amt} ريال`; if(type==='نقل مجموعة'&&to) det+=` — إلى ${to}`; if(notes) det+=` — ${notes}`; DB.events.push({type:'movement',ids,date,details:det,amount:(type==='بيع'&&amt)?amt:0}); save(); renderAll(); byId('dlgMove').close()}
-function openFeed(){show('finance')}
-function saveFeed(){const t=byId('f_type').value, name=byId('f_name').value||'', date=byId('f_date').value||dstr(), qty=byId('f_qty').value?parseFloat(byId('f_qty').value):0, cost=byId('f_cost').value?parseFloat(byId('f_cost').value):0, notes=byId('f_notes').value||''; DB.finance.push({type:t,name,date,qty,cost,notes}); DB.events.push({type:'feed',ids:[],date,details:`${t} — ${name} — ${qty||0} كجم — ${cost||0} ريال ${notes? ' — '+notes:''}`}); save(); renderAll(); byId('f_name').value=''; byId('f_qty').value=''; byId('f_cost').value=''; byId('f_notes').value=''}
-function renderFinance(){const tb=byId('tblFEE').querySelector('tbody'); tb.innerHTML=''; DB.finance.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(r=>{const tr=document.createElement('tr'); tr.innerHTML=`<td>${fmt(r.date)}</td><td>${r.type}</td><td>${r.name||'—'}</td><td>${r.qty||0}</td><td>${r.cost||0}</td><td>${r.notes||''}</td>`; tb.appendChild(tr);}); const since=new Date(); since.setDate(since.getDate()-30); const feed30=DB.finance.filter(f=>new Date(f.date)>=since).reduce((a,b)=>a+(+b.cost||0),0); const rev30=DB.events.filter(e=>e.type==='movement'&&e.details.startsWith('بيع')&&new Date(e.date)>=since).reduce((a,b)=>{const m=/بيع — ([0-9.]+)/.exec(b.details||''); return a+(m?parseFloat(m[1]):(b.amount||0));},0); const net30=rev30-feed30; const alive=Object.values(DB.sheep).filter(s=>s.status!=='مباعة'&&s.status!=='نافقة').length||1; byId('m_feed30').textContent=feed30.toFixed(0); byId('m_rev30').textContent=rev30.toFixed(0); byId('m_net30').textContent=net30.toFixed(0); byId('m_perhead').textContent=(feed30/alive).toFixed(1); byId('s_feed30').textContent=feed30.toFixed(0);}
-function lineage(){const kids={}; for(const s of Object.values(DB.sheep)){const m=(s.motherId||'').trim(); if(!m) continue; (kids[m]=kids[m]||[]).push(s.id)} const births={}; for(const e of DB.events){if(e.type!=='birth') continue; const mom=(e.ids&&e.ids[0])||''; const cnt=parseInt((e.details||'').split(' ')[0],10); births[mom]=births[mom]||{singles:0,multiples:0,total:0}; births[mom].total++; if(cnt===1) births[mom].singles++; else if(cnt>=2) births[mom].multiples++;} const ewes=Object.values(DB.sheep).filter(s=>s.sex==='أنثى'); const list=ewes.map(e=>{const c=(kids[e.id]||[]); let g=0; c.forEach(x=>{if(kids[x]) g+=kids[x].length}); const b=births[e.id]||{singles:0,multiples:0,total:0}; return {id:e.id,group:e.group,dob:e.dob,children:c,cc:c.length,s:b.singles,m:b.multiples,gc:g}}).sort((a,b)=>b.cc-a.cc); return {kids,list}}
-function renderLineage(){const {kids,list}=lineage(); const filter=(byId('motherFilter').value||'').trim(); const rows=list.filter(r=>!filter||(r.id||'').includes(filter)); const view=byId('linView').value; const wrap=byId('linWrap'); wrap.innerHTML=''; if(view==='table'){const t=document.createElement('table'); t.className='table'; t.innerHTML=`<thead><tr><th>الأم</th><th>مواليدها</th><th>عدد</th><th>مفرد</th><th>توائم+</th><th>أحفاد</th></tr></thead><tbody></tbody>`; const tb=t.querySelector('tbody'); rows.forEach(r=>{const tr=document.createElement('tr'); tr.innerHTML=`<td><b>${r.id}</b><div class="mini">${r.group||''} • ${fmt(r.dob)}</div></td><td>${r.children.join(', ')||'—'}</td><td>${r.cc}</td><td>${r.s}</td><td>${r.m}</td><td>${r.gc}</td>`; tb.appendChild(tr)}); wrap.appendChild(t)} else {rows.forEach(r=>{const card=document.createElement('div'); card.className='card'; card.innerHTML=`<h3 style="margin:0 0 6px 0">الأم: ${r.id}</h3>`; const box=document.createElement('div'); function node(id){const div=document.createElement('div'); const ch=(kids[id]||[]); div.innerHTML=`• <b>${id}</b>${ch.length?' — أبناء: '+ch.join(', '):''}`; if(ch.length){const kid=document.createElement('div'); kid.style.marginInlineStart='18px'; kid.style.borderInlineStart='2px dashed #e5e7eb'; kid.style.paddingInlineStart='10px'; ch.forEach(c=>kid.appendChild(node(c))); div.appendChild(kid)} return div} box.appendChild(node(r.id)); card.appendChild(box); wrap.appendChild(card)})}}
-function exportData(){const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='sheep-data.json'; a.click()}
-function importData(ev){const f=ev.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{try{DB=JSON.parse(r.result); save(); renderAll(); alert('تم الاستيراد ✅')}catch{alert('ملف غير صالح')}}; r.readAsText(f)}
-function renderAll(){renderDash(); renderFlock(); renderEvents(); renderSettings(); if(byId('finance').classList.contains('active')) renderFinance(); if(byId('lineage').classList.contains('active')) renderLineage();}
-renderAll();
-if('serviceWorker' in navigator){window.addEventListener('load', ()=>{navigator.serviceWorker.register('./sw.js?v=2').catch(console.warn);});}
+
+/* ========== إحصاءات أعلى القائمة ========== */
+function getStats(){
+  const alive=Object.values(DB.sheep).filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
+  const ewes=alive.filter(s=>s.sex==='أنثى').length;
+  const since=new Date(); since.setDate(since.getDate()-30);
+  const birth30=DB.events.filter(e=>e.type==='birth'&&new Date(e.date)>=since).length;
+  const feed30=DB.finance.filter(f=>new Date(f.date)>=since).reduce((a,b)=>a+(+b.cost||0),0);
+  return {total:alive.length,ewes,birth30,feed30};
+}
+function statsToUI(){
+  const s=getStats();
+  byId('s_total').textContent=s.total;
+  byId('s_ewes').textContent=s.ewes;
+  byId('s_birth30').textContent=s.birth30;
+  byId('s_feed30').textContent=s.feed30.toFixed(0);
+}
+
+/* ========== قائمة القطيع ========== */
+function renderList(){
+  const q=(byId('q')?.value||'').toLowerCase();
+  const sort=byId('sort')?.value||'created';
+  let arr=Object.values(DB.sheep);
+  if(q){arr=arr.filter(s=>(s.id||'').toLowerCase().includes(q)||(s.group||'').toLowerCase().includes(q)||(s.status||'').toLowerCase().includes(q))}
+  arr.sort((a,b)=>{
+    if(sort==='id') return (a.id||'').localeCompare(b.id||'');
+    if(sort==='dob') return (b.dob||'').localeCompare(a.dob||'');
+    if(sort==='group') return (a.group||'').localeCompare(b.group||'');
+    return (b.createdAt||'').localeCompare(a.createdAt||'');
+  });
+  const box=byId('list'); box.innerHTML='';
+  if(!arr.length){ box.innerHTML='<div class="item"><div>لا توجد سجلات.. اضغط + لإضافة أول رأس</div></div>'; return; }
+  arr.forEach(s=>{
+    const el=document.createElement('div'); el.className='item';
+    el.innerHTML=`
+      <div style="flex:1">
+        <div class="row"><b>${s.id||''}</b> <span class="badge">${s.group||'—'}</span></div>
+        <div class="k">${s.sex||''} • ${s.status||'حية'} • ${fmt(s.dob)} ${s.lastWeight!=null?('• '+s.lastWeight+' كجم'):''}</div>
+      </div>
+      <div class="actions">
+        <button class="btn" onclick="edit('${s.id}')">تعديل</button>
+        <button class="btn" onclick="weight('${s.id}')">⚖️</button>
+      </div>`;
+    box.appendChild(el);
+  });
+}
+
+/* تعديل سريع */
+function edit(id){
+  const s=DB.sheep[id]; if(!s) return;
+  byId('f_id').value=s.id; byId('f_sex').value=s.sex||'أنثى'; byId('f_group').value=s.group||'';
+  byId('f_dob').value=s.dob||''; byId('f_w').value=s.lastWeight??''; byId('f_mom').value=s.motherId||''; byId('f_dad').value=s.fatherId||'';
+  byId('f_notes').value=s.notes||''; go('tab-add');
+}
+
+/* وزن سريع */
+function weight(id){
+  const s=DB.sheep[id]; if(!s) return;
+  const v=prompt('الوزن (كجم):', s.lastWeight ?? '');
+  if(v==null) return;
+  const w=parseFloat(v);
+  if(!isFinite(w)) return alert('رقم غير صالح');
+  s.lastWeight=w; s.updatedAt=new Date().toISOString();
+  DB.events.push({type:'weight',ids:[id],date:dstr(),details:`${w} كجم`});
+  save(); renderList(); go('tab-herd');
+}
+
+/* ========== إضافة سريعة ========== */
+function clearQuick(){['f_id','f_group','f_dob','f_w','f_mom','f_dad','f_notes'].forEach(x=>byId(x).value=''); byId('f_sex').value='أنثى'}
+function saveQuick(){
+  const id=(byId('f_id').value||'').trim();
+  if(!id) return alert('اكتب الوسم');
+  const s={
+    id,
+    sex:byId('f_sex').value||'أنثى',
+    group:byId('f_group').value||'',
+    dob:byId('f_dob').value||'',
+    lastWeight: byId('f_w').value?parseFloat(byId('f_w').value):null,
+    motherId:byId('f_mom').value||'',
+    fatherId:byId('f_dad').value||'',
+    notes:byId('f_notes').value||'',
+    status: DB.sheep[id]?.status || 'حية',
+    createdAt: DB.sheep[id]?.createdAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  DB.sheep[id]=s; save();
+  clearQuick(); statsToUI(); renderList(); alert('تم الحفظ ✅'); go('tab-herd');
+}
+
+/* ========== سجلات مبسطة ========== */
+let EV_FILTER='all';
+function filterEv(btn){EV_FILTER=btn.dataset.t; renderEvents()}
+function renderEvents(){
+  const box=byId('events'); box.innerHTML='';
+  let arr=DB.events.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  if(EV_FILTER!=='all') arr=arr.filter(e=>e.type===EV_FILTER);
+  if(!arr.length){ box.innerHTML='<div class="item">لا توجد سجلات بعد.</div>'; return; }
+  const map={birth:'🍼 ولادة',weight:'⚖️ وزن',vaccination:'💉 تطعيم',movement:'🔁 حركة',feed:'🌾 علف'};
+  arr.forEach(e=>{
+    const el=document.createElement('div'); el.className='item';
+    el.innerHTML=`<div style="flex:1"><b>${map[e.type]||e.type}</b><div class="k">${e.details||''}</div></div><div class="k">${fmt(e.date)}</div>`;
+    box.appendChild(el);
+  });
+}
+
+/* ========== نوافذ مبسطة للولادة/التطعيم/الحركة/العلف ========== */
+function openBirth(){
+  const mom=prompt('وسم الأم؟'); if(!mom) return;
+  const cnt=parseInt(prompt('عدد المواليد؟(1/2/..)')||'1',10);
+  DB.events.push({type:'birth',ids:[mom],date:dstr(),details:`${cnt} مولود`});
+  save(); alert('سُجّلت الولادة'); renderEvents(); go('tab-events');
+}
+function openWeightPrompt(){
+  const id=prompt('وسم الرأس؟'); if(!id||!DB.sheep[id]) return alert('الوسم غير موجود');
+  weight(id);
+}
+function openVacc(){
+  const ids=(prompt('الوسوم (افصل بفاصلة)')||'').split(',').map(s=>s.trim()).filter(Boolean);
+  if(!ids.length) return;
+  const name=prompt('اسم اللقاح؟')||'لقاح';
+  const next=prompt('موعد قادم (YYYY-MM-DD) اختياري')||'';
+  ids.forEach(id=>{
+    if(DB.sheep[id]){ DB.sheep[id].vaccinations=(DB.sheep[id].vaccinations||[]); DB.sheep[id].vaccinations.push({name,date:dstr(),next}); }
+  });
+  DB.events.push({type:'vaccination',ids,date:dstr(),details:`${name}${next? ' — القادم: '+next:''}`});
+  save(); alert('تم التطعيم'); renderEvents(); go('tab-events');
+}
+function openMove(){
+  const type=prompt('العملية: بيع / شراء / نفوق / نقل')||'بيع';
+  const ids=(prompt('الوسوم (افصل بفاصلة)')||'').split(',').map(s=>s.trim()).filter(Boolean);
+  if(!ids.length) return;
+  const date=dstr();
+  let det=type; let amt=null; let to='';
+  if(type==='بيع'||type==='شراء'){ amt=parseFloat(prompt('القيمة (ريال)')||'0'); det+=` — ${amt} ريال`; }
+  if(type==='نقل'){ to=prompt('إلى أي مجموعة؟')||''; det+=to?` — إلى ${to}`:''; }
+  ids.forEach(id=>{
+    const s=DB.sheep[id]; if(!s) return;
+    if(type==='بيع') s.status='مباعة';
+    else if(type==='شراء') s.status='حية';
+    else if(type==='نفوق') s.status='نافقة';
+    else if(type==='نقل') s.group=to;
+    s.updatedAt=new Date().toISOString();
+  });
+  DB.events.push({type:'movement',ids,date,details:det,amount:(type==='بيع'&&amt)?amt:0});
+  save(); alert('تم تسجيل الحركة'); go('tab-events'); renderEvents(); renderList(); statsToUI();
+}
+
+/* ========== إعدادات ========== */
+function renderSettings(){
+  byId('farm').value=DB.settings.farm||'';
+  byId('groups').value=DB.settings.groups||'';
+  const dl=byId('dlGroups'); dl.innerHTML='';
+  (DB.settings.groups||'').split(',').map(x=>x.trim()).filter(Boolean).forEach(g=>{
+    const o=document.createElement('option'); o.value=g; dl.appendChild(o);
+  });
+}
+function saveSettings(){ DB.settings.farm=byId('farm').value; DB.settings.groups=byId('groups').value; save(); renderSettings(); }
+
+/* ========== تصدير/استيراد ========== */
+function exportData(){ const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='sheep-data.json'; a.click(); }
+function importData(ev){ const f=ev.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ try{ DB=JSON.parse(r.result); save(); go('tab-herd'); renderList(); renderEvents(); renderSettings(); statsToUI(); alert('تم الاستيراد ✅'); }catch{ alert('ملف غير صالح'); } }; r.readAsText(f); }
+
+/* تهيئة أولية */
+go('tab-herd'); renderSettings(); statsToUI();
+
+/* PWA */
+if('serviceWorker' in navigator){ window.addEventListener('load', ()=>{ navigator.serviceWorker.register('./sw.js?v=2').catch(console.warn); }); }
 </script>
 </body>
 </html>
