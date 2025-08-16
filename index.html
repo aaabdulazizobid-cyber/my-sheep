@@ -260,18 +260,19 @@ label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px}
 </dialog>
 
 <script>
-const KEY='sheep_full_v1';
-let DB={sheep:{},events:[],finance:[],settings:{farm:'',groups:'أمهات, فحول, مواليد, تسمين, للبيع'}};
-let editing=null;
+// ====== تخزين محلي قوي (v4) ======
+const KEY='sheep_data_v4';
+let DB = (()=>{
+  try{ const t=localStorage.getItem(KEY); return t?JSON.parse(t):null }catch(e){ alert('التخزين المحلي غير متاح في هذا المتصفح.'); return null }
+})() || {sheep:{},events:[],finance:[],settings:{farm:'',groups:'أمهات, فحول, مواليد, تسمين, للبيع'}};
 
-function load(){const raw=localStorage.getItem(KEY); if(raw){try{DB=JSON.parse(raw)}catch{}} renderAll()}
-function save(){localStorage.setItem(KEY,JSON.stringify(DB))}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)); }catch(e){ alert('تعذّر الحفظ: مساحة المتصفح ممتلئة أو محظورة.'); } }
 function byId(x){return document.getElementById(x)}
-function show(id){document.querySelectorAll('.sect').forEach(s=>s.classList.remove('active')); byId(id).classList.add('active'); if(id==='finance') renderFinance(); if(id==='lineage') renderLineage();}
 function dstr(){return new Date().toISOString().slice(0,10)}
 function fmt(d){if(!d) return '—'; try{return new Date(d).toLocaleDateString('ar')}catch(e){return d}}
+function show(id){document.querySelectorAll('.sect').forEach(s=>s.classList.remove('active')); byId(id).classList.add('active'); if(id==='finance') renderFinance(); if(id==='lineage') renderLineage();}
 
-// DASH
+// ====== لوحة ======
 function stats(){
   const alive=Object.values(DB.sheep).filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
   const ewes=alive.filter(s=>s.sex==='أنثى').length;
@@ -282,14 +283,11 @@ function stats(){
 }
 function renderDash(){const s=stats(); byId('s_total').textContent=s.total; byId('s_ewes').textContent=s.ewes; byId('s_birth30').textContent=s.birth30; byId('s_feed30').textContent=s.feed30.toFixed(0)}
 
-// SETTINGS
-function renderSettings(){
-  byId('farm').value=DB.settings.farm||''; byId('groups').value=DB.settings.groups||'';
-  const dl=byId('dlGroups'); dl.innerHTML=''; (DB.settings.groups||'').split(',').map(x=>x.trim()).filter(Boolean).forEach(g=>{const o=document.createElement('option');o.value=g;dl.appendChild(o);})
-}
+// ====== إعدادات ======
+function renderSettings(){ byId('farm').value=DB.settings.farm||''; byId('groups').value=DB.settings.groups||''; const dl=byId('dlGroups'); dl.innerHTML=''; (DB.settings.groups||'').split(',').map(x=>x.trim()).filter(Boolean).forEach(g=>{const o=document.createElement('option');o.value=g;dl.appendChild(o);}) }
 function saveSettings(){DB.settings.farm=byId('farm').value; DB.settings.groups=byId('groups').value; save(); renderSettings()}
 
-// FLOCK
+// ====== القطيع ======
 function renderFlock(){
   const q=(byId('q').value||'').toLowerCase(), sort=byId('sort').value;
   let arr=Object.values(DB.sheep);
@@ -299,22 +297,23 @@ function renderFlock(){
   arr.forEach((s,i)=>{const tr=document.createElement('tr'); tr.innerHTML=`<td>${i+1}</td><td><b>${s.id||''}</b></td><td>${s.status||'حية'}</td><td>${s.sex||''}</td><td>${s.group||''}</td><td>${fmt(s.dob)}</td><td>${s.motherId||''}</td><td>${s.lastWeight!=null?s.lastWeight+' كجم':'—'}</td><td>${s.notes||''}</td><td><button class="btn mini" onclick="editSheep('${s.id}')">تعديل</button> <button class="btn mini" onclick="quickW('${s.id}')">وزن</button></td>`; tb.appendChild(tr);})
 }
 function openSheep(){editing=null;['s_id','s_sex','s_group','s_dob','s_mother','s_father','s_lastw','s_notes'].forEach(i=>byId(i).value=''); byId('s_status').value='حية'; byId('s_del').style.display='none'; byId('dlgSheep').showModal()}
+let editing=null;
 function editSheep(id){const s=DB.sheep[id]; if(!s) return; editing=id; byId('s_id').value=s.id||''; byId('s_sex').value=s.sex||''; byId('s_group').value=s.group||''; byId('s_status').value=s.status||'حية'; byId('s_dob').value=s.dob||''; byId('s_mother').value=s.motherId||''; byId('s_father').value=s.fatherId||''; byId('s_lastw').value=s.lastWeight!=null?s.lastWeight:''; byId('s_notes').value=s.notes||''; byId('s_del').style.display='inline-flex'; byId('dlgSheep').showModal()}
 function saveSheep(){
-  const id=(byId('s_id').value||'').trim(); if(!id) return alert('الوسم إلزامي');
+  const id=(byId('s_id').value||'').trim(); if(!id) return alert('اكتب الوسم');
   const s={id, sex:byId('s_sex').value||'', group:byId('s_group').value||'', status:byId('s_status').value||'حية', dob:byId('s_dob').value||'', motherId:byId('s_mother').value||'', fatherId:byId('s_father').value||'', lastWeight: byId('s_lastw').value?parseFloat(byId('s_lastw').value):null, notes:byId('s_notes').value||'', createdAt:DB.sheep[id]?.createdAt||new Date().toISOString(), updatedAt:new Date().toISOString()};
   if(editing&&editing!==id){ if(DB.sheep[id]) return alert('وسم موجود'); delete DB.sheep[editing] }
-  DB.sheep[id]=s; save(); renderAll(); byId('dlgSheep').close()
+  DB.sheep[id]=s; save(); alert('تم الحفظ ✅'); byId('dlgSheep').close(); renderAll()
 }
 function delSheep(){if(!editing) return; if(confirm('حذف؟')){delete DB.sheep[editing]; save(); renderAll(); byId('dlgSheep').close()}}
 function quickW(id){const s=DB.sheep[id]; if(!s) return; const v=prompt('أدخل الوزن (كجم):'); if(v==null) return; const w=parseFloat(v); if(!isFinite(w)) return alert('قيمة غير صحيحة'); s.lastWeight=w; s.updatedAt=new Date().toISOString(); DB.events.push({type:'weight',ids:[id],date:dstr(),details:`${w} كجم`}); save(); renderAll()}
 
-// EVENTS
+// ====== السجلات ======
 function switchEvt(e){document.querySelectorAll('#evtTabs .tab').forEach(t=>t.classList.remove('active')); e.target.classList.add('active'); renderEvents()}
 function mapType(t){return ({birth:'ولادة',vaccination:'تطعيم',movement:'حركة',weight:'وزن',feed:'علف/مصروف'})[t]||t}
 function renderEvents(){const t=document.querySelector('#evtTabs .tab.active')?.dataset.t||'all'; let arr=DB.events.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')); if(t!=='all') arr=arr.filter(e=>e.type===t); const tb=byId('tblE').querySelector('tbody'); tb.innerHTML=''; arr.forEach(ev=>{const tr=document.createElement('tr'); tr.innerHTML=`<td>${fmt(ev.date)}</td><td>${mapType(ev.type)}</td><td>${(ev.ids||[]).join(', ')||'—'}</td><td>${ev.details||'—'}</td>`; tb.appendChild(tr);})}
 
-// BIRTH/VAC/MOVE/FEED
+// ====== ولادة/تطعيم/حركة/علف ======
 function openBirth(){byId('b_mom').value=''; byId('b_cnt').value='1'; byId('b_date').value=dstr(); byId('b_notes').value=''; byId('dlgBirth').showModal()}
 function saveBirth(){const mom=(byId('b_mom').value||'').trim(); const cnt=parseInt(byId('b_cnt').value||'1'); const date=byId('b_date').value||dstr(); const notes=byId('b_notes').value||''; if(!mom) return alert('أدخل وسم الأم'); DB.events.push({type:'birth',ids:[mom],date,details:`${cnt} مولود — ${notes}`}); save(); renderAll(); byId('dlgBirth').close()}
 function openVac(){byId('v_ids').value=''; byId('v_name').value=''; byId('v_date').value=dstr(); byId('v_next').value=''; byId('v_notes').value=''; byId('dlgVac').showModal()}
@@ -324,7 +323,7 @@ function saveMove(){const type=byId('m_type').value; const ids=(byId('m_ids').va
 function openFeed(){show('finance')}
 function saveFeed(){const t=byId('f_type').value, name=byId('f_name').value||'', date=byId('f_date').value||dstr(), qty=byId('f_qty').value?parseFloat(byId('f_qty').value):0, cost=byId('f_cost').value?parseFloat(byId('f_cost').value):0, notes=byId('f_notes').value||''; DB.finance.push({type:t,name,date,qty,cost,notes}); DB.events.push({type:'feed',ids:[],date,details:`${t} — ${name} — ${qty||0} كجم — ${cost||0} ريال ${notes? ' — '+notes:''}`}); save(); renderAll(); byId('f_name').value=''; byId('f_qty').value=''; byId('f_cost').value=''; byId('f_notes').value=''}
 
-// FINANCE render
+// ====== المالية ======
 function renderFinance(){
   const tb=byId('tblFEE').querySelector('tbody'); tb.innerHTML='';
   DB.finance.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(r=>{const tr=document.createElement('tr'); tr.innerHTML=`<td>${fmt(r.date)}</td><td>${r.type}</td><td>${r.name||'—'}</td><td>${r.qty||0}</td><td>${r.cost||0}</td><td>${r.notes||''}</td>`; tb.appendChild(tr);});
@@ -336,20 +335,25 @@ function renderFinance(){
   byId('s_feed30').textContent=feed30.toFixed(0);
 }
 
-// LINEAGE
+// ====== الأنساب ======
 function lineage(){const kids={}; for(const s of Object.values(DB.sheep)){const m=(s.motherId||'').trim(); if(!m) continue; (kids[m]=kids[m]||[]).push(s.id)} const births={}; for(const e of DB.events){if(e.type!=='birth') continue; const mom=(e.ids&&e.ids[0])||''; const cnt=parseInt((e.details||'').split(' ')[0],10); births[mom]=births[mom]||{singles:0,multiples:0,total:0}; births[mom].total++; if(cnt===1) births[mom].singles++; else if(cnt>=2) births[mom].multiples++;} const ewes=Object.values(DB.sheep).filter(s=>s.sex==='أنثى'); const list=ewes.map(e=>{const c=(kids[e.id]||[]); let g=0; c.forEach(x=>{if(kids[x]) g+=kids[x].length}); const b=births[e.id]||{singles:0,multiples:0,total:0}; return {id:e.id,group:e.group,dob:e.dob,children:c,cc:c.length,s:b.singles,m:b.multiples,gc:g}}).sort((a,b)=>b.cc-a.cc); return {kids,list}}
 function renderLineage(){const {kids,list}=lineage(); const filter=(byId('motherFilter').value||'').trim(); const rows=list.filter(r=>!filter||(r.id||'').includes(filter)); const view=byId('linView').value; const wrap=byId('linWrap'); wrap.innerHTML=''; if(view==='table'){const t=document.createElement('table'); t.className='table'; t.innerHTML=`<thead><tr><th>الأم</th><th>مواليدها</th><th>عدد</th><th>مفرد</th><th>توائم+</th><th>أحفاد</th></tr></thead><tbody></tbody>`; const tb=t.querySelector('tbody'); rows.forEach(r=>{const tr=document.createElement('tr'); tr.innerHTML=`<td><b>${r.id}</b><div class="mini">${r.group||''} • ${fmt(r.dob)}</div></td><td>${r.children.join(', ')||'—'}</td><td>${r.cc}</td><td>${r.s}</td><td>${r.m}</td><td>${r.gc}</td>`; tb.appendChild(tr)}); wrap.appendChild(t)} else {rows.forEach(r=>{const card=document.createElement('div'); card.className='card'; card.innerHTML=`<h3 style="margin:0 0 6px 0">الأم: ${r.id}</h3>`; const box=document.createElement('div'); function node(id){const div=document.createElement('div'); const ch=(kids[id]||[]); div.innerHTML=`• <b>${id}</b>${ch.length?' — أبناء: '+ch.join(', '):''}`; if(ch.length){const kid=document.createElement('div'); kid.style.marginInlineStart='18px'; kid.style.borderInlineStart='2px dashed #e5e7eb'; kid.style.paddingInlineStart='10px'; ch.forEach(c=>kid.appendChild(node(c))); div.appendChild(kid)} return div} box.appendChild(node(r.id)); card.appendChild(box); wrap.appendChild(card)})}}
 
-// EXPORT / IMPORT
+// ====== تصدير/استيراد ======
 function exportData(){const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='sheep-data.json'; a.click()}
 function importData(ev){const f=ev.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{try{DB=JSON.parse(r.result); save(); renderAll(); alert('تم الاستيراد ✅')}catch{alert('ملف غير صالح')}}; r.readAsText(f)}
 
-// QUICK
+// ====== مساعدات ======
 function openWeightQuick(){const id=prompt('وسم الرأس لوزنه:'); if(!id) return; quickW(id.trim())}
+function renderAll(){renderDash(); renderFlock(); renderEvents(); renderSettings(); if(byId('finance').classList.contains('active')) renderFinance(); if(byId('lineage').classList.contains('active')) renderLineage();}
+renderAll();
 
-// INIT
-load();
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'))}
+// تسجيل Service Worker (غيّر الكاش برقم v4)
+if('serviceWorker' in navigator){
+  // أضف استعلام لكسر الكاش عند أول تحميل
+  const swUrl = './sw.js?v=4';
+  window.addEventListener('load',()=>navigator.serviceWorker.register(swUrl));
+}
 </script>
 </body>
 </html>
