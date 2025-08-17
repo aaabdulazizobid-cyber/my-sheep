@@ -59,7 +59,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 .mini-btn{padding:4px 8px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;font-size:12px}
 .mini-btn.solid{background:var(--brand);border-color:var(--brand);color:#fff}
 
-/* شريط أدوات فوق القائمة */
+/* شريط أدوات */
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
 </style>
 </head>
@@ -82,10 +82,18 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
         <div class="stat"><div class="k">أمهات</div><div id="s_ewes" style="font-weight:800;font-size:22px">0</div></div>
         <div class="stat"><div class="k">مواليد 30 يوم</div><div id="s_birth30" style="font-weight:800;font-size:22px">0</div></div>
         <div class="stat"><div class="k">تكلفة العلف 30 يوم</div><div id="s_feed30" style="font-weight:800;font-size:22px">0</div></div>
+        <div class="stat"><div class="k">مباعة 30 يوم</div><div id="s_sold30" style="font-weight:800;font-size:22px">0</div></div>
+        <div class="stat"><div class="k">إيراد بيع 30 يوم</div><div id="s_rev30" style="font-weight:800;font-size:22px">0</div></div>
       </div>
-      <div class="row" style="gap:10px;margin-top:4px">
-        <input id="q" oninput="renderList()" placeholder="بحث بالوسم/المجموعة/الحالة">
-        <select id="sort" onchange="renderList()">
+
+      <div class="row" style="gap:10px;margin-top:4px;flex-wrap:wrap">
+        <input id="q" oninput="renderList()" placeholder="بحث بالوسم/المجموعة/الحالة" style="flex:2">
+        <select id="fltStatus" onchange="renderList()" style="flex:1;min-width:170px">
+          <option value="alive">الحيّة فقط</option>
+          <option value="sold">المباعة</option>
+          <option value="all">الكل</option>
+        </select>
+        <select id="sort" onchange="renderList()" style="flex:1;min-width:160px">
           <option value="created">الأحدث</option>
           <option value="id">الوسم</option>
           <option value="dob">الميلاد</option>
@@ -95,6 +103,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 
       <div class="toolbar">
         <button class="btn gray" onclick="toggleSimpleMode(this)">وضع مبسّط جداً: <span id="lblSimple">مغلق</span></button>
+        <button class="btn gray" onclick="byId('fltStatus').value='sold';renderList()">عرض المباعة</button>
         <button class="btn gray" onclick="go('tab-settings')">⚙️ الإعدادات السهلة</button>
       </div>
     </div>
@@ -264,7 +273,10 @@ function getStats(){
   const since=new Date(); since.setDate(since.getDate()-30);
   const birth30=DB.events.filter(e=>e.type==='birth'&&new Date(e.date)>=since).length;
   const feed30=DB.finance.filter(f=>new Date(f.date)>=since).reduce((a,b)=>a+(+b.cost||0),0);
-  return {total:alive.length,ewes,birth30,feed30};
+  const soldEvents=DB.events.filter(e=>e.type==='movement' && /بيع/.test(e.details||'') && new Date(e.date)>=since);
+  const sold30=soldEvents.length;
+  const rev30=soldEvents.reduce((a,e)=>a+(+e.amount||0),0);
+  return {total:alive.length,ewes,birth30,feed30,sold30,rev30};
 }
 function statsToUI(){
   const s=getStats();
@@ -272,6 +284,8 @@ function statsToUI(){
   byId('s_ewes').textContent=s.ewes;
   byId('s_birth30').textContent=s.birth30;
   byId('s_feed30').textContent=s.feed30.toFixed(0);
+  byId('s_sold30').textContent=s.sold30;
+  byId('s_rev30').textContent=s.rev30.toFixed(0);
 }
 
 /* ======= أبناء الأم / الدُفعات ======= */
@@ -358,7 +372,7 @@ function addMany(momId){
   alert('تمت إضافة '+n+' مواليد ✅');
 }
 
-/* ======= القطيع (قائمة) ======= */
+/* ======= بيع / حذف / وزن ======= */
 let _undo=null; // للرجوع بعد حذف
 function deleteSheep(id){
   const s=DB.sheep[id];
@@ -370,10 +384,43 @@ function deleteSheep(id){
   save(); renderList(); statsToUI();
   if(confirm('تم الحذف. تبي تراجع؟')){ DB.sheep[_undo.id]=_undo.data; save(); renderList(); statsToUI(); _undo=null; }
 }
+function sellSheep(id){
+  const s=DB.sheep[id]; if(!s) return;
+  const price = parseFloat(prompt('سعر البيع (ريال):','')||'');
+  if(!isFinite(price)) return alert('السعر غير صالح');
+  const date  = prompt('تاريخ البيع (YYYY-MM-DD)', dstr()) || dstr();
+  s.status='مباعة';
+  s.soldPrice=price;
+  s.soldDate=date;
+  s.updatedAt=new Date().toISOString();
+  DB.events.push({type:'movement',ids:[id],date,details:'بيع',amount:price});
+  save(); renderList(); statsToUI(); renderEvents();
+  // تحويل الفلتر تلقائياً للمباعة لإظهار الشيء الذي بعته
+  byId('fltStatus').value='sold'; renderList();
+  alert('تم البيع ✅');
+}
+function edit(id){
+  const s=DB.sheep[id]; if(!s) return;
+  byId('f_id').value=s.id; byId('f_sex').value=s.sex||'أنثى'; byId('f_group').value=s.group||'';
+  byId('f_dob').value=s.dob||''; byId('f_w').value=s.lastWeight??''; byId('f_mom').value=s.motherId||''; byId('f_dad').value=s.fatherId||'';
+  byId('f_notes').value=s.notes||''; go('tab-add');
+}
+function weight(id){
+  const s=DB.sheep[id]; if(!s) return;
+  const v=prompt('الوزن (كجم):', s.lastWeight ?? '');
+  if(v==null) return;
+  const w=parseFloat(v);
+  if(!isFinite(w)) return alert('رقم غير صالح');
+  s.lastWeight=w; s.updatedAt=new Date().toISOString();
+  DB.events.push({type:'weight',ids:[id],date:dstr(),details:`${w} كجم`});
+  save(); renderList(); statsToUI(); go('tab-herd');
+}
 
+/* ======= القطيع (قائمة) ======= */
 function renderList(){
   const q=(byId('q')?.value||'').toLowerCase();
   const sort=byId('sort')?.value||'created';
+  const flt=byId('fltStatus')?.value||'alive';
   let arr=Object.values(DB.sheep);
 
   if(q){
@@ -381,6 +428,9 @@ function renderList(){
       ||(s.group||'').toLowerCase().includes(q)
       ||(s.status||'').toLowerCase().includes(q));
   }
+  if(flt==='alive') arr=arr.filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
+  else if(flt==='sold') arr=arr.filter(s=>s.status==='مباعة');
+
   arr.sort((a,b)=>{
     if(sort==='id') return (a.id||'').localeCompare(b.id||'');
     if(sort==='dob') return (b.dob||'').localeCompare(a.dob||'');
@@ -389,7 +439,7 @@ function renderList(){
   });
 
   const box=byId('list'); box.innerHTML='';
-  if(!arr.length){ box.innerHTML='<div class="item"><div>لا توجد سجلات.. اضغط + لإضافة أول رأس</div></div>'; return; }
+  if(!arr.length){ box.innerHTML='<div class="item"><div>لا توجد سجلات هنا.. غيّر الفلتر أو اضغط + لإضافة رأس جديد</div></div>'; return; }
 
   arr.forEach(s=>{
     const isEwe = (s.sex||'').includes('أنث');
@@ -406,6 +456,7 @@ function renderList(){
             ? ''
             : `<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
                  <span class="badge">${s.group||'—'}</span>
+                 ${s.status==='مباعة' ? '<span class="badge" style="background:#fee2e2;border-color:#fecaca;color:#991b1b">مباعة'+(s.soldPrice!=null?(' • '+s.soldPrice+'ر.س'):'')+'</span>':''}
                  ${isEwe ? `<span class="badge birth toggle" title="عرض الأبناء" onclick="toggleKids('${s.id}')">🍼 ${birthsCount}</span>`:''}
                </div>`
           }
@@ -436,9 +487,10 @@ function renderList(){
       </div>
 
       <div class="row" style="gap:6px;flex-wrap:wrap">
-        ${ isEwe ? `<button class="btn gray" onclick="addChild('${s.id}')">＋ مولود</button>` : '' }
-        ${ isEwe && !SIMPLE ? `<button class="btn gray" onclick="addTwin('${s.id}')">＋ توأم</button>` : '' }
-        ${ isEwe && !SIMPLE ? `<button class="btn gray" onclick="addMany('${s.id}')">＋ متعدد</button>` : '' }
+        ${ isEwe && s.status!=='مباعة' ? `<button class="btn gray" onclick="addChild('${s.id}')">＋ مولود</button>` : '' }
+        ${ isEwe && !SIMPLE && s.status!=='مباعة' ? `<button class="btn gray" onclick="addTwin('${s.id}')">＋ توأم</button>` : '' }
+        ${ isEwe && !SIMPLE && s.status!=='مباعة' ? `<button class="btn gray" onclick="addMany('${s.id}')">＋ متعدد</button>` : '' }
+        ${ s.status!=='مباعة' ? `<button class="btn warn" onclick="sellSheep('${s.id}')">💸 بيع</button>` : '' }
         <button class="btn" onclick="edit('${s.id}')">تعديل</button>
         <button class="btn" onclick="weight('${s.id}')">⚖️</button>
         <button class="btn danger" onclick="deleteSheep('${s.id}')">🗑️ حذف</button>
@@ -446,22 +498,6 @@ function renderList(){
     `;
     box.appendChild(el);
   });
-}
-function edit(id){
-  const s=DB.sheep[id]; if(!s) return;
-  byId('f_id').value=s.id; byId('f_sex').value=s.sex||'أنثى'; byId('f_group').value=s.group||'';
-  byId('f_dob').value=s.dob||''; byId('f_w').value=s.lastWeight??''; byId('f_mom').value=s.motherId||''; byId('f_dad').value=s.fatherId||'';
-  byId('f_notes').value=s.notes||''; go('tab-add');
-}
-function weight(id){
-  const s=DB.sheep[id]; if(!s) return;
-  const v=prompt('الوزن (كجم):', s.lastWeight ?? '');
-  if(v==null) return;
-  const w=parseFloat(v);
-  if(!isFinite(w)) return alert('رقم غير صالح');
-  s.lastWeight=w; s.updatedAt=new Date().toISOString();
-  DB.events.push({type:'weight',ids:[id],date:dstr(),details:`${w} كجم`});
-  save(); renderList(); statsToUI(); go('tab-herd');
 }
 
 /* ======= إضافة سريعة ======= */
@@ -479,6 +515,8 @@ function saveQuick(){
     fatherId:byId('f_dad').value||'',
     notes:byId('f_notes').value||'',
     status: DB.sheep[id]?.status || 'حية',
+    soldPrice: DB.sheep[id]?.soldPrice ?? null,
+    soldDate:  DB.sheep[id]?.soldDate  ?? '',
     createdAt: DB.sheep[id]?.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
@@ -494,10 +532,11 @@ function renderEvents(){
   let arr=DB.events.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   if(EV_FILTER!=='all') arr=arr.filter(e=>e.type===EV_FILTER);
   if(!arr.length){ box.innerHTML='<div class="item">لا توجد سجلات بعد.</div>'; return; }
-  const map={birth:'🍼 ولادة',weight:'⚖️ وزن',vaccination:'💉 تطعيم',movement:'🔁 حركة',feed:'🌾 علف'};
+  const map={birth:'🍼 ولادة',weight:'⚖️ وزن',vaccination:'💉 تطعيم',movement:'🔁 بيع/شراء',feed:'🌾 علف'};
   arr.forEach(e=>{
     const el=document.createElement('div'); el.className='item';
-    el.innerHTML=`<div style="flex:1"><b>${map[e.type]||e.type}</b><div class="k">${e.details||''}</div></div><div class="k">${fmt(e.date)}</div>`;
+    const det=(e.type==='movement'&&/بيع/.test(e.details||'')) ? (e.details+' — '+(e.amount||0)+' ر.س') : (e.details||'');
+    el.innerHTML=`<div style="flex:1"><b>${map[e.type]||e.type}</b><div class="k">${det}</div></div><div class="k">${fmt(e.date)}</div>`;
     box.appendChild(el);
   });
 }
@@ -534,7 +573,7 @@ function openMove(){
   if(type==='نقل'){ to=prompt('إلى أي مجموعة؟')||''; det+=to?` — إلى ${to}`:''; }
   ids.forEach(id=>{
     const s=DB.sheep[id]; if(!s) return;
-    if(type==='بيع') s.status='مباعة';
+    if(type==='بيع'){ s.status='مباعة'; s.soldPrice=amt; s.soldDate=date; }
     else if(type==='شراء') s.status='حية';
     else if(type==='نفوق') s.status='نافقة';
     else if(type==='نقل') s.group=to;
