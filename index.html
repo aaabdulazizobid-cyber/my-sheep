@@ -1,492 +1,655 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="theme-color" content="#17a2b8" />
-<title>دفتر الغنم — شامل (PWA)</title>
-
-<link rel="manifest" href="manifest.webmanifest" />
-<link rel="apple-touch-icon" href="icon-192.png" />
-<link rel="icon" href="icon-192.png" />
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>دفتر الغنم — شامل</title>
+<meta name="theme-color" content="#10b981">
 <style>
-  :root{
-    --bg:#f7f9fc;--card:#fff;--text:#1f2937;--muted:#6b7280;
-    --brand:#17a2b8;--brand2:#0ea5a0;--ok:#22c55e;--warn:#f59e0b;--danger:#ef4444;
-    --chip:#eef2ff;--line:#e5e7eb;
-  }
-  html,body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial}
-  .wrap{max-width:980px;margin:0 auto;padding:10px}
-  .topbar{background:linear-gradient(90deg,var(--brand),var(--brand2));color:#fff;border-radius:10px;padding:10px 12px;margin:10px 0}
-  .topbar .title{display:flex;align-items:center;gap:8px;font-weight:700}
-  .hint{font-size:12px;color:#d1fae5}
-  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}
-  .k{background:var(--card);border-radius:10px;box-shadow:0 1px 2px rgba(0,0,0,.05);padding:12px}
-  .k small{color:var(--muted)}
-  .k b{display:block;font-size:20px;margin-top:4px}
-  .tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
-  .btn{border:0;background:#e8f7fb;color:#054;padding:8px 12px;border-radius:10px;cursor:pointer}
-  .btn:hover{filter:brightness(.97)}
-  .btn.green{background:#d1fae5;color:#065f46}
-  .btn.warn{background:#fff7ed;color:#7c2d12}
-  .btn.danger{background:#fee2e2;color:#7f1d1d}
-  .btn.ghost{background:#f3f4f6;color:#111827}
-  .btn.out{background:#eef2ff;color:#3730a3}
-  .search{flex:1;min-width:160px}
-  .search input{width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:#fff}
-  .card{background:var(--card);border-radius:12px;box-shadow:0 1px 2px rgba(0,0,0,.05);padding:12px;margin:12px 0}
-  .row{display:flex;align-items:center;gap:8px;justify-content:space-between}
-  .head{display:flex;gap:10px;align-items:center}
-  .tag{font-weight:700}
-  .chips{display:flex;flex-wrap:wrap;gap:6px}
-  .chip{padding:3px 8px;border-radius:999px;background:var(--chip);border:1px solid var(--line);font-size:12px;color:#334155}
-  .chip.sold{background:#fff7ed;border-color:#fcd34d}
-  .chip.dead{background:#fee2e2;border-color:#fecaca}
-  .actions{display:flex;flex-wrap:wrap;gap:6px}
-  .child{padding:8px;border:1px dashed var(--line);border-radius:10px;margin-top:6px;background:#fafafa}
-  .tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:6px;overflow:auto}
-  .tab{padding:6px 10px;border-radius:10px;background:#f3f4f6;cursor:pointer;white-space:nowrap}
-  .tab.active{background:#e0f2fe;color:#0c4a6e}
-  table{width:100%;border-collapse:collapse}
-  th,td{padding:10px;border-bottom:1px solid var(--line);text-align:right}
-  .muted{color:var(--muted)}
-  /* Bottom sheet */
-  .sheet{position:fixed;inset-inline:0;bottom:-100%;background:var(--card);box-shadow:0 -10px 30px rgba(0,0,0,.15);border-radius:16px 16px 0 0;padding:14px;transition:.25s;z-index:50;max-height:92vh;overflow:auto}
-  .sheet.show{bottom:0}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .grid .full{grid-column:1/-1}
-  input,select,textarea{border:1px solid var(--line);border-radius:10px;padding:9px;background:#fff}
-  textarea{min-height:70px}
+:root{
+  --brand:#10b981;--brand2:#34d399;--ink:#0f172a;--muted:#6b7280;--bg:#f6f7fb;--card:#fff;--line:#e5e7eb;--warn:#f59e0b;
+  --danger:#ef4444;--dead:#925;--chip:#ecfeff;--chipb:#a5f3fc;--chips:#155e75
+}
+*{box-sizing:border-box} html,body{margin:0;background:var(--bg);color:var(--ink);
+font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto Sans Arabic",Tahoma,sans-serif}
+.top{position:sticky;top:0;z-index:9;background:linear-gradient(90deg,var(--brand),var(--brand2));color:#fff;padding:12px}
+.top h1{margin:0;font-size:18px;font-weight:800}
+.wrap{max-width:1040px;margin:auto;padding:12px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.kpi b{display:block;font-size:20px}
+.kpi span{font-size:12px;color:var(--muted)}
+.kpi.click{cursor:pointer;transition:.15s transform}.kpi.click:active{transform:scale(.98)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 16px #0b1a4411}
+.section{padding:10px}
+.searchbar{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
+.searchbar input,.searchbar select{padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:8px 12px;cursor:pointer;font-size:13px}
+.btn.solid{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.warn{background:var(--warn);border-color:var(--warn);color:#fff}
+.btn.danger{background:var(--danger);border-color:var(--danger);color:#fff}
+.btn.gray{background:#f3f4f6}
+.list .item{display:flex;gap:10px;padding:12px;border-bottom:1px solid var(--line)}
+.item:last-child{border-bottom:0}
+.name{font-weight:800}
+.meta{font-size:12px;color:var(--muted)}
+.badge{font-size:12px;background:var(--chip);border:1px solid var(--chipb);padding:2px 8px;border-radius:999px;color:var(--chips);margin-inline-start:6px}
+.badge.sold{background:#fee2e2;border-color:#fecaca;color:#991b1b}
+.badge.np{background:#e5e7eb;border-color:#d1d5db;color:#374151}
+.badge.dead{background:#fde68a;border-color:#fcd34d;color:#92400e}
+.controls{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.children{margin-top:10px;background:#f9fafb;border:1px dashed var(--line);border-radius:12px;padding:8px}
+.children h4{margin:0 0 6px 0;font-size:13px;color:#0f766e}
+.kids{display:flex;flex-wrap:wrap;gap:6px}
+.kid{background:#fff;border:1px solid var(--line);padding:4px 8px;border-radius:999px;font-size:12px}
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{border-bottom:1px solid var(--line);padding:8px;text-align:center;font-size:13px}
+.modal{position:fixed;inset:0;background:#0006;display:none;align-items:flex-end;justify-content:center;z-index:50}
+.modal.open{display:flex}
+.sheet{background:#fff;width:min(760px,100%);border-radius:16px 16px 0 0;padding:14px;border:1px solid var(--line)}
+.sheet h3{margin:0 0 8px 0}
+.form{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.row{display:flex;flex-direction:column}
+.row label{font-size:12px;color:var(--muted);margin-bottom:4px}
+.form input,.form select,.form textarea{padding:10px;border:1px solid var(--line);border-radius:10px}
+.form textarea{grid-column:1 / span 2;min-height:70px}
+.sheet .bar{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+@media(max-width:640px){.form{grid-template-columns:1fr}}
+/* تنسيقات تبويب السجلات */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.tab{padding:6px 10px;border-radius:999px;border:1px solid var(--line);cursor:pointer}
+.tab.active{background:var(--brand);border-color:var(--brand);color:#fff}
 </style>
 </head>
 <body>
-<div class="wrap">
-
-  <div class="topbar">
-    <div class="title">🐑 <span>دفتر الغنم — <b>شامل</b></span> <span class="hint">• افتح بـ Safari ثم “إضافة إلى الشاشة الرئيسية”</span></div>
-  </div>
-
-  <!-- KPIs -->
-  <div class="kpi">
-    <div class="k"><small>إجمالي (حية)</small><b id="k_total">0</b></div>
-    <div class="k"><small>أمهات</small><b id="k_ewes">0</b></div>
-    <div class="k"><small>مواليد سنة</small><b id="k_ybirth">0</b></div>
-    <div class="k"><small>تكلفة العلف سنة</small><b id="k_feed">0</b></div>
-    <div class="k"><small>تكلفة العلاجات سنة</small><b id="k_treat">0</b></div>
-    <div class="k"><small>إيراد سنة</small><b id="k_income">0</b></div>
-    <div class="k"><small>الفائض سنة</small><b id="k_profit">0</b></div>
-    <div class="k"><small>مباع هذا الشهر</small><b id="k_soldm">0</b></div>
-  </div>
-
-  <!-- Tools -->
-  <div class="tools">
-    <button class="btn out" onclick="exportDB()">تصدير 📤</button>
-    <label class="btn ghost" title="استيراد">
-      استيراد 📥 <input type="file" hidden onchange="importDB(this.files[0])"/>
-    </label>
-
-    <button class="btn" onclick="addFeed()">🌾 علف</button>
-    <button class="btn" onclick="addTreatmentGlobal()">💊 علاج</button>
-    <button class="btn green" onclick="openForm()">إضافة رأس ＋</button>
-
-    <button class="btn ghost" onclick="setFilter('ewesOnly')">الأمهات فقط</button>
-    <button class="btn ghost" onclick="setFilter('newbornsOnly')">المواليد فقط</button>
-    <button class="btn ghost" onclick="setFilter('aliveOnly')">الحية فقط</button>
-    <button class="btn ghost" onclick="setFilter('staleEwes')">أمهات بلا ولادة (سنة)</button>
-
-    <div class="search"><input id="q" placeholder="بحث بالوسم/المجموعة/الحالة..." oninput="render()"/></div>
-  </div>
-
-  <!-- animals list -->
-  <div id="list"></div>
-
-  <!-- Logs -->
-  <div class="card">
-    <div class="tabs" id="logTabs"></div>
-    <div id="logsView"></div>
-  </div>
-
-  <div style="height:70px"></div>
+<div class="top">
+  <h1>دفتر الغنم — شامل</h1>
+  <small>افتح من Safari → مشاركة → أضِف للشاشة الرئيسية (PWA)</small>
 </div>
 
-<!-- Add/Edit sheet -->
-<div id="sheet" class="sheet" aria-hidden="true">
-  <div class="row" style="margin-bottom:8px">
-    <b id="sheetTitle">إضافة/تعديل رأس</b>
-    <div class="actions"><button class="btn danger" onclick="closeForm()">إغلاق ✖</button></div>
+<div class="wrap">
+  <!-- KPIs -->
+  <div class="grid4">
+    <div class="kpi"><b id="s_total">0</b><span>إجمالي (حية)</span></div>
+    <div class="kpi click" id="kpi_ewes"><b id="s_ewes">0</b><span>أمهات</span></div>
+    <div class="kpi click" id="kpi_birthYear"><b id="s_birthYear">0</b><span>مواليد سنة</span></div>
+    <div class="kpi"><b id="s_feedYear">0</b><span>تكلفة العلف سنة</span></div>
+  </div>
+  <div class="grid4" style="margin-top:8px">
+    <div class="kpi"><b id="s_treatYear">0</b><span>تكلفة العلاجات سنة</span></div>
+    <div class="kpi"><b id="s_soldYear">0</b><span>مباعة سنة</span></div>
+    <div class="kpi"><b id="s_revYear">0</b><span>إيراد سنة</span></div>
+    <div class="kpi"><b id="s_deathYear">0</b><span>النفوق سنة</span></div>
   </div>
 
-  <div class="grid">
-    <label>الوسم<input id="f_tag" placeholder="مثال: 406"/></label>
-    <label>الجنس
-      <select id="f_sex">
-        <option>أنثى</option><option>ذكر</option>
+  <!-- الأدوات -->
+  <div class="card section" style="margin:12px 0;">
+    <div class="searchbar">
+      <input id="q" placeholder="بحث بالوسم/المجموعة/الحالة…" oninput="renderList()">
+      <select id="viewMode" onchange="renderList()">
+        <option value="all">الكل</option>
+        <option value="ewes">الأمهات فقط</option>
+        <option value="newborns">المواليد فقط</option>
+        <option value="np">غير المنتِجة</option>
+        <option value="staleEwes">أمهات بلا ولادة (سنة)</option><!-- جديد -->
       </select>
-    </label>
-    <label>الحالة
-      <select id="f_status">
-        <option>حية</option><option>مباع</option><option>نفوق</option>
+      <select id="fltStatus" onchange="renderList()">
+        <option value="alive">الحية فقط</option>
+        <option value="sold">المباعة</option>
+        <option value="all">الكل</option>
       </select>
-    </label>
-    <label>المجموعة<input id="f_group" placeholder="حري / نعيمي ..."/></label>
-    <label>الأم (وسم)<input id="f_dam" placeholder="وسم الأم إن وجد"/></label>
-    <label>الأب (وسم)<input id="f_sire" placeholder="وسم الأب"/></label>
-    <label>تاريخ الميلاد<input id="f_dob" type="date"/></label>
-    <label>آخر وزن (كجم)<input id="f_w" type="number" inputmode="decimal"/></label>
-    <label class="full">ملاحظات<textarea id="f_note" placeholder="ملاحظات"></textarea></label>
-  </div>
-
-  <div class="row" style="margin-top:8px">
-    <div class="actions">
-      <button class="btn green" onclick="saveHead()">حفظ ✅</button>
-      <button class="btn ghost" onclick="closeForm()">إلغاء</button>
+      <button class="btn solid" onclick="openForm()">＋ إضافة رأس</button>
+      <button class="btn" onclick="addFeed()">🌾 علف</button>
+      <button class="btn" onclick="addTreatmentGlobal()">💊 علاج عام</button><!-- جديد -->
+      <button class="btn" onclick="exportDB()">⬇️ تصدير</button>
+      <label class="btn">⬆️ استيراد<input type="file" accept="application/json" style="display:none" onchange="importDB(event)"></label>
+      <button class="btn gray" onclick="quickDemo()">وضع تجربة</button>
     </div>
   </div>
-  <input type="hidden" id="f_id"/>
+
+  <!-- القائمة -->
+  <div class="card list" id="list"></div>
+
+  <!-- السجلات -->
+  <div class="card section" style="margin-top:12px">
+    <div class="tabs">
+      <div class="tab active" data-tab="births" onclick="setTab(this)">👶 الولادات</div>
+      <div class="tab" data-tab="sales" onclick="setTab(this)">💰 المبيعات</div>
+      <div class="tab" data-tab="feed" onclick="setTab(this)">🌾 العلف</div>
+      <div class="tab" data-tab="treat" onclick="setTab(this)">💊 العلاجات</div>
+      <div class="tab" data-tab="vacc" onclick="setTab(this)">💉 اللقاحات</div>
+      <div class="tab" data-tab="death" onclick="setTab(this)">☠️ النفوق</div>
+      <div class="tab" data-tab="summary" onclick="setTab(this)">📊 ملخص السنة</div>
+    </div>
+
+    <div id="pane_births">
+      <div style="overflow:auto;">
+        <table class="table" id="tblBirths">
+          <thead><tr><th>التاريخ</th><th>الأم</th><th>المواليد</th><th>تفاصيل</th></tr></thead><tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="pane_sales" style="display:none">
+      <div style="overflow:auto;">
+        <table class="table" id="tblSales">
+          <thead><tr><th>التاريخ</th><th>الوسم</th><th>التفصيل</th><th>المبلغ</th></tr></thead><tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="pane_feed" style="display:none">
+      <div style="overflow:auto;">
+        <table class="table" id="tblFeed">
+          <thead><tr><th>التاريخ</th><th>الوصف</th><th>الكمية</th><th>التكلفة</th><th></th></tr></thead><tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="pane_treat" style="display:none">
+      <div style="overflow:auto;">
+        <table class="table" id="tblTreat">
+          <thead><tr><th>التاريخ</th><th>الوسم</th><th>التشخيص</th><th>العلاج</th><th>الجرعة</th><th>التكلفة</th><th></th></tr></thead><tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="pane_vacc" style="display:none">
+      <div style="overflow:auto;">
+        <table class="table" id="tblVacc">
+          <thead><tr><th>التاريخ</th><th>الوسم</th><th>اللقاح</th><th>الجرعة</th><th>ملاحظات</th></tr></thead><tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="pane_death" style="display:none">
+      <div style="overflow:auto;">
+        <table class="table" id="tblDeath">
+          <thead><tr><th>التاريخ</th><th>الوسم</th><th>السبب</th></tr></thead><tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="pane_summary" style="display:none">
+      <div style="overflow:auto;">
+        <table class="table" id="tblSummary">
+          <thead><tr><th>البند</th><th>سنة</th><th>إجمالي</th></tr></thead><tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- نافذة النموذج -->
+<div class="modal" id="modal">
+  <div class="sheet">
+    <h3 id="formTitle">إضافة/تعديل رأس</h3>
+    <div class="form">
+      <div class="row"><label>الوسم</label><input id="f_id" placeholder="مثال: 406"></div>
+      <div class="row"><label>الجنس</label><select id="f_sex"><option>أنثى</option><option>ذكر</option></select></div>
+      <div class="row"><label>المجموعة</label><input id="f_group" placeholder="حري/نعيمي…"></div>
+      <div class="row"><label>تاريخ الميلاد</label><input id="f_dob" type="date"></div>
+      <div class="row"><label>الأم (وسم)</label><input id="f_mother"></div>
+      <div class="row"><label>الأب (وسم)</label><input id="f_father"></div>
+      <div class="row"><label>آخر وزن (كجم)</label><input id="f_weight" type="number" step="0.1"></div>
+      <div class="row"><label>الحالة</label><select id="f_status"><option>حية</option><option>مباعة</option><option>نافقة</option></select></div>
+      <div class="row" style="grid-column:1 / span 2"><label><input type="checkbox" id="f_np"> أم غير منتجة</label></div>
+      <div class="row" style="grid-column:1 / span 2"><label>ملاحظات</label><textarea id="f_notes" placeholder="ملاحظات…"></textarea></div>
+    </div>
+    <div class="bar">
+      <button class="btn" onclick="closeForm()">إلغاء</button>
+      <button class="btn solid" onclick="submitForm()">حفظ</button>
+    </div>
+  </div>
 </div>
 
 <script>
-/* ========= قاعدة البيانات في localStorage ========= */
-const KEY='sheepDB_v4';
-let DB = load();
-const tabs=[
-  {id:'feed',   title:'🌾 العلف'},
-  {id:'treat',  title:'💊 العلاجات'},
-  {id:'sales',  title:'💰 المبيعات'},
-  {id:'deaths', title:'☠️ النفوق'},
-  {id:'year',   title:'📌 ملخص سنة'}
-];
-let currentTab='feed';
-let filterMode='all';
+/*** التخزين ***/
+const KEY='sheep-db-v11';
+let DB=load();
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||seed()}catch(e){return seed()}}
+function save(){localStorage.setItem(KEY,JSON.stringify(DB))}
+function seed(){return{sheep:{},events:[],finance:[],treatments:[],vaccines:[],deaths:[]}}
+/*
+finance: [{id,type:'feed',date,desc,qty,cost}]
+treatments: [{id,date,sheepId,diagnosis,drug,dose,cost}]
+vaccines: [{id,date,sheepId,vaccine,dose,notes}]
+deaths: [{id,date,sheepId,cause}]
+*/
 
-function load(){
-  try{
-    const x=JSON.parse(localStorage.getItem(KEY)||'{}');
-    return Object.assign({
-      animals:[], feed:[], treatments:[], sales:[], deaths:[]
-    }, x);
-  }catch(e){ return {animals:[],feed:[],treatments:[],sales:[],deaths:[]} }
+const $=id=>document.getElementById(id);
+const dstr=(d=new Date())=>new Date(d).toISOString().slice(0,10);
+const money=n=>(+n||0).toLocaleString('ar-SA');
+const fmt=d=>!d?'—':new Date(d).toLocaleDateString('ar');
+
+/*** تبويب السجلات ***/
+function setTab(el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const map={'births':'pane_births','sales':'pane_sales','feed':'pane_feed','treat':'pane_treat','vacc':'pane_vacc','death':'pane_death','summary':'pane_summary'};
+  Object.values(map).forEach(id=>$(id).style.display='none');
+  $(map[el.dataset.tab]).style.display='';
 }
-function save(){ localStorage.setItem(KEY, JSON.stringify(DB)); }
 
-/* ========= أدوات تاريخ/بحث ========= */
-const today = ()=>new Date();
-const dstr  = (d=today())=>d.toISOString().slice(0,10);
-const daysAgo=(n)=>{const d=today(); d.setDate(d.getDate()-n); return d;};
-const inLastYear=(ds)=> new Date(ds)>=daysAgo(365);
-const inThisMonth=(ds)=>{const d=new Date(ds), n=today(); return d.getFullYear()==n.getFullYear() && d.getMonth()==n.getMonth();};
+/*** أولاد الأم وتجميع الدُفعات ***/
+function kidsOf(m){return Object.values(DB.sheep).filter(s=>s.motherId===m).sort((a,b)=>a.id>b.id?1:-1)}
+function packByDate(m){const map={};kidsOf(m).forEach(k=>{const d=k.dob||'غير معروف';(map[d]??=[]).push(k)});return Object.entries(map).sort((a,b)=>a[0]>b[0]?-1:1)}
 
-const byTag = (id)=> DB.animals.find(a=>a.id==id);
-const alive = (a)=> a.status!=='مباع' && a.status!=='نفوق';
-const isEwe = (a)=> a.sex==='أنثى';
-const lambsOf = (damId)=> DB.animals.filter(a=>a.dam===damId);
-const nextChildId=(damId)=>{ const n=lambsOf(damId).length+1; return `${damId}-${String(n).padStart(2,'0')}`; };
-const money = (n)=> Number(n||0).toLocaleString('ar-SA');
+/*** نموذج الرأس ***/
+let editingId=null;
+function openForm(id=null){
+  editingId=id||null;
+  if(id){
+    const s=DB.sheep[id]; if(!s) return;
+    $('formTitle').textContent='تعديل رأس';
+    $('f_id').value=s.id; $('f_id').disabled=true;
+    $('f_sex').value=s.sex||'أنثى'; $('f_group').value=s.group||'';
+    $('f_dob').value=s.dob||''; $('f_mother').value=s.motherId||''; $('f_father').value=s.fatherId||'';
+    $('f_weight').value=s.lastWeight??''; $('f_status').value=s.status||'حية';
+    $('f_notes').value=s.notes||''; $('f_np').checked=!!s.nonProductive;
+  }else{
+    ['f_id','f_group','f_dob','f_mother','f_father','f_weight','f_notes'].forEach(k=>$(k).value='');
+    $('f_id').disabled=false; $('f_sex').value='أنثى'; $('f_status').value='حية'; $('f_np').checked=false;
+    $('formTitle').textContent='إضافة رأس';
+  }
+  $('modal').classList.add('open');
+}
+function closeForm(){$('modal').classList.remove('open')}
+function submitForm(){
+  const rec={
+    id:$('f_id').value.trim(), sex:$('f_sex').value, group:$('f_group').value.trim(),
+    dob:$('f_dob').value||'', motherId:$('f_mother').value.trim(), fatherId:$('f_father').value.trim(),
+    lastWeight:$('f_weight').value?+$('f_weight').value:null, status:$('f_status').value,
+    notes:$('f_notes').value.trim(), nonProductive:$('f_np').checked
+  };
+  if(!rec.id){alert('الوسم مطلوب');return}
+  if(editingId){Object.assign(DB.sheep[editingId],rec,{updatedAt:new Date().toISOString()})}
+  else{
+    if(DB.sheep[rec.id]){alert('الوسم موجود');return}
+    DB.sheep[rec.id]=Object.assign(rec,{soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()})
+  }
+  save(); closeForm(); renderList(); statsToUI();
+}
 
-/* ========= الواجهة: قائمة الحيوانات ========= */
-function setFilter(f){ filterMode=f; render(); }
+/*** عمليات على الرؤوس ***/
+function setWeight(id){
+  const s=DB.sheep[id]; if(!s)return;
+  const v=prompt('الوزن (كجم):',s.lastWeight??''); if(v===null)return;
+  const w=parseFloat(v); if(!isFinite(w))return alert('رقم غير صالح');
+  s.lastWeight=w; s.updatedAt=new Date().toISOString();
+  DB.events.push({type:'weight',ids:[id],date:dstr(),details:w+' كجم'});
+  save(); renderList(); renderLogs();
+}
+function editSheep(id){openForm(id)}
+function removeSheep(id){
+  if(!confirm('حذف الرأس '+id+'؟'))return;
+  delete DB.sheep[id];
+  DB.events=DB.events.filter(e=>!(e.ids||[]).includes(id));
+  DB.treatments=DB.treatments.filter(x=>x.sheepId!==id);
+  DB.vaccines=DB.vaccines.filter(x=>x.sheepId!==id);
+  DB.deaths=DB.deaths.filter(x=>x.sheepId!==id);
+  save(); renderList(); statsToUI(); renderLogs();
+}
 
-function render(){
-  let arr=[...DB.animals];
-  const q=(document.getElementById('q').value||'').trim();
+/*** المواليد ***/
+function addChild(m){
+  const mom=DB.sheep[m]; if(!mom)return alert('الأم غير موجودة');
+  const i=kidsOf(m).length+1; const id=m+'-'+String(i).padStart(2,'0'); const date=dstr();
+  DB.sheep[id]={id,sex:'أنثى',group:'مواليد',dob:date,motherId:m,fatherId:mom.fatherId||'',notes:'مولود',status:'حية',soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
+  DB.events.push({type:'birth',ids:[m,id],date,details:'1 مولود'});
+  save(); renderList(); statsToUI(); renderLogs();
+}
+function addTwin(m){
+  const mom=DB.sheep[m]; if(!mom)return;
+  const base=kidsOf(m).length; const date=dstr();
+  const mk=i=>m+'-'+String(base+i).padStart(2,'0');
+  const a=mk(1), b=mk(2);
+  DB.sheep[a]={id:a,sex:'أنثى',group:'مواليد',dob:date,motherId:m,fatherId:mom.fatherId||'',notes:'توأم',status:'حية',soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
+  DB.sheep[b]={id:b,sex:'ذكر', group:'مواليد',dob:date,motherId:m,fatherId:mom.fatherId||'',notes:'توأم',status:'حية',soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
+  DB.events.push({type:'birth',ids:[m,a,b],date,details:'2 مولود (توأم)'});
+  save(); renderList(); statsToUI(); renderLogs();
+}
+function addMany(m){const n=+prompt('كم مولود؟','3'); if(!n||n<=0)return; for(let i=0;i<n;i++) addChild(m)}
 
-  if(filterMode==='aliveOnly')   arr=arr.filter(alive);
-  if(filterMode==='ewesOnly')    arr=arr.filter(a=>alive(a)&&isEwe(a));
-  if(filterMode==='newbornsOnly')arr=arr.filter(a=>a.dam && alive(a));
-  if(filterMode==='staleEwes')   arr=arr.filter(a=>alive(a)&&isEwe(a))
-                                     .filter(e=>!DB.animals.some(c=>c.dam===e.id && inLastYear(c.dob||'')));
+/*** البيع ***/
+function sellSheep(id){
+  const s=DB.sheep[id]; if(!s)return;
+  const price=+prompt('سعر البيع (ريال):','0'); if(isNaN(price))return;
+  const date=prompt('تاريخ البيع (YYYY-MM-DD):',dstr()); if(date===null)return;
+  s.status='مباعة'; s.soldPrice=price; s.soldDate=date; s.updatedAt=new Date().toISOString();
+  DB.events.push({type:'movement',ids:[id],date,details:'بيع',amount:price});
+  save(); renderList(); statsToUI(); renderLogs();
+}
 
-  if(q) arr=arr.filter(a=>(a.id||'').includes(q)||(a.group||'').includes(q)||(a.status||'').includes(q));
+/*** العلف ***/
+function addFeed(){
+  const date=prompt('تاريخ (YYYY-MM-DD):',dstr()); if(date===null)return;
+  const desc=prompt('الوصف:','علف'); if(desc===null)return;
+  const qv=prompt('الكمية (اختياري):',''); const qty=qv===''?null:+qv; if(qv!==''&&!isFinite(qty))return alert('كمية غير صالحة');
+  const cv=prompt('التكلفة (ريال):','0'); if(cv===null)return; const cost=+cv; if(!isFinite(cost))return alert('تكلفة غير صالحة');
+  DB.finance.push({id:'feed_'+Date.now(),type:'feed',date,desc,qty,cost});
+  save(); statsToUI(); renderLogs(); alert('تم تسجيل العلف ✅');
+}
+function deleteFeed(id){ if(!confirm('حذف سجل العلف؟'))return; DB.finance=DB.finance.filter(r=>r.id!==id); save(); statsToUI(); renderLogs(); }
 
-  // الأحدث أولاً
-  arr.sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+/*** العلاجات — حسب الرأس ***/
+function addTreatment(id){
+  if(!DB.sheep[id]) return alert('الرأس غير موجود');
+  const date=prompt('تاريخ العلاج (YYYY-MM-DD):', dstr()); if(date===null) return;
+  const diagnosis=prompt('التشخيص/الملاحظة:',''); if(diagnosis===null) return;
+  const drug=prompt('اسم العلاج/الدواء:',''); if(drug===null) return;
+  const dose=prompt('الجرعة (مثال: 5 مل مرتين):',''); if(dose===null) return;
+  const costV=prompt('تكلفة العلاج (ريال):','0'); if(costV===null) return;
+  const cost=+costV; if(!isFinite(cost)) return alert('تكلفة غير صالحة');
+  DB.treatments.push({id:'treat_'+Date.now(), date, sheepId:id, diagnosis, drug, dose, cost});
+  save(); renderLogs(); statsToUI(); alert('تم تسجيل العلاج ✅');
+}
+/*** علاج عام — جديد (اختياري بدون وسم) ***/
+function addTreatmentGlobal(){
+  const sheepId=(prompt('وسم الرأس (اختياري — اتركه فاضي للتسجيل العام):','')||'').trim();
+  const date=prompt('تاريخ العلاج (YYYY-MM-DD):', dstr()); if(date===null) return;
+  const diagnosis=prompt('التشخيص/الملاحظة:',''); if(diagnosis===null) return;
+  const drug=prompt('اسم العلاج/الدواء:',''); if(drug===null) return;
+  const dose=prompt('الجرعة:',''); if(dose===null) return;
+  const costV=prompt('التكلفة (ريال):','0'); if(costV===null) return;
+  const cost=+costV; if(!isFinite(cost)) return alert('تكلفة غير صالحة');
+  DB.treatments.push({id:'treat_'+Date.now(), date, sheepId, diagnosis, drug, dose, cost});
+  save(); renderLogs(); statsToUI(); alert('تم تسجيل العلاج ✅');
+}
+function deleteTreatment(id){ if(!confirm('حذف سجل العلاج؟'))return; DB.treatments=DB.treatments.filter(x=>x.id!==id); save(); renderLogs(); statsToUI(); }
 
-  const list=document.getElementById('list');
-  if(!arr.length){ list.innerHTML='<div class="card muted">لا توجد بيانات.</div>'; stats(); renderLogs(); return; }
+/*** لقاحات ***/
+function addVaccine(id){
+  if(!DB.sheep[id]) return alert('الرأس غير موجود');
+  const date=prompt('تاريخ اللقاح (YYYY-MM-DD):', dstr()); if(date===null) return;
+  const vaccine=prompt('اسم اللقاح:',''); if(vaccine===null) return;
+  const dose=prompt('الجرعة:',''); if(dose===null) return;
+  const notes=prompt('ملاحظات — اختياري:',''); if(notes===null) return;
+  DB.vaccines.push({id:'vac_'+Date.now(), date, sheepId:id, vaccine, dose, notes});
+  save(); renderLogs(); alert('تم تسجيل اللقاح ✅');
+}
 
-  let html='';
-  for(const a of arr){
-    const chips=[];
-    chips.push(`<span class="chip">${a.sex||'-'}</span>`);
-    chips.push(`<span class="chip">${a.group||'-'}</span>`);
-    if(a.dob) chips.push(`<span class="chip">ولد: ${a.dob}</span>`);
-    if(a.weight) chips.push(`<span class="chip">وزن: ${a.weight}كجم</span>`);
-    if(a.status==='مباع') chips.push(`<span class="chip sold">مباع</span>`);
-    if(a.status==='نفوق') chips.push(`<span class="chip dead">نفوق</span>`);
-    if(a.dam) chips.push(`<span class="chip">أم: ${a.dam}</span>`);
+/*** نفوق ***/
+function markDead(id){
+  const s=DB.sheep[id]; if(!s) return alert('غير موجود');
+  const date=prompt('تاريخ النفوق (YYYY-MM-DD):', dstr()); if(date===null) return;
+  const cause=prompt('سبب النفوق — اختياري:',''); if(cause===null) return;
+  s.status='نافقة'; s.updatedAt=new Date().toISOString();
+  DB.deaths.push({id:'die_'+Date.now(), date, sheepId:id, cause});
+  DB.events.push({type:'movement', ids:[id], date, details:'نفوق', amount:0});
+  save(); renderList(); renderLogs(); statsToUI();
+}
 
-    // مواليد
-    const kids=lambsOf(a.id).sort((x,y)=>(y.createdAt||'').localeCompare(x.createdAt||''));
-    let children='';
-    if(kids.length){
-      children = `<div class="list">` + kids.map(k=>`
-        <div class="child">
-          <div class="row">
-            <div class="head"><span class="tag">${k.id}</span> <span class="muted">مولود ${k.dob||''}</span></div>
-            <div class="actions">
-              <button class="btn"      onclick="weightPrompt('${k.id}')">وزن ⚖️</button>
-              <button class="btn warn" onclick="sellPrompt('${k.id}')">بيع 💰</button>
-              <button class="btn danger" onclick="removeHead('${k.id}')">حذف 🗑️</button>
-            </div>
-          </div>
-        </div>`).join('') + `</div>`;
-    }else if(isEwe(a)){
-      children = `<div class="muted" style="padding:6px 0">لا يوجد مواليد</div>`;
+/*** إحصاءات ***/
+function getStats(){
+  const since=new Date(); since.setDate(since.getDate()-365);
+  const alive=Object.values(DB.sheep).filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
+  const ewes=alive.filter(s=>s.sex==='أنثى').length;
+  const birthYear=Object.values(DB.sheep).filter(s=>s.dob&&new Date(s.dob)>=since).length;
+  const feedYear=DB.finance.filter(f=>f.type==='feed'&&new Date(f.date)>=since).reduce((a,b)=>a+(+b.cost||0),0);
+  const feedAll =DB.finance.filter(f=>f.type==='feed').reduce((a,b)=>a+(+b.cost||0),0);
+  const soldYearEv=DB.events.filter(e=>e.type==='movement'&&/بيع/.test(e.details||'')&&new Date(e.date)>=since);
+  const soldYear=soldYearEv.length; const revYear=soldYearEv.reduce((a,e)=>a+(+e.amount||0),0);
+  const revAll =DB.events.filter(e=>e.type==='movement'&&/بيع/.test(e.details||'')).reduce((a,e)=>a+(+e.amount||0),0);
+  const treatYear=DB.treatments.filter(t=>new Date(t.date)>=since).reduce((a,b)=>a+(+b.cost||0),0);
+  const deathYear=DB.deaths.filter(d=>new Date(d.date)>=since).length;
+  return {total:alive.length, ewes, birthYear, feedYear, feedAll, soldYear, revYear, revAll, treatYear, deathYear};
+}
+function statsToUI(){
+  const s=getStats();
+  $('s_total').textContent=s.total;
+  $('s_ewes').textContent=s.ewes;
+  $('s_birthYear').textContent=s.birthYear;
+  $('s_feedYear').textContent=money(s.feedYear);
+  $('s_soldYear').textContent=s.soldYear;
+  $('s_revYear').textContent=money(s.revYear);
+  $('s_deathYear').textContent=s.deathYear;
+  $('s_feedAll') && ($('s_feedAll').textContent=money(s.feedAll));
+  $('s_revAll') && ($('s_revAll').textContent=money(s.revAll));
+  $('s_treatYear').textContent=money(s.treatYear);
+}
+
+/*** KPIs قابلة للنقر + فلاتر ***/
+function setView(m){$('viewMode').value=m;renderList();window.scrollTo({top:document.querySelector('.wrap').offsetTop,behavior:'smooth'})}
+document.addEventListener('DOMContentLoaded',()=>{
+  $('kpi_birthYear').onclick=()=>setView('newborns');
+  $('kpi_ewes').onclick=()=>setView('ewes');
+});
+
+/*** أدوات مساعدة ***/
+function lastBirthWithinYear(eweId){
+  const since=new Date(); since.setDate(since.getDate()-365);
+  const kids = kidsOf(eweId);
+  return kids.some(k=>k.dob && new Date(k.dob)>=since);
+}
+
+/*** عرض القائمة ***/
+function renderList(){
+  const q=($('q').value||'').trim().toLowerCase();
+  const mode=$('viewMode').value, flt=$('fltStatus').value;
+  let arr=Object.values(DB.sheep);
+
+  if(q){
+    arr=arr.filter(s=>(s.id||'').toLowerCase().includes(q)||(s.group||'').toLowerCase().includes(q)||(s.status||'').toLowerCase().includes(q));
+  }
+  if(mode==='ewes'){arr=arr.filter(s=>s.sex==='أنثى')}
+  else if(mode==='newborns'){arr=arr.filter(s=>s.motherId&&s.motherId!=='')}
+  else if(mode==='np'){arr=arr.filter(s=>s.sex==='أنثى'&&!!s.nonProductive)}
+  else if(mode==='staleEwes'){ // جديد: أمهات بلا ولادة خلال سنة
+    arr=arr.filter(s=>s.sex==='أنثى' && s.status!=='مباعة' && s.status!=='نافقة')
+           .filter(e=>!lastBirthWithinYear(e.id));
+  }
+
+  if(flt==='alive')arr=arr.filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
+  else if(flt==='sold')arr=arr.filter(s=>s.status==='مباعة');
+
+  arr.sort((a,b)=>{if(a.sex!==b.sex)return a.sex==='أنثى'?-1:1;return a.id>b.id?1:-1});
+
+  const box=$('list'); box.innerHTML='';
+  if(!arr.length){box.innerHTML='<div class="item">لا توجد سجلات..</div>';return}
+
+  arr.forEach(s=>{
+    const row=document.createElement('div'); row.className='item';
+    const info=document.createElement('div'); info.style.flex='1';
+
+    const title=document.createElement('div');
+    title.innerHTML=`<span class="name">${s.id}</span>
+      ${s.sex==='أنثى'?'<span class="badge">أم</span>':''}
+      ${s.nonProductive?'<span class="badge np">🛑 غير منتجة</span>':''}
+      ${s.status==='نافقة'?'<span class="badge dead">نافقة</span>':''}
+      ${(s.status!=='حية'&&s.status!=='نافقة')?`<span class="badge sold">${s.status}${s.soldPrice!=null?' • '+s.soldPrice+' ر.س':''}</span>`:''}`;
+    info.appendChild(title);
+
+    const meta=document.createElement('div'); meta.className='meta';
+    meta.textContent=`${s.group||'–'} • ${s.sex||'–'} • ${fmt(s.dob)}${s.lastWeight!=null?' • '+s.lastWeight+' كجم':''}`;
+    info.appendChild(meta);
+
+    if(s.sex==='أنثى'){
+      const packs=packByDate(s.id); const wrap=document.createElement('div'); wrap.className='children';
+      wrap.innerHTML=`<h4>مواليد ${packs.length?'':'— لا يوجد'}</h4>`;
+      packs.forEach(([date,kids])=>{
+        const line=document.createElement('div'); line.style.margin='6px 0';
+        line.innerHTML=`<div class="meta">دفعة ${fmt(date)} (${kids.length})</div>`;
+        const rowKids=document.createElement('div'); rowKids.className='kids';
+        kids.forEach(k=>{const b=document.createElement('span'); b.className='kid'; b.textContent=`${k.id} • ${k.sex||'—'}`; rowKids.appendChild(b)});
+        line.appendChild(rowKids); wrap.appendChild(line);
+      });
+      info.appendChild(wrap);
     }
 
-    html+=`
-      <div class="card">
-        <div class="row">
-          <div class="head">
-            <span class="tag">${a.id}</span>
-            <div class="chips">${chips.join('')}</div>
-          </div>
-          <div class="actions">
-            <button class="btn" onclick="toggleChildren(this)">مواليد 👶</button>
-            ${isEwe(a)? `
-              <button class="btn" onclick="quickBirth('${a.id}',1)">+ مولود</button>
-              <button class="btn" onclick="quickBirth('${a.id}',2)">+ توأم</button>
-              <button class="btn" onclick="multiBirth('${a.id}')">+ متعدد</button>`:''}
-            <button class="btn" onclick="weightPrompt('${a.id}')">وزن ⚖️</button>
-            <button class="btn" onclick="openForm('${a.id}')">تعديل ✏️</button>
-            <button class="btn warn" onclick="sellPrompt('${a.id}')">بيع 💰</button>
-            <button class="btn danger" onclick="removeHead('${a.id}')">حذف 🗑️</button>
-          </div>
-        </div>
-        <div class="children" style="display:none">${children}</div>
-      </div>`;
-  }
-  list.innerHTML=html;
+    const ctr=document.createElement('div'); ctr.className='controls';
+    if(s.sex==='أنثى'&&s.status!=='مباعة'&&s.status!=='نافقة'){
+      const b1=btn('+ مولود',()=>addChild(s.id));
+      const b2=btn('توأم +',()=>addTwin(s.id));
+      const b3=btn('+ متعدد',()=>addMany(s.id));
+      ctr.append(b1,b2,b3);
+    }
+    if(s.status!=='نافقة') ctr.append(btn('⚖️ وزن',()=>setWeight(s.id)));
+    ctr.append(btn('علاج 💊',()=>addTreatment(s.id)), btn('لقاح 💉',()=>addVaccine(s.id)));
+    if(s.status!=='نافقة') ctr.append(btn('بيع 💰',()=>sellSheep(s.id),'warn'));
+    ctr.append(btn('تعديل',()=>editSheep(s.id)));
+    if(s.status!=='نافقة') ctr.append(btn('نفوق ☠️',()=>markDead(s.id),'danger'));
+    ctr.append(btn('حذف 🗑',()=>removeSheep(s.id),'danger'));
 
-  stats();
-  renderLogs();
-}
-function toggleChildren(btn){
-  const box=btn.closest('.card').querySelector('.children');
-  box.style.display = (box.style.display==='none') ? 'block' : 'none';
+    info.appendChild(ctr);
+    row.appendChild(info);
+    box.appendChild(row);
+  });
+
+  function btn(t,fn,cls=''){const b=document.createElement('button'); b.className='btn'+(cls?' '+cls:''); b.textContent=t; b.onclick=fn; return b}
 }
 
-/* ========= المؤشرات أعلى الصفحة ========= */
-function stats(){
-  const aliveArr = DB.animals.filter(alive);
-  const ewes = aliveArr.filter(isEwe);
-  const yBirth = aliveArr.filter(a=>a.dob && inLastYear(a.dob));
-  const feedY = DB.feed.filter(r=>inLastYear(r.date)).reduce((s,r)=>s+(+r.cost||0),0);
-  const trtY  = DB.treatments.filter(r=>inLastYear(r.date)).reduce((s,r)=>s+(+r.cost||0),0);
-  const incY  = DB.sales.filter(r=>inLastYear(r.date)).reduce((s,r)=>s+(+r.price||0),0);
-  const soldM = DB.sales.filter(r=>inThisMonth(r.date)).length;
-
-  document.getElementById('k_total').textContent  = aliveArr.length;
-  document.getElementById('k_ewes').textContent   = ewes.length;
-  document.getElementById('k_ybirth').textContent = yBirth.length;
-  document.getElementById('k_feed').textContent   = money(feedY)+' ر.س';
-  document.getElementById('k_treat').textContent  = money(trtY)+' ر.س';
-  document.getElementById('k_income').textContent = money(incY)+' ر.س';
-  document.getElementById('k_profit').textContent = money(incY-(feedY+trtY))+' ر.س';
-  document.getElementById('k_soldm').textContent  = soldM;
-}
-
-/* ========= إضافة/تعديل/حذف ========= */
-function openForm(id){
-  const e=id? byTag(id): null;
-  document.getElementById('sheetTitle').textContent = id? ('تعديل رأس: '+id): 'إضافة رأس';
-  document.getElementById('f_id').value = id||'';
-  document.getElementById('f_tag').value = e?.id||'';
-  document.getElementById('f_sex').value = e?.sex||'أنثى';
-  document.getElementById('f_status').value = e?.status||'حية';
-  document.getElementById('f_group').value = e?.group||'';
-  document.getElementById('f_dam').value = e?.dam||'';
-  document.getElementById('f_sire').value = e?.sire||'';
-  document.getElementById('f_dob').value = e?.dob||'';
-  document.getElementById('f_w').value   = e?.weight||'';
-  document.getElementById('f_note').value= e?.notes||'';
-  document.getElementById('sheet').classList.add('show');
-}
-function closeForm(){ document.getElementById('sheet').classList.remove('show'); }
-function saveHead(){
-  const oldId = document.getElementById('f_id').value.trim();
-  const obj={
-    id: document.getElementById('f_tag').value.trim(),
-    sex:document.getElementById('f_sex').value,
-    status:document.getElementById('f_status').value,
-    group:document.getElementById('f_group').value.trim(),
-    dam:document.getElementById('f_dam').value.trim(),
-    sire:document.getElementById('f_sire').value.trim(),
-    dob:document.getElementById('f_dob').value||'',
-    weight:+(document.getElementById('f_w').value||0),
-    notes:document.getElementById('f_note').value.trim()
-  };
-  if(!obj.id) return alert('الوسم مطلوب');
-
-  if(oldId){ // تعديل
-    const e=byTag(oldId); if(!e) return;
-    // لو غيّر الوسم، تأكد ما يتصادم
-    if(oldId!==obj.id && byTag(obj.id)) return alert('وسم موجود مسبقًا');
-    // حدث الأبناء المرتبطين لو تغيّر الوسم (dam)
-    DB.animals.forEach(x=>{ if(x.dam===oldId) x.dam=obj.id; });
-    Object.assign(e,obj);
-    e.id=obj.id;
-  }else{ // إضافة
-    if(byTag(obj.id)) return alert('وسم موجود مسبقًا');
-    obj.createdAt=new Date().toISOString();
-    DB.animals.push(obj);
-  }
-  save(); closeForm(); render();
-}
-function removeHead(id){
-  if(!confirm('حذف الرأس '+id+' ؟')) return;
-  DB.animals = DB.animals.filter(a=>a.id!==id);
-  // احذف أي أبناء مسجلين على هذا الرأس كأم
-  DB.animals = DB.animals.filter(a=>a.dam!==id);
-  save(); render();
-}
-
-/* ========= ولادات ========= */
-function quickBirth(damId,count=1){
-  const dam=byTag(damId); if(!dam) return;
-  for(let i=0;i<count;i++){
-    const suggested = nextChildId(damId);
-    const tag = prompt('وسم المولود', suggested); if(!tag) continue;
-    if(byTag(tag)){ alert('وسم مكرر، تم تجاوزه'); continue; }
-    const sex = prompt('الجنس (أنثى/ذكر):','أنثى')||'أنثى';
-    DB.animals.push({
-      id:tag, sex, status:'حية', group:dam.group||'',
-      dam:damId, sire:dam.sire||'', dob:dstr(),
-      weight:0, notes:'', createdAt:new Date().toISOString()
-    });
-  }
-  save(); render();
-}
-function multiBirth(damId){
-  const n= +prompt('عدد المواليد:', '3'); if(!n||n<1) return;
-  quickBirth(damId,n);
-}
-
-/* ========= وزن / بيع / نفوق ========= */
-function weightPrompt(id){
-  const a=byTag(id); if(!a) return;
-  const w= +prompt('الوزن بالكيلو جرام:', a.weight||''); if(!isFinite(w)) return;
-  a.weight=w; save(); render();
-}
-function sellPrompt(id){
-  const a=byTag(id); if(!a) return;
-  const price= +prompt('سعر البيع (ريال):','0'); if(!isFinite(price)) return;
-  a.status='مباع';
-  DB.sales.push({id:'s'+Date.now(),date:dstr(),sheepId:id,price,detail:''});
-  save(); render();
-}
-function deathPrompt(id){
-  const a=byTag(id); if(!a) return;
-  if(!confirm('تسجيل نفوق للرأس '+id+'؟')) return;
-  a.status='نفوق';
-  DB.deaths.push({id:'d'+Date.now(),date:dstr(),sheepId:id,detail:''});
-  save(); render();
-}
-
-/* ========= عمليات عامة: العلف والعلاج ========= */
-function addFeed(){
-  const date = prompt('تاريخ العملية (YYYY-MM-DD):', dstr()); if(date===null) return;
-  const desc = prompt('الوصف/النوع:', ''); if(desc===null) return;
-  const qty  = prompt('الكمية (كجم/شوال...):', ''); if(qty===null) return;
-  const cost = +prompt('التكلفة (ريال):', '0'); if(!isFinite(cost)) return;
-  DB.feed.push({id:'f'+Date.now(),date,desc,qty,cost});
-  save(); renderLogs(); stats();
-  alert('تم تسجيل العلف');
-}
-function addTreatmentGlobal(){
-  const sheepId = prompt('وسم الرأس (اختياري – اتركه فاضي للتسجيل العام):','') || '';
-  const date    = prompt('تاريخ العلاج (YYYY-MM-DD):', dstr()); if(date===null) return;
-  const diagnosis = prompt('التشخيص/الملاحظة:',''); if(diagnosis===null) return;
-  const drug = prompt('اسم العلاج/الدواء:',''); if(drug===null) return;
-  const dose = prompt('الجرعة (مثال: 5 مل مرتين):',''); if(dose===null) return;
-  const cost = +prompt('التكلفة (ريال):','0'); if(!isFinite(cost)) return;
-  DB.treatments.push({id:'t'+Date.now(),date,sheepId:sheepId.trim(),diagnosis,drug,dose,cost});
-  save(); renderLogs(); stats();
-  alert('تم تسجيل العلاج');
-}
-
-/* ========= السجلات (التبويبات) ========= */
+/*** السجلات ***/
 function renderLogs(){
-  const tabsBox=document.getElementById('logTabs');
-  tabsBox.innerHTML = tabs.map(t=>`<div class="tab ${currentTab===t.id?'active':''}" onclick="currentTab='${t.id}';renderLogs()">${t.title}</div>`).join('');
-  const box=document.getElementById('logsView');
+  // ولادات
+  const tbB=$('tblBirths').querySelector('tbody'); tbB.innerHTML='';
+  DB.events.filter(e=>e.type==='birth').sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(e=>{
+    const mom=(e.ids||[])[0]||'—'; const kids=(e.ids||[]).slice(1).join('، ');
+    tbB.insertAdjacentHTML('beforeend',`<tr><td>${fmt(e.date)}</td><td>${mom}</td><td>${kids||'—'}</td><td>${e.details||''}</td></tr>`);
+  });
 
-  if(currentTab==='feed'){
-    const rows=DB.feed.sort((a,b)=>b.date.localeCompare(a.date)).map(r=>`
-      <tr>
-        <td>${r.date}</td><td>${r.desc||'-'}</td><td>${r.qty||'-'}</td><td>${money(r.cost)}</td>
-        <td><button class="btn danger" onclick="delFeed('${r.id}')">حذف</button></td>
-      </tr>`).join('');
-    box.innerHTML=`<table><thead><tr><th>التاريخ</th><th>الوصف</th><th>الكمية</th><th>التكلفة</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="5" class="muted">لا يوجد</td></tr>'}</tbody></table>`;
-  }
-  else if(currentTab==='treat'){
-    const rows=DB.treatments.sort((a,b)=>b.date.localeCompare(a.date)).map(r=>`
-      <tr>
-        <td>${r.date}</td><td>${r.sheepId||'-'}</td><td>${r.diagnosis||'-'}</td><td>${r.drug||'-'}</td><td>${r.dose||'-'}</td><td>${money(r.cost)}</td>
-        <td><button class="btn danger" onclick="delTreatment('${r.id}')">حذف</button></td>
-      </tr>`).join('');
-    box.innerHTML=`<table><thead><tr><th>التاريخ</th><th>الوسم</th><th>التشخيص</th><th>العلاج</th><th>الجرعة</th><th>التكلفة</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="7" class="muted">لا يوجد</td></tr>'}</tbody></table>`;
-  }
-  else if(currentTab==='sales'){
-    const rows=DB.sales.sort((a,b)=>b.date.localeCompare(a.date)).map(r=>`
-      <tr>
-        <td>${r.date}</td><td>${r.sheepId}</td><td>${money(r.price)}</td>
-        <td><button class="btn danger" onclick="delSale('${r.id}')">حذف</button></td>
-      </tr>`).join('');
-    box.innerHTML=`<table><thead><tr><th>التاريخ</th><th>الوسم</th><th>السعر</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="4" class="muted">لا يوجد</td></tr>'}</tbody></table>`;
-  }
-  else if(currentTab==='deaths'){
-    const rows=DB.deaths.sort((a,b)=>b.date.localeCompare(a.date)).map(r=>`
-      <tr>
-        <td>${r.date}</td><td>${r.sheepId}</td><td>${r.detail||'-'}</td>
-        <td><button class="btn danger" onclick="delDeath('${r.id}')">حذف</button></td>
-      </tr>`).join('');
-    box.innerHTML=`<table><thead><tr><th>التاريخ</th><th>الوسم</th><th>تفاصيل</th><th></th></tr></thead><tbody>${rows||'<tr><td colspan="4" class="muted">لا يوجد</td></tr>'}</tbody></table>`;
-  }
-  else if(currentTab==='year'){
-    const feedY = DB.feed.filter(r=>inLastYear(r.date)).reduce((s,r)=>s+(+r.cost||0),0);
-    const trtY  = DB.treatments.filter(r=>inLastYear(r.date)).reduce((s,r)=>s+(+r.cost||0),0);
-    const incY  = DB.sales.filter(r=>inLastYear(r.date)).reduce((s,r)=>s+(+r.price||0),0);
-    const births= DB.animals.filter(a=>a.dob && inLastYear(a.dob) && alive(a)).length;
-    box.innerHTML=`
-      <div class="card" style="background:#f0f9ff">
-        <div class="kpi">
-          <div class="k"><small>مواليد سنة</small><b>${births}</b></div>
-          <div class="k"><small>تكلفة العلف سنة</small><b>${money(feedY)} ر.س</b></div>
-          <div class="k"><small>تكلفة العلاجات سنة</small><b>${money(trtY)} ر.س</b></div>
-          <div class="k"><small>إيراد سنة</small><b>${money(incY)} ر.س</b></div>
-          <div class="k"><small>الفائض سنة</small><b>${money(incY-(feedY+trtY))} ر.س</b></div>
-        </div>
-      </div>`;
-  }
+  // مبيعات
+  const tbS=$('tblSales').querySelector('tbody'); tbS.innerHTML='';
+  DB.events.filter(e=>e.type==='movement'&&/بيع/.test(e.details||''))
+    .sort((a,b)=>(b.date||'').localeCompare(a.date||''))
+    .forEach(e=>tbS.insertAdjacentHTML('beforeend',`<tr><td>${fmt(e.date)}</td><td>${(e.ids||[])[0]||'—'}</td><td>بيع</td><td>${money(+e.amount||0)}</td></tr>`));
+
+  // علف
+  const tbF=$('tblFeed').querySelector('tbody'); tbF.innerHTML='';
+  DB.finance.filter(f=>f.type==='feed').sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(r=>{
+    const qty=(r.qty==null||r.qty==='')?'—':r.qty;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${fmt(r.date)}</td><td>${r.desc||'—'}</td><td>${qty}</td><td>${money(r.cost||0)}</td>`;
+    const td=document.createElement('td'); const b=document.createElement('button'); b.className='btn danger'; b.textContent='🗑'; b.onclick=()=>deleteFeed(r.id);
+    td.appendChild(b); tr.appendChild(td); tbF.appendChild(tr);
+  });
+
+  // علاج
+  const tbT=$('tblTreat').querySelector('tbody'); tbT.innerHTML='';
+  DB.treatments.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(t=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${fmt(t.date)}</td><td>${t.sheepId||'—'}</td><td>${t.diagnosis||'—'}</td><td>${t.drug||'—'}</td><td>${t.dose||'—'}</td><td>${money(+t.cost||0)}</td>`;
+    const td=document.createElement('td'); const b=document.createElement('button'); b.className='btn danger'; b.textContent='🗑'; b.onclick=()=>deleteTreatment(t.id);
+    td.appendChild(b); tr.appendChild(td); tbT.appendChild(tr);
+  });
+
+  // لقاحات
+  const tbV=$('tblVacc').querySelector('tbody'); tbV.innerHTML='';
+  DB.vaccines.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(v=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${fmt(v.date)}</td><td>${v.sheepId}</td><td>${v.vaccine||''}</td><td>${v.dose||'—'}</td><td>${v.notes||'—'}</td>`;
+    tbV.appendChild(tr);
+  });
+
+  // نفوق
+  const tbD=$('tblDeath').querySelector('tbody'); tbD.innerHTML='';
+  DB.deaths.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(d=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${fmt(d.date)}</td><td>${d.sheepId}</td><td>${d.cause||'—'}</td>`;
+    tbD.appendChild(tr);
+  });
+
+  // ملخص السنة
+  renderSummary();
 }
-function delFeed(id){ DB.feed=DB.feed.filter(x=>x.id!==id); save(); renderLogs(); stats(); }
-function delTreatment(id){ DB.treatments=DB.treatments.filter(x=>x.id!==id); save(); renderLogs(); stats(); }
-function delSale(id){ DB.sales=DB.sales.filter(x=>x.id!==id); save(); renderLogs(); stats(); }
-function delDeath(id){ DB.deaths=DB.deaths.filter(x=>x.id!==id); save(); renderLogs(); }
 
-/* ========= تصدير/استيراد ========= */
+/*** ملخص السنة (علف/علاجات/مصروف/مبيعات/صافي) ***/
+function renderSummary(){
+  const since=new Date(); since.setDate(since.getDate()-365);
+  const feedYear = DB.finance.filter(f=>f.type==='feed'&&new Date(f.date)>=since).reduce((a,b)=>a+(+b.cost||0),0);
+  const treatYear= DB.treatments.filter(t=>new Date(t.date)>=since).reduce((a,b)=>a+(+b.cost||0),0);
+  const costYear = feedYear + treatYear;
+  const revYear  = DB.events.filter(e=>e.type==='movement'&&/بيع/.test(e.details||'')&&new Date(e.date)>=since).reduce((a,e)=>a+(+e.amount||0),0);
+  const netYear  = revYear - costYear;
+
+  const feedAll  = DB.finance.filter(f=>f.type==='feed').reduce((a,b)=>a+(+b.cost||0),0);
+  const treatAll = DB.treatments.reduce((a,b)=>a+(+b.cost||0),0);
+  const costAll  = feedAll + treatAll;
+  const revAll   = DB.events.filter(e=>e.type==='movement'&&/بيع/.test(e.details||'')).reduce((a,e)=>a+(+e.amount||0),0);
+  const netAll   = revAll - costAll;
+
+  const rows = [
+    ['🌾 العلف', money(feedYear),  money(feedAll)],
+    ['💊 العلاجات', money(treatYear), money(treatAll)],
+    ['📦 المصاريف (علف+علاجات)', money(costYear), money(costAll)],
+    ['💰 المبيعات', money(revYear), money(revAll)],
+    ['📈 الصافي', money(netYear), money(netAll)],
+  ];
+  const tb=$('tblSummary').querySelector('tbody'); tb.innerHTML='';
+  rows.forEach(r=> tb.insertAdjacentHTML('beforeend', `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`));
+}
+
+/*** تصدير/استيراد وتجربة ***/
 function exportDB(){
-  const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify(DB,null,2)],{type:"application/json"});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download='sheep_backup_'+dstr()+'.json'; a.click();
+  a.download='sheep-backup-'+dstr()+'.json'; a.click(); URL.revokeObjectURL(a.href);
 }
-function importDB(file){
-  if(!file) return;
-  const fr=new FileReader();
-  fr.onload=()=>{
-    try{ DB=JSON.parse(fr.result); save(); render(); alert('تم الاستيراد ✅'); }
-    catch(e){ alert('ملف غير صالح'); }
-  };
-  fr.readAsText(file);
+function importDB(ev){
+  const f=ev.target.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ DB=JSON.parse(r.result); save(); renderList(); statsToUI(); renderLogs(); alert('تم الاستيراد ✅') }catch{ alert('ملف غير صالح') } };
+  r.readAsText(f);
+}
+function quickDemo(){
+  if(!confirm('تعبئة بيانات تجربة؟'))return;
+  DB=seed();
+  DB.sheep['600']={id:'600',sex:'أنثى',group:'حري',dob:'2024-10-10',status:'حية',nonProductive:false};
+  DB.sheep['600-01']={id:'600-01',sex:'أنثى',group:'مواليد',dob:dstr(),motherId:'600',status:'حية'};
+  DB.events.push({type:'birth',ids:['600','600-01'],date:dstr(),details:'1 مولود'});
+  DB.finance.push({id:'feed_'+Date.now(),type:'feed',date:dstr(),desc:'شعير',qty:120,cost:160});
+  DB.treatments.push({id:'treat_'+(Date.now()+1),date:dstr(),sheepId:'600',diagnosis:'إسهال',drug:'أوكسيتتراسايكلين',dose:'5مل/مرتين',cost:25});
+  DB.vaccines.push({id:'vac_'+(Date.now()+2),date:dstr(),sheepId:'600',vaccine:'طاعون',dose:'2 مل',notes:'وقائي'});
+  save(); renderList(); statsToUI(); renderLogs();
 }
 
-/* ========= تشغيل أولي + SW ========= */
-render();
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));
-}
+/*** هجرة ولادات مفقودة (مرة واحدة) ***/
+(function migrateBirthsOnce(){
+  const FLAG=KEY+'-migrated';
+  if(localStorage.getItem(FLAG))return;
+  const seen=new Set(DB.events.filter(e=>e.type==='birth').map(e=>(e.ids||[]).join('|')+'@'+e.date));
+  const buckets={};
+  Object.values(DB.sheep).forEach(s=>{
+    if(s.motherId&&s.dob){
+      const k=s.motherId+'@'+s.dob; (buckets[k]??={mom:s.motherId,date:s.dob,kids:[]}).kids.push(s.id)
+    }
+  });
+  Object.values(buckets).forEach(b=>{
+    const key=[b.mom].concat(b.kids).join('|')+'@'+b.date;
+    if(!seen.has(key)){ DB.events.push({type:'birth',ids:[b.mom].concat(b.kids),date:b.date,details:`${b.kids.length} مولود (مهاجرة)`}); }
+  });
+  save(); localStorage.setItem(FLAG,'1');
+})();
+
+/*** تشغيل أولي ***/
+renderList(); statsToUI(); renderLogs();
+
+/*** PWA (Manifest + Service Worker داخل الصفحة) ***/
+(function injectPWA(){
+  const manifest = {
+    "name":"دفتر الغنم — شامل","short_name":"دفتر الغنم","start_url":"./","display":"standalone",
+    "background_color":"#10b981","theme_color":"#10b981",
+    "icons":[{"src":"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Ccircle cx='128' cy='128' r='120' fill='%2310b981'/%3E%3Ctext x='50%25' y='57%25' text-anchor='middle' font-size='120' fill='white'%3E%F0%9F%90%91%3C/text%3E%3C/svg%3E","sizes":"256x256","type":"image/svg+xml"}]
+  };
+  const mBlob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
+  const mUrl=URL.createObjectURL(mBlob); const link=document.createElement('link'); link.rel='manifest'; link.href=mUrl; document.head.appendChild(link);
+
+  if('serviceWorker' in navigator){
+    const swCode=`
+      const CACHE='sheep-cache-v1';
+      self.addEventListener('install',e=>{ e.waitUntil(caches.open(CACHE).then(c=>c.addAll(['./']))); self.skipWaiting(); });
+      self.addEventListener('activate',e=>{ e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k))))); self.clients.claim(); });
+      self.addEventListener('fetch',e=>{
+        e.respondWith(
+          caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{ const cp=res.clone(); caches.open(CACHE).then(c=>c.put(e.request,cp)); return res; }).catch(()=>r))
+        );
+      });
+    `;
+    const swBlob=new Blob([swCode],{type:'text/javascript'});
+    const swUrl=URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swUrl).catch(()=>{});
+  }
+})();
 </script>
 </body>
 </html>
