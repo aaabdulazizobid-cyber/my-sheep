@@ -55,7 +55,6 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .form textarea{grid-column:1 / span 2;min-height:70px}
 .sheet .bar{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
 @media(max-width:640px){.form{grid-template-columns:1fr}}
-/* تنسيقات تبويب السجلات */
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
 .tab{padding:6px 10px;border-radius:999px;border:1px solid var(--line);cursor:pointer}
 .tab.active{background:var(--brand);border-color:var(--brand);color:#fff}
@@ -91,7 +90,6 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
         <option value="ewes">الأمهات فقط</option>
         <option value="newborns">المواليد فقط</option>
         <option value="np">غير المنتِجة</option>
-        <option value="staleEwes">أمهات بلا ولادة (سنة)</option><!-- جديد -->
       </select>
       <select id="fltStatus" onchange="renderList()">
         <option value="alive">الحية فقط</option>
@@ -100,7 +98,6 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
       </select>
       <button class="btn solid" onclick="openForm()">＋ إضافة رأس</button>
       <button class="btn" onclick="addFeed()">🌾 علف</button>
-      <button class="btn" onclick="addTreatmentGlobal()">💊 علاج عام</button><!-- جديد -->
       <button class="btn" onclick="exportDB()">⬇️ تصدير</button>
       <label class="btn">⬆️ استيراد<input type="file" accept="application/json" style="display:none" onchange="importDB(event)"></label>
       <button class="btn gray" onclick="quickDemo()">وضع تجربة</button>
@@ -133,7 +130,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
     <div id="pane_sales" style="display:none">
       <div style="overflow:auto;">
         <table class="table" id="tblSales">
-          <thead><tr><th>التاريخ</th><th>الوسم</th><th>التفصيل</th><th>المبلغ</th></tr></thead><tbody></tbody>
+          <thead><tr><th>التاريخ</th><th>الوسم</th><th>التفصيل</th><th>المبلغ</th><th>إجراءات</th></tr></thead><tbody></tbody>
         </table>
       </div>
     </div>
@@ -205,18 +202,18 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 
 <script>
 /*** التخزين ***/
-const KEY='sheep-db-v11';
+const KEY='sheep-db-v12'; // v12: إضافة معرف للعمليات (المبيعات) + تعديل/حذف
 let DB=load();
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||seed()}catch(e){return seed()}}
 function save(){localStorage.setItem(KEY,JSON.stringify(DB))}
 function seed(){return{sheep:{},events:[],finance:[],treatments:[],vaccines:[],deaths:[]}}
 /*
+events: [{id,type:'birth'|'movement'|'weight',ids:[...],date,details,amount?}]
 finance: [{id,type:'feed',date,desc,qty,cost}]
 treatments: [{id,date,sheepId,diagnosis,drug,dose,cost}]
-vaccines: [{id,date,sheepId,vaccine,dose,notes}]
-deaths: [{id,date,sheepId,cause}]
 */
 
+/* أدوات صغيرة */
 const $=id=>document.getElementById(id);
 const dstr=(d=new Date())=>new Date(d).toISOString().slice(0,10);
 const money=n=>(+n||0).toLocaleString('ar-SA');
@@ -277,7 +274,7 @@ function setWeight(id){
   const v=prompt('الوزن (كجم):',s.lastWeight??''); if(v===null)return;
   const w=parseFloat(v); if(!isFinite(w))return alert('رقم غير صالح');
   s.lastWeight=w; s.updatedAt=new Date().toISOString();
-  DB.events.push({type:'weight',ids:[id],date:dstr(),details:w+' كجم'});
+  DB.events.push({id:'ev_'+Date.now(),type:'weight',ids:[id],date:dstr(),details:w+' كجم'});
   save(); renderList(); renderLogs();
 }
 function editSheep(id){openForm(id)}
@@ -296,7 +293,7 @@ function addChild(m){
   const mom=DB.sheep[m]; if(!mom)return alert('الأم غير موجودة');
   const i=kidsOf(m).length+1; const id=m+'-'+String(i).padStart(2,'0'); const date=dstr();
   DB.sheep[id]={id,sex:'أنثى',group:'مواليد',dob:date,motherId:m,fatherId:mom.fatherId||'',notes:'مولود',status:'حية',soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
-  DB.events.push({type:'birth',ids:[m,id],date,details:'1 مولود'});
+  DB.events.push({id:'ev_'+Date.now(),type:'birth',ids:[m,id],date,details:'1 مولود'});
   save(); renderList(); statsToUI(); renderLogs();
 }
 function addTwin(m){
@@ -306,18 +303,47 @@ function addTwin(m){
   const a=mk(1), b=mk(2);
   DB.sheep[a]={id:a,sex:'أنثى',group:'مواليد',dob:date,motherId:m,fatherId:mom.fatherId||'',notes:'توأم',status:'حية',soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
   DB.sheep[b]={id:b,sex:'ذكر', group:'مواليد',dob:date,motherId:m,fatherId:mom.fatherId||'',notes:'توأم',status:'حية',soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
-  DB.events.push({type:'birth',ids:[m,a,b],date,details:'2 مولود (توأم)'});
+  DB.events.push({id:'ev_'+(Date.now()+1),type:'birth',ids:[m,a,b],date,details:'2 مولود (توأم)'});
   save(); renderList(); statsToUI(); renderLogs();
 }
 function addMany(m){const n=+prompt('كم مولود؟','3'); if(!n||n<=0)return; for(let i=0;i<n;i++) addChild(m)}
 
-/*** البيع ***/
+/*** البيع (مع تعديل/حذف) ***/
 function sellSheep(id){
   const s=DB.sheep[id]; if(!s)return;
-  const price=+prompt('سعر البيع (ريال):','0'); if(isNaN(price))return;
-  const date=prompt('تاريخ البيع (YYYY-MM-DD):',dstr()); if(date===null)return;
+  const price=+prompt('سعر البيع (ريال):',s.soldPrice??'0'); if(isNaN(price))return;
+  const date=prompt('تاريخ البيع (YYYY-MM-DD):',s.soldDate||dstr()); if(date===null)return;
   s.status='مباعة'; s.soldPrice=price; s.soldDate=date; s.updatedAt=new Date().toISOString();
-  DB.events.push({type:'movement',ids:[id],date,details:'بيع',amount:price});
+  DB.events.push({id:'ev_'+Date.now(),type:'movement',ids:[id],date,details:'بيع',amount:price});
+  save(); renderList(); statsToUI(); renderLogs();
+}
+function deleteSale(evId){
+  const ev=DB.events.find(e=>e.id===evId&&e.type==='movement'&&/بيع/.test(e.details||'')); if(!ev) return;
+  if(!confirm('حذف عملية البيع للرأس '+(ev.ids?.[0]||'')+'؟')) return;
+  // إن كان هذا الحدث هو سبب حالة "مباعة" للرأس… نرجّعه حية
+  const tag=ev.ids?.[0]; const s=DB.sheep[tag];
+  if(s && s.status==='مباعة' && s.soldDate===ev.date && (+s.soldPrice||0)===(+ev.amount||0)){
+    s.status='حية'; s.soldDate=''; s.soldPrice=null; s.updatedAt=new Date().toISOString();
+  }
+  DB.events=DB.events.filter(e=>e.id!==evId);
+  save(); renderList(); statsToUI(); renderLogs();
+}
+function editSale(evId){
+  const ev=DB.events.find(e=>e.id===evId&&e.type==='movement'&&/بيع/.test(e.details||'')); if(!ev) return;
+  const oldTag=ev.ids?.[0]||''; const oldAmt=+ev.amount||0; const oldDate=ev.date;
+  const tag = prompt('وسم الرأس:', oldTag); if(tag===null) return;
+  const amount = +prompt('المبلغ (ريال):', oldAmt); if(!isFinite(amount)) return;
+  const date = prompt('التاريخ (YYYY-MM-DD):', oldDate); if(date===null) return;
+
+  // رجوع الرأس القديم (إن وُجد وتطابق البيع القديم)
+  const os=DB.sheep[oldTag];
+  if(os && os.status==='مباعة' && os.soldDate===oldDate && (+os.soldPrice||0)===oldAmt){
+    os.status='حية'; os.soldDate=''; os.soldPrice=null; os.updatedAt=new Date().toISOString();
+  }
+  // تعيين الرأس الجديد مباع
+  const ns=DB.sheep[tag]; if(ns){ ns.status='مباعة'; ns.soldDate=date; ns.soldPrice=amount; ns.updatedAt=new Date().toISOString(); }
+
+  Object.assign(ev,{ids:[tag],amount,date});
   save(); renderList(); statsToUI(); renderLogs();
 }
 
@@ -332,26 +358,14 @@ function addFeed(){
 }
 function deleteFeed(id){ if(!confirm('حذف سجل العلف؟'))return; DB.finance=DB.finance.filter(r=>r.id!==id); save(); statsToUI(); renderLogs(); }
 
-/*** العلاجات — حسب الرأس ***/
+/*** العلاجات ***/
 function addTreatment(id){
-  if(!DB.sheep[id]) return alert('الرأس غير موجود');
+  const sheepId = id || prompt('وسم الرأس (اختياري — اتركه فارغ لعلاج عام):','') || '';
   const date=prompt('تاريخ العلاج (YYYY-MM-DD):', dstr()); if(date===null) return;
   const diagnosis=prompt('التشخيص/الملاحظة:',''); if(diagnosis===null) return;
   const drug=prompt('اسم العلاج/الدواء:',''); if(drug===null) return;
   const dose=prompt('الجرعة (مثال: 5 مل مرتين):',''); if(dose===null) return;
   const costV=prompt('تكلفة العلاج (ريال):','0'); if(costV===null) return;
-  const cost=+costV; if(!isFinite(cost)) return alert('تكلفة غير صالحة');
-  DB.treatments.push({id:'treat_'+Date.now(), date, sheepId:id, diagnosis, drug, dose, cost});
-  save(); renderLogs(); statsToUI(); alert('تم تسجيل العلاج ✅');
-}
-/*** علاج عام — جديد (اختياري بدون وسم) ***/
-function addTreatmentGlobal(){
-  const sheepId=(prompt('وسم الرأس (اختياري — اتركه فاضي للتسجيل العام):','')||'').trim();
-  const date=prompt('تاريخ العلاج (YYYY-MM-DD):', dstr()); if(date===null) return;
-  const diagnosis=prompt('التشخيص/الملاحظة:',''); if(diagnosis===null) return;
-  const drug=prompt('اسم العلاج/الدواء:',''); if(drug===null) return;
-  const dose=prompt('الجرعة:',''); if(dose===null) return;
-  const costV=prompt('التكلفة (ريال):','0'); if(costV===null) return;
   const cost=+costV; if(!isFinite(cost)) return alert('تكلفة غير صالحة');
   DB.treatments.push({id:'treat_'+Date.now(), date, sheepId, diagnosis, drug, dose, cost});
   save(); renderLogs(); statsToUI(); alert('تم تسجيل العلاج ✅');
@@ -376,7 +390,7 @@ function markDead(id){
   const cause=prompt('سبب النفوق — اختياري:',''); if(cause===null) return;
   s.status='نافقة'; s.updatedAt=new Date().toISOString();
   DB.deaths.push({id:'die_'+Date.now(), date, sheepId:id, cause});
-  DB.events.push({type:'movement', ids:[id], date, details:'نفوق', amount:0});
+  DB.events.push({id:'ev_'+Date.now(),type:'movement', ids:[id], date, details:'نفوق', amount:0});
   save(); renderList(); renderLogs(); statsToUI();
 }
 
@@ -404,8 +418,6 @@ function statsToUI(){
   $('s_soldYear').textContent=s.soldYear;
   $('s_revYear').textContent=money(s.revYear);
   $('s_deathYear').textContent=s.deathYear;
-  $('s_feedAll') && ($('s_feedAll').textContent=money(s.feedAll));
-  $('s_revAll') && ($('s_revAll').textContent=money(s.revAll));
   $('s_treatYear').textContent=money(s.treatYear);
 }
 
@@ -415,13 +427,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   $('kpi_birthYear').onclick=()=>setView('newborns');
   $('kpi_ewes').onclick=()=>setView('ewes');
 });
-
-/*** أدوات مساعدة ***/
-function lastBirthWithinYear(eweId){
-  const since=new Date(); since.setDate(since.getDate()-365);
-  const kids = kidsOf(eweId);
-  return kids.some(k=>k.dob && new Date(k.dob)>=since);
-}
 
 /*** عرض القائمة ***/
 function renderList(){
@@ -435,10 +440,6 @@ function renderList(){
   if(mode==='ewes'){arr=arr.filter(s=>s.sex==='أنثى')}
   else if(mode==='newborns'){arr=arr.filter(s=>s.motherId&&s.motherId!=='')}
   else if(mode==='np'){arr=arr.filter(s=>s.sex==='أنثى'&&!!s.nonProductive)}
-  else if(mode==='staleEwes'){ // جديد: أمهات بلا ولادة خلال سنة
-    arr=arr.filter(s=>s.sex==='أنثى' && s.status!=='مباعة' && s.status!=='نافقة')
-           .filter(e=>!lastBirthWithinYear(e.id));
-  }
 
   if(flt==='alive')arr=arr.filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
   else if(flt==='sold')arr=arr.filter(s=>s.status==='مباعة');
@@ -508,11 +509,18 @@ function renderLogs(){
     tbB.insertAdjacentHTML('beforeend',`<tr><td>${fmt(e.date)}</td><td>${mom}</td><td>${kids||'—'}</td><td>${e.details||''}</td></tr>`);
   });
 
-  // مبيعات
+  // مبيعات (مع تعديل/حذف)
   const tbS=$('tblSales').querySelector('tbody'); tbS.innerHTML='';
   DB.events.filter(e=>e.type==='movement'&&/بيع/.test(e.details||''))
     .sort((a,b)=>(b.date||'').localeCompare(a.date||''))
-    .forEach(e=>tbS.insertAdjacentHTML('beforeend',`<tr><td>${fmt(e.date)}</td><td>${(e.ids||[])[0]||'—'}</td><td>بيع</td><td>${money(+e.amount||0)}</td></tr>`));
+    .forEach(e=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td>${fmt(e.date)}</td><td>${(e.ids||[])[0]||'—'}</td><td>بيع</td><td>${money(+e.amount||0)}</td>`;
+      const td=document.createElement('td');
+      const b1=document.createElement('button'); b1.className='btn'; b1.textContent='تعديل'; b1.onclick=()=>editSale(e.id);
+      const b2=document.createElement('button'); b2.className='btn danger'; b2.textContent='حذف'; b2.onclick=()=>deleteSale(e.id);
+      td.append(b1,b2); tr.appendChild(td); tbS.appendChild(tr);
+    });
 
   // علف
   const tbF=$('tblFeed').querySelector('tbody'); tbF.innerHTML='';
@@ -553,7 +561,7 @@ function renderLogs(){
   renderSummary();
 }
 
-/*** ملخص السنة (علف/علاجات/مصروف/مبيعات/صافي) ***/
+/*** ملخص السنة ***/
 function renderSummary(){
   const since=new Date(); since.setDate(since.getDate()-365);
   const feedYear = DB.finance.filter(f=>f.type==='feed'&&new Date(f.date)>=since).reduce((a,b)=>a+(+b.cost||0),0);
@@ -596,29 +604,22 @@ function quickDemo(){
   DB=seed();
   DB.sheep['600']={id:'600',sex:'أنثى',group:'حري',dob:'2024-10-10',status:'حية',nonProductive:false};
   DB.sheep['600-01']={id:'600-01',sex:'أنثى',group:'مواليد',dob:dstr(),motherId:'600',status:'حية'};
-  DB.events.push({type:'birth',ids:['600','600-01'],date:dstr(),details:'1 مولود'});
+  DB.events.push({id:'ev_'+Date.now(),type:'birth',ids:['600','600-01'],date:dstr(),details:'1 مولود'});
   DB.finance.push({id:'feed_'+Date.now(),type:'feed',date:dstr(),desc:'شعير',qty:120,cost:160});
   DB.treatments.push({id:'treat_'+(Date.now()+1),date:dstr(),sheepId:'600',diagnosis:'إسهال',drug:'أوكسيتتراسايكلين',dose:'5مل/مرتين',cost:25});
   DB.vaccines.push({id:'vac_'+(Date.now()+2),date:dstr(),sheepId:'600',vaccine:'طاعون',dose:'2 مل',notes:'وقائي'});
   save(); renderList(); statsToUI(); renderLogs();
 }
 
-/*** هجرة ولادات مفقودة (مرة واحدة) ***/
-(function migrateBirthsOnce(){
-  const FLAG=KEY+'-migrated';
-  if(localStorage.getItem(FLAG))return;
-  const seen=new Set(DB.events.filter(e=>e.type==='birth').map(e=>(e.ids||[]).join('|')+'@'+e.date));
-  const buckets={};
-  Object.values(DB.sheep).forEach(s=>{
-    if(s.motherId&&s.dob){
-      const k=s.motherId+'@'+s.dob; (buckets[k]??={mom:s.motherId,date:s.dob,kids:[]}).kids.push(s.id)
-    }
+/*** ترقية: أعطِ كل عملية بيع قديمة id إذا ما عندها ***/
+(function migrateIds(){
+  let changed=false;
+  DB.events.forEach(e=>{
+    if(e.type==='movement' && /بيع/.test(e.details||'') && !e.id){ e.id='ev_'+Math.random().toString(36).slice(2); changed=true; }
+    if(e.type==='birth' && !e.id){ e.id='ev_'+Math.random().toString(36).slice(2); changed=true; }
+    if(e.type==='weight' && !e.id){ e.id='ev_'+Math.random().toString(36).slice(2); changed=true; }
   });
-  Object.values(buckets).forEach(b=>{
-    const key=[b.mom].concat(b.kids).join('|')+'@'+b.date;
-    if(!seen.has(key)){ DB.events.push({type:'birth',ids:[b.mom].concat(b.kids),date:b.date,details:`${b.kids.length} مولود (مهاجرة)`}); }
-  });
-  save(); localStorage.setItem(FLAG,'1');
+  if(changed) save();
 })();
 
 /*** تشغيل أولي ***/
