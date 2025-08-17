@@ -30,6 +30,8 @@
 .btn.solid{background:var(--brand);border-color:var(--brand);color:#fff}
 .btn.ghost{background:#f9fafb}
 .btn.warn{background:var(--warn);border-color:var(--warn);color:#fff}
+.btn.danger{background:#ef4444;border-color:#ef4444;color:#fff}
+.btn.gray{background:#f3f4f6}
 input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff}
 
 .nav{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr)}
@@ -56,6 +58,9 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 /* أزرار صغيرة داخل البطاقة */
 .mini-btn{padding:4px 8px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;font-size:12px}
 .mini-btn.solid{background:var(--brand);border-color:var(--brand);color:#fff}
+
+/* شريط أدوات فوق القائمة */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
 </style>
 </head>
 <body>
@@ -86,6 +91,11 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
           <option value="dob">الميلاد</option>
           <option value="group">المجموعة</option>
         </select>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn gray" onclick="toggleSimpleMode(this)">وضع مبسّط جداً: <span id="lblSimple">مغلق</span></button>
+        <button class="btn gray" onclick="go('tab-settings')">⚙️ الإعدادات السهلة</button>
       </div>
     </div>
     <div class="list" id="list"></div>
@@ -177,6 +187,12 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
   <section id="tab-settings" class="card hidden">
     <div style="padding:14px;display:grid;gap:10px">
       <h3 style="margin:0">إعدادات</h3>
+
+      <div class="toolbar">
+        <button class="btn gray" onclick="setTrain(!TRAIN)">وضع التدريب: <b id="lblTrain">مغلق</b></button>
+        <button class="btn" onclick="clearTrain()">تصفير بيانات التدريب</button>
+      </div>
+
       <div class="row" style="gap:10px">
         <div style="flex:1"><label class="k">اسم المزرعة</label><input id="farm" oninput="saveSettings()"></div>
         <div style="flex:1"><label class="k">مجموعات (افصل بفاصلة)</label><input id="groups" oninput="saveSettings()" placeholder="أمهات, فحول, مواليد, تسمين, للبيع"></div>
@@ -185,7 +201,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
       <div class="row" style="gap:10px">
         <label class="btn">⬆️ استيراد<input id="imp" type="file" accept=".json" class="hidden" onchange="importData(event)"></label>
         <button class="btn" onclick="exportData()">⬇️ تصدير</button>
-        <button class="btn warn" onclick="if(confirm('متأكد؟')){localStorage.removeItem(KEY);location.reload()}">تفريغ البيانات</button>
+        <button class="btn warn" onclick="if(confirm('متأكد؟')){localStorage.removeItem(KEY);location.reload()}">تفريغ البيانات (العادي)</button>
       </div>
     </div>
   </section>
@@ -202,11 +218,23 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 </div>
 
 <script>
-/* ======= قاعدة بيانات محلية ======= */
+/* ======= المفاتيح / وضع التدريب ======= */
 const KEY='sheep_data_pwa_v2';
-let DB = (()=>{ try{ const t=localStorage.getItem(KEY); return t?JSON.parse(t):null }catch{ return null } })()
-   || {sheep:{},events:[],finance:[],settings:{farm:'',groups:'أمهات, فحول, مواليد, تسمين, للبيع'}};
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(DB)); }catch(e){ alert('تعذّر الحفظ: مساحة المتصفح ممتلئة أو محظورة.'); } }
+const KEY_TRAIN='sheep_data_pwa_training';
+let TRAIN=false; // افتراضي: مغلق
+let SIMPLE=false;
+
+let DB = (()=>{ 
+  try{ const t=localStorage.getItem(KEY); return t?JSON.parse(t):null }catch{ return null } 
+})() || {sheep:{},events:[],finance:[],settings:{farm:'',groups:'أمهات, فحول, مواليد, تسمين, للبيع'}};
+
+function save(){
+  try{
+    localStorage.setItem(TRAIN? KEY_TRAIN : KEY, JSON.stringify(DB));
+  }catch(e){
+    alert('تعذّر الحفظ: قد تكون مساحة المتصفح ممتلئة.');
+  }
+}
 
 /* ======= تنقّل ======= */
 function go(id){
@@ -225,8 +253,11 @@ function go(id){
 function byId(x){return document.getElementById(x)}
 function dstr(){return new Date().toISOString().slice(0,10)}
 function fmt(d){if(!d) return '—'; try{return new Date(d).toLocaleDateString('ar')}catch(e){return d}}
+function toggleSimpleMode(){ SIMPLE=!SIMPLE; byId('lblSimple').textContent=SIMPLE?'مشغّل':'مغلق'; renderList(); }
+function setTrain(on){ TRAIN=!!on; const raw=localStorage.getItem(TRAIN?KEY_TRAIN:KEY); if(raw){ try{ DB=JSON.parse(raw) }catch{} } renderSettings(); renderList(); renderEvents(); renderFeed(); statsToUI(); alert('تم التحويل إلى '+(TRAIN?'وضع التدريب':'الوضع العادي')); }
+function clearTrain(){ localStorage.removeItem(KEY_TRAIN); if(TRAIN){ DB={sheep:{},events:[],finance:[],settings:{farm:'',groups:'أمهات, فحول, مواليد, تسمين, للبيع'}}; save(); } alert('تم تصفير بيانات وضع التدريب'); renderList(); renderEvents(); renderFeed(); statsToUI(); }
 
-/* ======= إحصاءات أعلى الصفحة ======= */
+/* ======= إحصاءات ======= */
 function getStats(){
   const alive=Object.values(DB.sheep).filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
   const ewes=alive.filter(s=>s.sex==='أنثى').length;
@@ -270,8 +301,7 @@ function latestBirthDate(momId){
 
 /* ======= إضافة مولود/توأم/دفعة ======= */
 function addChild(momId){
-  const mom = DB.sheep[momId];
-  if(!mom){ alert('لم يتم العثور على الأم'); return; }
+  const mom = DB.sheep[momId]; if(!mom){ alert('لم يتم العثور على الأم'); return; }
   const next = getChildren(momId).length + 1;
   const suggested = momId + '-' + String(next).padStart(2,'0');
   go('tab-add');
@@ -286,8 +316,7 @@ function addChild(momId){
   byId('f_id').focus();
 }
 function addTwin(momId){
-  const mom = DB.sheep[momId];
-  if(!mom){ alert('لم يتم العثور على الأم'); return; }
+  const mom = DB.sheep[momId]; if(!mom){ alert('لم يتم العثور على الأم'); return; }
   const next = getChildren(momId).length + 1;
   const suggested = momId + '-' + String(next).padStart(2,'0');
   go('tab-add');
@@ -302,8 +331,7 @@ function addTwin(momId){
   byId('f_id').focus();
 }
 function addMany(momId){
-  const mom = DB.sheep[momId];
-  if(!mom){ alert('لم يتم العثور على الأم'); return; }
+  const mom = DB.sheep[momId]; if(!mom){ alert('لم يتم العثور على الأم'); return; }
   let n = parseInt(prompt('كم عدد المواليد؟', '2')||'0', 10);
   if(!Number.isFinite(n) || n<=0){ alert('عدد غير صالح'); return; }
   const sexAns = (prompt('الجنس: اكتب "أنثى" أو "ذكر" أو "مختلط"', 'مختلط')||'').trim();
@@ -330,7 +358,19 @@ function addMany(momId){
   alert('تمت إضافة '+n+' مواليد ✅');
 }
 
-/* ======= القطيع ======= */
+/* ======= القطيع (قائمة) ======= */
+let _undo=null; // للرجوع بعد حذف
+function deleteSheep(id){
+  const s=DB.sheep[id];
+  if(!s){ alert('غير موجود'); return; }
+  if(!confirm('حذف الوسم "'+id+'" وجميع سجلاته؟')) return;
+  _undo={id,data:JSON.parse(JSON.stringify(s))};
+  delete DB.sheep[id];
+  DB.events = DB.events.filter(e => !(e.ids||[]).includes(id));
+  save(); renderList(); statsToUI();
+  if(confirm('تم الحذف. تبي تراجع؟')){ DB.sheep[_undo.id]=_undo.data; save(); renderList(); statsToUI(); _undo=null; }
+}
+
 function renderList(){
   const q=(byId('q')?.value||'').toLowerCase();
   const sort=byId('sort')?.value||'created';
@@ -361,42 +401,47 @@ function renderList(){
       <div style="flex:1">
         <div class="row">
           <b>${s.id||''}</b>
-          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-            <span class="badge">${s.group||'—'}</span>
-            ${isEwe ? `
-              <span class="badge birth toggle" title="عرض الأبناء" onclick="toggleKids('${s.id}')">🍼 ${birthsCount}</span>
-              <button class="mini-btn solid" onclick="addChild('${s.id}')">＋ مولود</button>
-              <button class="mini-btn" onclick="addTwin('${s.id}')">＋ توأم</button>
-              <button class="mini-btn" onclick="addMany('${s.id}')">＋ مواليد متعدد</button>
-            `:''}
-          </div>
+          ${
+            SIMPLE
+            ? ''
+            : `<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+                 <span class="badge">${s.group||'—'}</span>
+                 ${isEwe ? `<span class="badge birth toggle" title="عرض الأبناء" onclick="toggleKids('${s.id}')">🍼 ${birthsCount}</span>`:''}
+               </div>`
+          }
         </div>
         <div class="k">${s.sex||''} • ${s.status||'حية'} • ${fmt(s.dob)} ${s.lastWeight!=null?('• '+s.lastWeight+' كجم'):''}</div>
 
-        ${isEwe ? `
-          <div id="kids-${s.id}" class="kids hidden">
-            ${
-              Object.keys(birthsGrouped).length
-              ? Object.entries(birthsGrouped).map(([date,list])=>`
-                <div class="group">
-                  <h4>دفعة ${date==='غير مُسجّل'?'بدون تاريخ':fmt(date)} — ${list.length} ${list.length>1?'مواليد':'مولود'}</h4>
-                  ${list.map(ch=>`
-                    <div class="kid">
-                      <div><b>${ch.id||''}</b> • ${ch.sex||''} ${ch.lastWeight!=null?('• '+ch.lastWeight+' كجم'):''}</div>
-                      <div class="k">${ch.group||''}</div>
-                    </div>
-                  `).join('')}
-                </div>
-              `).join('')
-              : `<div class="k">لا يوجد أبناء مسجّلين لهذه الأم بعد.</div>`
-            }
-          </div>
-        `:''}
+        ${
+          (isEwe && !SIMPLE)
+          ? `<div id="kids-${s.id}" class="kids hidden">
+               ${
+                 Object.keys(birthsGrouped).length
+                 ? Object.entries(birthsGrouped).map(([date,list])=>`
+                   <div class="group">
+                     <h4>دفعة ${date==='غير مُسجّل'?'بدون تاريخ':fmt(date)} — ${list.length} ${list.length>1?'مواليد':'مولود'}</h4>
+                     ${list.map(ch=>`
+                       <div class="kid">
+                         <div><b>${ch.id||''}</b> • ${ch.sex||''} ${ch.lastWeight!=null?('• '+ch.lastWeight+' كجم'):''}</div>
+                         <div class="k">${ch.group||''}</div>
+                       </div>
+                     `).join('')}
+                   </div>
+                 `).join('')
+                 : `<div class="k">لا يوجد أبناء مسجّلين لهذه الأم بعد.</div>`
+               }
+             </div>`
+          : ''
+        }
       </div>
 
-      <div class="row" style="gap:8px">
+      <div class="row" style="gap:6px;flex-wrap:wrap">
+        ${ isEwe ? `<button class="btn gray" onclick="addChild('${s.id}')">＋ مولود</button>` : '' }
+        ${ isEwe && !SIMPLE ? `<button class="btn gray" onclick="addTwin('${s.id}')">＋ توأم</button>` : '' }
+        ${ isEwe && !SIMPLE ? `<button class="btn gray" onclick="addMany('${s.id}')">＋ متعدد</button>` : '' }
         <button class="btn" onclick="edit('${s.id}')">تعديل</button>
         <button class="btn" onclick="weight('${s.id}')">⚖️</button>
+        <button class="btn danger" onclick="deleteSheep('${s.id}')">🗑️ حذف</button>
       </div>
     `;
     box.appendChild(el);
@@ -526,6 +571,7 @@ function saveFeed(){
 function renderSettings(){
   byId('farm').value=DB.settings.farm||'';
   byId('groups').value=DB.settings.groups||'';
+  byId('lblTrain').textContent = TRAIN? 'مشغّل' : 'مغلق';
   const dl=byId('dlGroups'); dl.innerHTML='';
   (DB.settings.groups||'').split(',').map(x=>x.trim()).filter(Boolean).forEach(g=>{
     const o=document.createElement('option'); o.value=g; dl.appendChild(o);
