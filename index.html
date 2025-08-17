@@ -114,7 +114,7 @@ html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kuf
       </div>
       <div style="overflow:auto;margin-top:12px">
         <table class="table" id="tblFeed">
-          <thead><tr><th>التاريخ</th><th>الوصف</th><th>الكمية</th><th>التكلفة</th></tr></thead><tbody></tbody>
+          <thead><tr><th>التاريخ</th><th>الوصف</th><th>الكمية</th><th>التكلفة</th><th></th></tr></thead><tbody></tbody>
         </table>
       </div>
     </div>
@@ -179,9 +179,8 @@ html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kuf
 
 <script>
 /* ====== التخزين ====== */
-const KEY='sheep-db-v6';
+const KEY='sheep-db-v7';
 let DB = load();
-
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || seed() }catch(e){ return seed() } }
 function save(){ localStorage.setItem(KEY, JSON.stringify(DB)) }
 function seed(){ return { sheep:{}, events:[], finance:[] } }
@@ -204,7 +203,7 @@ let editingId = null;
 function openForm(id=null){
   editingId = id||null;
   const title = byId('formTitle');
-  if(id){ // تعبئة للتعديل
+  if(id){
     const s = DB.sheep[id]; if(!s) return;
     byId('f_id').value = s.id; byId('f_id').disabled = true;
     byId('f_sex').value = s.sex||'أنثى';
@@ -225,7 +224,6 @@ function openForm(id=null){
   byId('modal').classList.add('open');
 }
 function closeForm(){ byId('modal').classList.remove('open'); }
-
 function submitForm(){
   const rec = {
     id: byId('f_id').value.trim(),
@@ -239,10 +237,10 @@ function submitForm(){
     notes: byId('f_notes').value.trim(),
   };
   if(!rec.id){ alert('الوسم مطلوب'); return; }
-  if(editingId){ // تعديل
+  if(editingId){
     const s=DB.sheep[editingId]; if(!s) return;
     Object.assign(s,rec,{updatedAt:new Date().toISOString()});
-  }else{ // إضافة جديدة
+  }else{
     if(DB.sheep[rec.id]){ alert('الوسم موجود'); return; }
     DB.sheep[rec.id] = Object.assign(rec,{
       soldPrice:null, soldDate:'',
@@ -305,15 +303,28 @@ function sellSheep(id){
   save(); renderList(); statsToUI(); renderLogs();
 }
 
-/* ====== مصاريف العلف ====== */
+/* ====== مصاريف العلف (prompts) + حذف ====== */
 function addFeed(){
   const date = prompt('تاريخ العملية (YYYY-MM-DD):', dstr()); if(date===null) return;
   const desc = prompt('الوصف (مثال: شعير/تبن/برسيم):','علف'); if(desc===null) return;
-  const qty  = promptNum('الكمية (كجم) — اختياري:','');
-  const cost = promptNum('التكلفة بالريال:','0'); if(cost==null) return;
-  DB.finance.push({type:'feed',date,desc,qty: isNaN(qty)? null : +qty, cost:+cost});
+  const qtyV = prompt('الكمية (كجم) — اختياري:','');
+  const qty  = qtyV==='' ? null : +qtyV;
+  if(qtyV!=='' && !isFinite(qty)) return alert('الكمية غير صالحة');
+
+  const costV = prompt('التكلفة بالريال:','0'); if(costV===null) return;
+  const cost  = +costV; if(!isFinite(cost)) return alert('التكلفة غير صالحة');
+
+  const id='feed_'+Date.now();
+  DB.finance.push({id,type:'feed',date,desc,qty,cost});
   save(); statsToUI(); renderLogs();
   alert('تم تسجيل مصروف العلف ✅');
+}
+function deleteFeed(feedId){
+  if(!confirm('حذف سجل العلف؟')) return;
+  const before = DB.finance.length;
+  DB.finance = DB.finance.filter(r => !(r.type==='feed' && r.id===feedId));
+  if(DB.finance.length === before){ alert('لم يتم العثور على السجل'); return; }
+  save(); statsToUI(); renderLogs();
 }
 
 /* ====== الإحصاءات ====== */
@@ -448,13 +459,28 @@ function renderLogs(){
       tr.innerHTML=`<td>${fmt(e.date)}</td><td>${id}</td><td>بيع</td><td>${money(amt)}</td>`;
       tbS.appendChild(tr);
     });
-  // علف
+  // علف + زر حذف
   const tbF=byId('tblFeed').querySelector('tbody'); tbF.innerHTML='';
-  DB.finance.filter(f=>f.type==='feed').sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(r=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${fmt(r.date)}</td><td>${r.desc||'—'}</td><td>${r.qty??'—'}</td><td>${money(r.cost||0)}</td>`;
-    tbF.appendChild(tr);
-  });
+  DB.finance
+    .filter(f=>f.type==='feed')
+    .sort((a,b)=>(b.date||'').localeCompare(a.date||''))
+    .forEach(r=>{
+      const tr=document.createElement('tr');
+      const qtyTxt = (r.qty==null||r.qty==='') ? '—' : r.qty;
+      tr.innerHTML =
+        `<td>${fmt(r.date)}</td>
+         <td>${r.desc||'—'}</td>
+         <td>${qtyTxt}</td>
+         <td>${money(r.cost||0)}</td>`;
+      const tdDel = document.createElement('td');
+      const btn = document.createElement('button');
+      btn.className='btn danger';
+      btn.textContent='🗑 حذف';
+      btn.onclick=()=>deleteFeed(r.id);
+      tdDel.appendChild(btn);
+      tr.appendChild(tdDel);
+      tbF.appendChild(tr);
+    });
 }
 
 /* ====== تصدير/استيراد ====== */
@@ -479,7 +505,7 @@ function quickDemo(){
   DB.sheep['406-02']={id:'406-02',sex:'ذكر', group:'مواليد',dob:dstr(),motherId:'406',fatherId:'',status:'حية'};
   DB.events.push({type:'birth',ids:['406','406-01','406-02'],date:dstr(),details:'2 مولود (توأم)'});
   DB.sheep['202']={id:'202',sex:'أنثى',group:'نعيم',dob:'2025-05-12',status:'حية'};
-  DB.finance.push({type:'feed',date:dstr(),desc:'شعير',qty:200,cost:250});
+  DB.finance.push({id:'feed_'+Date.now(),type:'feed',date:dstr(),desc:'شعير',qty:200,cost:250});
   DB.events.push({type:'movement',ids:['202'],date:dstr(),details:'بيع',amount:800});
   save(); renderList(); statsToUI(); renderLogs();
 }
