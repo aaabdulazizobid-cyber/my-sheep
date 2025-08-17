@@ -6,10 +6,7 @@
 <title>دفتر الغنم — شامل</title>
 <meta name="theme-color" content="#10b981">
 <style>
-:root{
-  --brand:#10b981;--brand2:#34d399;--ink:#0f172a;--muted:#6b7280;
-  --bg:#f6f7fb;--card:#fff;--line:#e5e7eb;--warn:#f59e0b;
-}
+:root{--brand:#10b981;--brand2:#34d399;--ink:#0f172a;--muted:#6b7280;--bg:#f6f7fb;--card:#fff;--line:#e5e7eb;--warn:#f59e0b;}
 *{box-sizing:border-box}
 html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic",Tahoma,sans-serif;background:var(--bg);color:var(--ink)}
 .top{position:sticky;top:0;z-index:9;background:linear-gradient(90deg,var(--brand),var(--brand2));color:#fff;padding:12px 14px}
@@ -21,13 +18,13 @@ html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kuf
 .kpi b{display:block;font-size:20px}
 .kpi span{font-size:12px;color:var(--muted)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 16px #0b1a4411}
-.list .item{display:flex;align-items:flex-start;gap:10px;padding:12px;border-bottom:1px solid var(--line)}
+.list .item{display:flex;gap:10px;padding:12px;border-bottom:1px solid var(--line)}
 .item:last-child{border-bottom:0}
 .name{font-weight:800}
 .meta{font-size:12px;color:var(--muted)}
 .badge{font-size:12px;background:#ecfeff;border:1px solid #a5f3fc;padding:2px 8px;border-radius:999px;color:#155e75;margin-inline-start:6px}
 .badge.sold{background:#fee2e2;border-color:#fecaca;color:#991b1b}
-.btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:6px 10px;cursor:pointer;font-size:13px}
+.btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:8px 12px;cursor:pointer;font-size:13px}
 .btn.solid{background:var(--brand);border-color:var(--brand);color:#fff}
 .btn.warn{background:var(--warn);border-color:var(--warn);color:#fff}
 .btn.danger{background:#ef4444;border-color:#ef4444;color:#fff}
@@ -37,14 +34,25 @@ html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kuf
 .children h4{margin:0 0 6px 0;font-size:13px;color:#0f766e}
 .kids{display:flex;flex-wrap:wrap;gap:6px}
 .kid{background:#fff;border:1px solid var(--line);padding:4px 8px;border-radius:999px;font-size:12px}
-.footer{height:56px}
-.searchbar{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
-.searchbar input, .searchbar select{padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff}
-.collapsable h3{margin:0;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
 .section{padding:10px}
 .table{width:100%;border-collapse:collapse}
 .table th,.table td{border-bottom:1px solid var(--line);padding:8px;text-align:center;font-size:13px}
-@media(max-width:720px){.grid4{grid-template-columns:repeat(2,1fr)}}
+.searchbar{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
+.searchbar input,.searchbar select{padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.footer{height:56px}
+
+/* نافذة النموذج */
+.modal{position:fixed;inset:0;background:#0006;display:none;align-items:flex-end;justify-content:center;z-index:50}
+.modal.open{display:flex}
+.sheet{background:#fff;width:min(720px,100%);border-radius:16px 16px 0 0;padding:14px;border:1px solid var(--line)}
+.sheet h3{margin:0 0 8px 0}
+.form{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.form .row{display:flex;flex-direction:column}
+.form label{font-size:12px;color:var(--muted);margin-bottom:4px}
+.form input,.form select,.form textarea{padding:10px;border:1px solid var(--line);border-radius:10px}
+.form textarea{grid-column:1 / span 2;min-height:70px}
+.sheet .bar{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+@media(max-width:640px){.form{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -54,14 +62,13 @@ html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kuf
   </div>
 
   <div class="wrap">
-    <!-- KPIs الصف 1 -->
+    <!-- KPIs -->
     <div class="grid4">
       <div class="kpi"><b id="s_total">0</b><span>إجمالي (حية)</span></div>
       <div class="kpi"><b id="s_ewes">0</b><span>أمّهات</span></div>
       <div class="kpi"><b id="s_birthYear">0</b><span>مواليد سنة</span></div>
       <div class="kpi"><b id="s_feedYear">0</b><span>تكلفة العلف سنة</span></div>
     </div>
-    <!-- KPIs الصف 2 -->
     <div class="grid4" style="margin-top:8px">
       <div class="kpi"><b id="s_soldYear">0</b><span>مباعة سنة</span></div>
       <div class="kpi"><b id="s_revYear">0</b><span>إيراد سنة</span></div>
@@ -69,20 +76,19 @@ html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kuf
       <div class="kpi"><b id="s_revAll">0</b><span>إيراد إجمالي</span></div>
     </div>
 
-    <!-- بحث / فلاتر + أزرار -->
+    <!-- أدوات -->
     <div class="card section" style="margin:12px 0;">
       <div class="searchbar">
         <input id="q" placeholder="بحث بالوسم/المجموعة/الحالة…" oninput="renderList()">
         <select id="onlyEwes" onchange="renderList()">
-          <option value="">الكل</option>
-          <option value="1">الأمهات فقط</option>
+          <option value="">الكل</option><option value="1">الأمهات فقط</option>
         </select>
         <select id="fltStatus" onchange="renderList()">
           <option value="alive">الحية فقط</option>
           <option value="sold">المباعة</option>
           <option value="all">الكل</option>
         </select>
-        <button class="btn solid" onclick="addSheep()">＋ إضافة رأس</button>
+        <button class="btn solid" onclick="openForm()">＋ إضافة رأس</button>
         <button class="btn" onclick="addFeed()">💸 إضافة علف</button>
         <button class="btn" onclick="exportDB()">⬇️ تصدير</button>
         <label class="btn">⬆️ استيراد<input type="file" accept="application/json" style="display:none" onchange="importDB(event)"></label>
@@ -94,92 +100,160 @@ html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kuf
     <div class="card list" id="list"></div>
 
     <!-- السجلات -->
-    <div class="card section collapsable" style="margin-top:12px">
-      <h3 onclick="toggleLogs()">
-        السجلات (ولادات / مبيعات / علف)
-        <span id="logsChevron">▼</span>
-      </h3>
-      <div id="logs" style="margin-top:8px">
-        <div style="overflow:auto;margin-top:6px">
-          <table class="table" id="tblBirths">
-            <thead><tr><th>التاريخ</th><th>الأم</th><th>المواليد</th><th>تفاصيل</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-        <div style="overflow:auto;margin-top:12px">
-          <table class="table" id="tblSales">
-            <thead><tr><th>التاريخ</th><th>الوسم</th><th>التفصيل</th><th>المبلغ (ر.س)</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-        <div style="overflow:auto;margin-top:12px">
-          <table class="table" id="tblFeed">
-            <thead><tr><th>التاريخ</th><th>الوصف</th><th>الكمية (كجم)</th><th>التكلفة (ر.س)</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
+    <div class="card section" style="margin-top:12px">
+      <h3>السجلات</h3>
+      <div style="overflow:auto;margin-top:6px">
+        <table class="table" id="tblBirths">
+          <thead><tr><th>التاريخ</th><th>الأم</th><th>المواليد</th><th>تفاصيل</th></tr></thead><tbody></tbody>
+        </table>
+      </div>
+      <div style="overflow:auto;margin-top:12px">
+        <table class="table" id="tblSales">
+          <thead><tr><th>التاريخ</th><th>الوسم</th><th>التفصيل</th><th>المبلغ</th></tr></thead><tbody></tbody>
+        </table>
+      </div>
+      <div style="overflow:auto;margin-top:12px">
+        <table class="table" id="tblFeed">
+          <thead><tr><th>التاريخ</th><th>الوصف</th><th>الكمية</th><th>التكلفة</th></tr></thead><tbody></tbody>
+        </table>
       </div>
     </div>
-
     <div class="footer"></div>
   </div>
 
+  <!-- نافذة النموذج -->
+  <div class="modal" id="modal">
+    <div class="sheet">
+      <h3 id="formTitle">إضافة/تعديل رأس</h3>
+      <div class="form">
+        <div class="row">
+          <label>الوسم</label>
+          <input id="f_id" placeholder="مثال: 406">
+        </div>
+        <div class="row">
+          <label>الجنس</label>
+          <select id="f_sex">
+            <option value="أنثى">أنثى</option>
+            <option value="ذكر">ذكر</option>
+          </select>
+        </div>
+        <div class="row">
+          <label>المجموعة</label>
+          <input id="f_group" placeholder="حري/نعيمي…">
+        </div>
+        <div class="row">
+          <label>تاريخ الميلاد</label>
+          <input id="f_dob" type="date">
+        </div>
+        <div class="row">
+          <label>الأم (وسم)</label>
+          <input id="f_mother">
+        </div>
+        <div class="row">
+          <label>الأب (وسم)</label>
+          <input id="f_father">
+        </div>
+        <div class="row">
+          <label>آخر وزن (كجم)</label>
+          <input id="f_weight" type="number" step="0.1">
+        </div>
+        <div class="row">
+          <label>الحالة</label>
+          <select id="f_status">
+            <option value="حية">حية</option>
+            <option value="مباعة">مباعة</option>
+            <option value="نافقة">نافقة</option>
+          </select>
+        </div>
+        <div class="row" style="grid-column:1 / span 2">
+          <label>ملاحظات</label>
+          <textarea id="f_notes" placeholder="ملاحظات…"></textarea>
+        </div>
+      </div>
+      <div class="bar">
+        <button class="btn" onclick="closeForm()">إلغاء</button>
+        <button class="btn solid" onclick="submitForm()">حفظ</button>
+      </div>
+    </div>
+  </div>
+
 <script>
-/* ========= التخزين ========= */
-const KEY='sheep-db-v5';
+/* ====== التخزين ====== */
+const KEY='sheep-db-v6';
 let DB = load();
 
-function load(){
-  try{ return JSON.parse(localStorage.getItem(KEY)) || seed() }catch(e){ return seed() }
-}
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || seed() }catch(e){ return seed() } }
 function save(){ localStorage.setItem(KEY, JSON.stringify(DB)) }
 function seed(){ return { sheep:{}, events:[], finance:[] } }
 
-/* ========= أدوات ========= */
+/* ====== أدوات ====== */
 const dstr = (d=new Date()) => new Date(d).toISOString().slice(0,10);
 const money = n => (+n||0).toLocaleString('ar-SA');
 const byId = id => document.getElementById(id);
 function fmt(d){ if(!d) return '—'; try{ return new Date(d).toLocaleDateString('ar') }catch{ return d } }
 function promptNum(msg, def=''){ const v=prompt(msg, def); return v===null?null:+v }
-function getChildren(momId){
-  return Object.values(DB.sheep).filter(s=>s.motherId===momId).sort((a,b)=> (a.id>b.id?1:-1));
-}
+function getChildren(momId){ return Object.values(DB.sheep).filter(s=>s.motherId===momId).sort((a,b)=> (a.id>b.id?1:-1)); }
 function groupByBirthDate(momId){
   const kids = getChildren(momId);
-  const map = {};
-  kids.forEach(k=>{
-    const d = k.dob || 'غير معروف';
-    (map[d] ||= []).push(k);
-  });
-  return Object.entries(map).sort((a,b)=>a[0]>b[0]? -1 : 1); // أحدث أولاً
+  const map = {}; kids.forEach(k=>{ const d=k.dob||'غير معروف'; (map[d] ||= []).push(k); });
+  return Object.entries(map).sort((a,b)=>a[0]>b[0]? -1 : 1);
 }
 
-/* ========= إضافة/تعديل/وزن/حذف ========= */
-function addSheep(){
-  const id = prompt('وسم الرأس (مثال 406):'); if(!id) return;
-  if(DB.sheep[id]){ alert('الوسم موجود'); return }
-  const sex = prompt('الجنس: أنثى/ذكر','أنثى')||'أنثى';
-  const group = prompt('المجموعة','')||'';
-  const dob = prompt('تاريخ الميلاد (YYYY-MM-DD)', dstr())||'';
-  DB.sheep[id] = {
-    id, sex, group, dob, lastWeight:null,
-    motherId:'', fatherId:'', notes:'',
-    status:'حية', soldPrice:null, soldDate:'',
-    createdAt:new Date().toISOString(), updatedAt:new Date().toISOString()
+/* ====== نموذج الإضافة/التعديل ====== */
+let editingId = null;
+function openForm(id=null){
+  editingId = id||null;
+  const title = byId('formTitle');
+  if(id){ // تعبئة للتعديل
+    const s = DB.sheep[id]; if(!s) return;
+    byId('f_id').value = s.id; byId('f_id').disabled = true;
+    byId('f_sex').value = s.sex||'أنثى';
+    byId('f_group').value = s.group||'';
+    byId('f_dob').value = s.dob||'';
+    byId('f_mother').value = s.motherId||'';
+    byId('f_father').value = s.fatherId||'';
+    byId('f_weight').value = s.lastWeight??'';
+    byId('f_status').value = s.status||'حية';
+    byId('f_notes').value = s.notes||'';
+    title.textContent = 'تعديل رأس';
+  }else{
+    ['f_id','f_group','f_dob','f_mother','f_father','f_weight','f_notes'].forEach(k=>byId(k).value='');
+    byId('f_id').disabled = false;
+    byId('f_sex').value='أنثى'; byId('f_status').value='حية';
+    title.textContent = 'إضافة رأس';
+  }
+  byId('modal').classList.add('open');
+}
+function closeForm(){ byId('modal').classList.remove('open'); }
+
+function submitForm(){
+  const rec = {
+    id: byId('f_id').value.trim(),
+    sex: byId('f_sex').value,
+    group: byId('f_group').value.trim(),
+    dob: byId('f_dob').value || '',
+    motherId: byId('f_mother').value.trim(),
+    fatherId: byId('f_father').value.trim(),
+    lastWeight: byId('f_weight').value? +byId('f_weight').value : null,
+    status: byId('f_status').value,
+    notes: byId('f_notes').value.trim(),
   };
-  save(); renderList(); statsToUI(); renderLogs();
+  if(!rec.id){ alert('الوسم مطلوب'); return; }
+  if(editingId){ // تعديل
+    const s=DB.sheep[editingId]; if(!s) return;
+    Object.assign(s,rec,{updatedAt:new Date().toISOString()});
+  }else{ // إضافة جديدة
+    if(DB.sheep[rec.id]){ alert('الوسم موجود'); return; }
+    DB.sheep[rec.id] = Object.assign(rec,{
+      soldPrice:null, soldDate:'',
+      createdAt:new Date().toISOString(), updatedAt:new Date().toISOString()
+    });
+  }
+  save(); closeForm(); renderList(); statsToUI();
 }
 
-function editSheep(id){
-  const s = DB.sheep[id]; if(!s) return;
-  const sex = prompt('الجنس', s.sex)||s.sex;
-  const group = prompt('المجموعة', s.group||'')||'';
-  const dob = prompt('تاريخ الميلاد (YYYY-MM-DD)', s.dob||'')||'';
-  const notes = prompt('ملاحظات', s.notes||'')||'';
-  Object.assign(s,{sex,group,dob,notes,updatedAt:new Date().toISOString()});
-  save(); renderList(); statsToUI();
-}
-
+/* ====== عمليات على الرؤوس ====== */
+function editSheep(id){ openForm(id); }
 function setWeight(id){
   const s=DB.sheep[id]; if(!s) return;
   const v=prompt('الوزن (كجم):', s.lastWeight??''); if(v===null) return;
@@ -188,7 +262,6 @@ function setWeight(id){
   DB.events.push({type:'weight', ids:[id], date:dstr(), details:`${w} كجم`});
   save(); renderList(); renderLogs();
 }
-
 function removeSheep(id){
   if(!confirm('حذف الرأس '+id+'؟')) return;
   delete DB.sheep[id];
@@ -196,42 +269,33 @@ function removeSheep(id){
   save(); renderList(); statsToUI(); renderLogs();
 }
 
-/* ========= المواليد ========= */
+/* ====== المواليد ====== */
 function addChild(momId){
   const mom = DB.sheep[momId]; if(!mom){ alert('لم يتم العثور على الأم'); return; }
   const next = getChildren(momId).length + 1;
   const id   = momId + '-' + String(next).padStart(2,'0');
   const date = dstr();
-
-  DB.sheep[id] = {
-    id, sex:'أنثى', group:'مواليد', dob:date, lastWeight:null,
-    motherId:momId, fatherId:mom.fatherId||'', notes:'مولود من الأم '+momId,
-    status:'حية', soldPrice:null, soldDate:'',
-    createdAt:new Date().toISOString(), updatedAt:new Date().toISOString()
-  };
+  DB.sheep[id] = {id,sex:'أنثى',group:'مواليد',dob:date,lastWeight:null,motherId:momId,fatherId:mom.fatherId||'',notes:'مولود من الأم '+momId,status:'حية',soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
   DB.events.push({type:'birth', ids:[momId,id], date, details:'1 مولود'});
   save(); renderList(); statsToUI(); renderLogs();
 }
-
 function addTwin(momId){
   const mom = DB.sheep[momId]; if(!mom){ alert('لم يتم العثور على الأم'); return; }
   const base = getChildren(momId).length;
   const date = dstr();
   const makeId = i => momId + '-' + String(base + i).padStart(2,'0');
-
   const a = makeId(1), b = makeId(2);
   DB.sheep[a] = {id:a,sex:'أنثى',group:'مواليد',dob:date,lastWeight:null,motherId:momId,fatherId:mom.fatherId||'',notes:'توأم',status:'حية',soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
   DB.sheep[b] = {id:b,sex:'ذكر', group:'مواليد',dob:date,lastWeight:null,motherId:momId,fatherId:mom.fatherId||'',notes:'توأم',status:'حية',soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
   DB.events.push({type:'birth', ids:[momId,a,b], date, details:'2 مولود (توأم)'});
   save(); renderList(); statsToUI(); renderLogs();
 }
-
 function addMany(momId){
   const n = promptNum('كم مولود تُضيف؟','3'); if(n==null || n<=0) return;
   for(let i=0;i<n;i++) addChild(momId);
 }
 
-/* ========= البيع ========= */
+/* ====== البيع ====== */
 function sellSheep(id){
   const s = DB.sheep[id]; if(!s){ alert('غير موجود'); return; }
   const price = promptNum('سعر البيع (ريال):','0'); if(price==null) return;
@@ -241,53 +305,38 @@ function sellSheep(id){
   save(); renderList(); statsToUI(); renderLogs();
 }
 
-/* ========= مصاريف العلف ========= */
+/* ====== مصاريف العلف ====== */
 function addFeed(){
   const date = prompt('تاريخ العملية (YYYY-MM-DD):', dstr()); if(date===null) return;
   const desc = prompt('الوصف (مثال: شعير/تبن/برسيم):','علف'); if(desc===null) return;
-  const qty  = promptNum('الكمية (كجم) — اختياري:',''); // قد تكون فارغة
+  const qty  = promptNum('الكمية (كجم) — اختياري:','');
   const cost = promptNum('التكلفة بالريال:','0'); if(cost==null) return;
   DB.finance.push({type:'feed',date,desc,qty: isNaN(qty)? null : +qty, cost:+cost});
   save(); statsToUI(); renderLogs();
   alert('تم تسجيل مصروف العلف ✅');
 }
 
-/* ========= الإحصاءات (سنة + إجمالي) ========= */
+/* ====== الإحصاءات ====== */
 function getStats(){
   const DAYS = 365;
   const since = new Date(); since.setDate(since.getDate() - DAYS);
-
-  // رؤوس حيّة
-  const alive = Object.values(DB.sheep)
-    .filter(s => s.status!=='مباعة' && s.status!=='نافقة');
-
+  const alive = Object.values(DB.sheep).filter(s => s.status!=='مباعة' && s.status!=='نافقة');
   const ewes = alive.filter(s => s.sex==='أنثى').length;
 
-  // مواليد خلال سنة (من DOB)
   const birthYear = Object.values(DB.sheep).filter(s=>{
     if(!s.dob) return false;
     try{ return new Date(s.dob) >= since }catch(e){ return false }
   }).length;
 
-  // تغذية: سنة + إجمالي
-  const feedYear = DB.finance
-    .filter(f => f.type==='feed' && (()=>{ try{ return new Date(f.date) >= since }catch(e){ return false } })())
-    .reduce((a,b)=>a+(+b.cost||0),0);
-  const feedAll  = DB.finance
-    .filter(f => f.type==='feed')
-    .reduce((a,b)=>a+(+b.cost||0),0);
+  const feedYear = DB.finance.filter(f => f.type==='feed' && (()=>{ try{ return new Date(f.date) >= since }catch(e){ return false } })())
+                   .reduce((a,b)=>a+(+b.cost||0),0);
+  const feedAll  = DB.finance.filter(f => f.type==='feed').reduce((a,b)=>a+(+b.cost||0),0);
 
-  // مبيعات: سنة + إجمالي
-  const soldYearEvents = DB.events.filter(e=>{
-    if(e.type!=='movement' || !/بيع/.test(e.details||'')) return false;
-    try{ return new Date(e.date) >= since }catch(e){ return false }
-  });
+  const soldYearEvents = DB.events.filter(e=> e.type==='movement' && /بيع/.test(e.details||'') && (()=>{ try{ return new Date(e.date) >= since }catch(e){ return false } })());
   const soldYear = soldYearEvents.length;
   const revYear  = soldYearEvents.reduce((a,e)=>a+(+e.amount||0),0);
-
-  const soldAllEvents = DB.events.filter(e => e.type==='movement' && /بيع/.test(e.details||''));
-  const revAll   = soldAllEvents.reduce((a,e)=>a+(+e.amount||0),0);
-
+  const revAll   = DB.events.filter(e=> e.type==='movement' && /بيع/.test(e.details||''))
+                    .reduce((a,e)=>a+(+e.amount||0),0);
   return { total: alive.length, ewes, birthYear, feedYear, feedAll, soldYear, revYear, revAll };
 }
 function statsToUI(){
@@ -302,14 +351,13 @@ function statsToUI(){
   byId('s_revAll').textContent    = money(s.revAll);
 }
 
-/* ========= العرض ========= */
+/* ====== عرض القائمة ====== */
 function renderList(){
   const q = (byId('q').value||'').trim().toLowerCase();
   const onlyEwes = !!byId('onlyEwes').value;
   const flt = byId('fltStatus').value;
 
   let arr = Object.values(DB.sheep);
-
   if(q){
     arr = arr.filter(s =>
       (s.id||'').toLowerCase().includes(q) ||
@@ -321,11 +369,7 @@ function renderList(){
   if(flt==='alive') arr = arr.filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
   else if(flt==='sold') arr = arr.filter(s=>s.status==='مباعة');
 
-  // الأمهات أولاً ثم حسب الوسم
-  arr.sort((a,b)=>{
-    if(a.sex!==b.sex) return a.sex==='أنثى' ? -1 : 1;
-    return (a.id>b.id?1:-1);
-  });
+  arr.sort((a,b)=>{ if(a.sex!==b.sex) return a.sex==='أنثى'?-1:1; return (a.id>b.id?1:-1); });
 
   const box = byId('list'); box.innerHTML='';
   if(!arr.length){ box.innerHTML='<div class="item">لا توجد سجلات.. أضِف أول رأس</div>'; return; }
@@ -384,18 +428,13 @@ function renderList(){
   });
 }
 
-/* ========= السجلات ========= */
-function toggleLogs(){
-  const el=byId('logs'); const ch=byId('logsChevron');
-  if(el.style.display==='none'){ el.style.display=''; ch.textContent='▼' } else { el.style.display='none'; ch.textContent='▲' }
-}
+/* ====== السجلات ====== */
 function renderLogs(){
   // ولادات
   const tbB=byId('tblBirths').querySelector('tbody'); tbB.innerHTML='';
   DB.events.filter(e=>e.type==='birth').sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(e=>{
     const tr=document.createElement('tr');
-    const mom=(e.ids||[])[0]||'—';
-    const kids=(e.ids||[]).slice(1).join('، ');
+    const mom=(e.ids||[])[0]||'—'; const kids=(e.ids||[]).slice(1).join('، ');
     tr.innerHTML=`<td>${fmt(e.date)}</td><td>${mom}</td><td>${kids||'—'}</td><td>${e.details||''}</td>`;
     tbB.appendChild(tr);
   });
@@ -404,8 +443,7 @@ function renderLogs(){
   DB.events.filter(e=>e.type==='movement' && /بيع/.test(e.details||''))
     .sort((a,b)=>(b.date||'').localeCompare(a.date||''))
     .forEach(e=>{
-      const id=(e.ids||[])[0]||'—';
-      const amt=(+e.amount||0);
+      const id=(e.ids||[])[0]||'—'; const amt=(+e.amount||0);
       const tr=document.createElement('tr');
       tr.innerHTML=`<td>${fmt(e.date)}</td><td>${id}</td><td>بيع</td><td>${money(amt)}</td>`;
       tbS.appendChild(tr);
@@ -419,7 +457,7 @@ function renderLogs(){
   });
 }
 
-/* ========= استيراد/تصدير ========= */
+/* ====== تصدير/استيراد ====== */
 function exportDB(){
   const blob = new Blob([JSON.stringify(DB,null,2)],{type:"application/json"});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
@@ -432,28 +470,24 @@ function importDB(ev){
   r.readAsText(f);
 }
 
-/* ========= وضع تجربة ========= */
+/* ====== وضع تجربة ====== */
 function quickDemo(){
   if(!confirm('تعبئة بيانات تجربة؟')) return;
   DB = seed();
-  // أم + توأم حديث
   DB.sheep['406']={id:'406',sex:'أنثى',group:'حري',dob:'2024-04-10',status:'حية',motherId:'',fatherId:'',notes:'',soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
   DB.sheep['406-01']={id:'406-01',sex:'أنثى',group:'مواليد',dob:dstr(),motherId:'406',fatherId:'',status:'حية'};
   DB.sheep['406-02']={id:'406-02',sex:'ذكر', group:'مواليد',dob:dstr(),motherId:'406',fatherId:'',status:'حية'};
   DB.events.push({type:'birth',ids:['406','406-01','406-02'],date:dstr(),details:'2 مولود (توأم)'});
-  // رأس أخرى
   DB.sheep['202']={id:'202',sex:'أنثى',group:'نعيم',dob:'2025-05-12',status:'حية'};
-  // علف ومبيع تجريبي
   DB.finance.push({type:'feed',date:dstr(),desc:'شعير',qty:200,cost:250});
   DB.events.push({type:'movement',ids:['202'],date:dstr(),details:'بيع',amount:800});
   save(); renderList(); statsToUI(); renderLogs();
 }
 
-/* ========= هجرة أحداث الولادة المفقودة (مرة واحدة) ========= */
+/* ====== هجرة أحداث الولادة المفقودة (مرة واحدة) ====== */
 (function migrateBirthEvents(){
   if(localStorage.getItem(KEY+'-migrated')) return;
-  const already = new Set(DB.events.filter(e=>e.type==='birth')
-                   .map(e=>(e.ids||[]).join('|')+'@'+e.date));
+  const already = new Set(DB.events.filter(e=>e.type==='birth').map(e=>(e.ids||[]).join('|')+'@'+e.date));
   const buckets = {};
   Object.values(DB.sheep).forEach(s=>{
     if(s.motherId && s.dob){
@@ -465,15 +499,14 @@ function quickDemo(){
   Object.values(buckets).forEach(b=>{
     const key = [b.mom].concat(b.kids).join('|')+'@'+b.date;
     if(!already.has(key)){
-      DB.events.push({type:'birth', ids:[b.mom].concat(b.kids),
-                      date:b.date, details:`${b.kids.length} مولود (مهاجرة)`});
+      DB.events.push({type:'birth', ids:[b.mom].concat(b.kids), date:b.date, details:`${b.kids.length} مولود (مهاجرة)`});
       added++;
     }
   });
   save(); localStorage.setItem(KEY+'-migrated','1');
 })();
 
-/* ========= تشغيل أولي ========= */
+/* ====== تشغيل أولي ====== */
 renderList(); statsToUI(); renderLogs();
 </script>
 </body>
