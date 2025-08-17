@@ -17,6 +17,8 @@ html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kuf
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
 .kpi b{display:block;font-size:20px}
 .kpi span{font-size:12px;color:var(--muted)}
+.kpi.click{cursor:pointer;transition:.15s transform}
+.kpi.click:active{transform:scale(.98)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 16px #0b1a4411}
 .list .item{display:flex;gap:10px;padding:12px;border-bottom:1px solid var(--line)}
 .item:last-child{border-bottom:0}
@@ -65,8 +67,8 @@ html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kuf
     <!-- KPIs -->
     <div class="grid4">
       <div class="kpi"><b id="s_total">0</b><span>إجمالي (حية)</span></div>
-      <div class="kpi"><b id="s_ewes">0</b><span>أمّهات</span></div>
-      <div class="kpi"><b id="s_birthYear">0</b><span>مواليد سنة</span></div>
+      <div class="kpi click" id="kpi_ewes"><b id="s_ewes">0</b><span>أمهات</span></div>
+      <div class="kpi click" id="kpi_birthYear"><b id="s_birthYear">0</b><span>مواليد سنة</span></div>
       <div class="kpi"><b id="s_feedYear">0</b><span>تكلفة العلف سنة</span></div>
     </div>
     <div class="grid4" style="margin-top:8px">
@@ -80,8 +82,10 @@ html,body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kuf
     <div class="card section" style="margin:12px 0;">
       <div class="searchbar">
         <input id="q" placeholder="بحث بالوسم/المجموعة/الحالة…" oninput="renderList()">
-        <select id="onlyEwes" onchange="renderList()">
-          <option value="">الكل</option><option value="1">الأمهات فقط</option>
+        <select id="viewMode" onchange="renderList()">
+          <option value="all">الكل</option>
+          <option value="ewes">الأمهات فقط</option>
+          <option value="newborns">المواليد فقط</option>
         </select>
         <select id="fltStatus" onchange="renderList()">
           <option value="alive">الحية فقط</option>
@@ -362,13 +366,29 @@ function statsToUI(){
   byId('s_revAll').textContent    = money(s.revAll);
 }
 
+/* ====== تبديل وضع العرض (الكل/أمهات/مواليد) وربط KPIs ====== */
+function setView(mode){
+  const sel = byId('viewMode');
+  if(sel){ sel.value = mode; }
+  renderList();
+  window.scrollTo({top: document.querySelector('.wrap').offsetTop, behavior:'smooth'});
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  const b = byId('kpi_birthYear');
+  const e = byId('kpi_ewes');
+  if(b) b.onclick = ()=> setView('newborns');
+  if(e) e.onclick = ()=> setView('ewes');
+});
+
 /* ====== عرض القائمة ====== */
 function renderList(){
   const q = (byId('q').value||'').trim().toLowerCase();
-  const onlyEwes = !!byId('onlyEwes').value;
+  const modeSel = byId('viewMode');
+  const mode = modeSel ? modeSel.value : 'all';
   const flt = byId('fltStatus').value;
 
   let arr = Object.values(DB.sheep);
+
   if(q){
     arr = arr.filter(s =>
       (s.id||'').toLowerCase().includes(q) ||
@@ -376,7 +396,13 @@ function renderList(){
       (s.status||'').toLowerCase().includes(q)
     );
   }
-  if(onlyEwes) arr = arr.filter(s=>s.sex==='أنثى');
+
+  if(mode==='ewes'){
+    arr = arr.filter(s=> s.sex==='أنثى');
+  }else if(mode==='newborns'){
+    arr = arr.filter(s=> (s.motherId && s.motherId.trim()!=='') || (s.group||'')==='مواليد');
+  }
+
   if(flt==='alive') arr = arr.filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
   else if(flt==='sold') arr = arr.filter(s=>s.status==='مباعة');
 
@@ -500,13 +526,12 @@ function importDB(ev){
 function quickDemo(){
   if(!confirm('تعبئة بيانات تجربة؟')) return;
   DB = seed();
-  DB.sheep['406']={id:'406',sex:'أنثى',group:'حري',dob:'2024-04-10',status:'حية',motherId:'',fatherId:'',notes:'',soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
-  DB.sheep['406-01']={id:'406-01',sex:'أنثى',group:'مواليد',dob:dstr(),motherId:'406',fatherId:'',status:'حية'};
-  DB.sheep['406-02']={id:'406-02',sex:'ذكر', group:'مواليد',dob:dstr(),motherId:'406',fatherId:'',status:'حية'};
-  DB.events.push({type:'birth',ids:['406','406-01','406-02'],date:dstr(),details:'2 مولود (توأم)'});
-  DB.sheep['202']={id:'202',sex:'أنثى',group:'نعيم',dob:'2025-05-12',status:'حية'};
-  DB.finance.push({id:'feed_'+Date.now(),type:'feed',date:dstr(),desc:'شعير',qty:200,cost:250});
-  DB.events.push({type:'movement',ids:['202'],date:dstr(),details:'بيع',amount:800});
+  DB.sheep['408']={id:'408',sex:'أنثى',group:'حري',dob:'2024-04-10',status:'حية'};
+  DB.sheep['408-01']={id:'408-01',sex:'أنثى',group:'مواليد',dob:dstr(),motherId:'408',status:'حية'};
+  DB.sheep['408-02']={id:'408-02',sex:'ذكر', group:'مواليد',dob:dstr(),motherId:'408',status:'حية'};
+  DB.sheep['408-03']={id:'408-03',sex:'أنثى',group:'مواليد',dob:dstr(),motherId:'408',status:'حية'};
+  DB.events.push({type:'birth',ids:['408','408-01','408-02','408-03'],date:dstr(),details:'3 مواليد'});
+  DB.finance.push({id:'feed_'+Date.now(),type:'feed',date:dstr(),desc:'شعير',qty:200,cost:200});
   save(); renderList(); statsToUI(); renderLogs();
 }
 
