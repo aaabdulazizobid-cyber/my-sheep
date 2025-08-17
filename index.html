@@ -31,10 +31,12 @@
 .btn.ghost{background:#f9fafb}
 .btn.warn{background:var(--warn);border-color:var(--warn);color:#fff}
 input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff}
+
 .nav{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr)}
 .nav button{padding:10px 6px;background:#fff;border:0}
 .nav button.active{color:var(--brand);font-weight:700}
 .fab{position:fixed;right:16px;bottom:74px;background:var(--brand);color:#fff;border:none;width:58px;height:58px;border-radius:50%;font-size:26px;box-shadow:0 10px 30px #10b98155;cursor:pointer}
+
 .hidden{display:none}
 .mini{font-size:12px;color:var(--muted)}
 .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:10px}
@@ -42,6 +44,18 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
 @media(min-width:720px){.stats{grid-template-columns:repeat(4,1fr)}}
 .table{width:100%;border-collapse:collapse}
 .table th,.table td{border-bottom:1px solid var(--line);padding:10px;text-align:center;font-size:14px}
+
+/* أبناء الأم */
+.kids{margin-top:8px;border-top:1px dashed var(--line);padding-top:6px}
+.kids h4{margin:6px 0;font-size:13px;color:#065f46}
+.kids .kid{font-size:13px;color:#334155;display:flex;justify-content:space-between;padding:6px 8px;border:1px solid var(--line);border-radius:10px;margin:4px 0;background:#f8fafc}
+.kids .group{background:#ecfdf5;border-color:#a7f3d0;padding:6px 8px;border-radius:10px;margin:6px 0}
+.badge.birth{background:#fff7ed;border:1px solid #fdba74;color:#9a3412}
+.toggle{cursor:pointer}
+
+/* أزرار صغيرة داخل البطاقة */
+.mini-btn{padding:4px 8px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer;font-size:12px}
+.mini-btn.solid{background:var(--brand);border-color:var(--brand);color:#fff}
 </style>
 </head>
 <body>
@@ -104,7 +118,7 @@ input,select,textarea{width:100%;padding:10px;border:1px solid var(--line);borde
         <button class="btn solid" onclick="saveQuick()">حفظ</button>
       </div>
       <hr style="border:none;border-top:1px solid var(--line)">
-      <div class="row" style="gap:10px">
+      <div class="row" style="gap:10px;flex-wrap:wrap">
         <button class="btn ghost" onclick="openBirth()">🍼 ولادة</button>
         <button class="btn ghost" onclick="openWeightPrompt()">⚖️ وزن</button>
         <button class="btn ghost" onclick="openVacc()">💉 تطعيم</button>
@@ -229,31 +243,162 @@ function statsToUI(){
   byId('s_feed30').textContent=s.feed30.toFixed(0);
 }
 
+/* ======= أبناء الأم / الدُفعات ======= */
+function getChildren(momId){
+  return Object.values(DB.sheep).filter(ch => (ch.motherId||'').trim() === (momId||'').trim());
+}
+function groupChildrenByBirth(momId){
+  const kids = getChildren(momId).slice().sort((a,b)=>(a.dob||'').localeCompare(b.dob||''));
+  const map = {};
+  kids.forEach(k=>{
+    const key = k.dob || 'غير مُسجّل';
+    (map[key] ||= []).push(k);
+  });
+  return map;
+}
+function toggleKids(momId){
+  const row = document.getElementById('kids-'+momId);
+  if(row) row.classList.toggle('hidden');
+}
+function latestBirthDate(momId){
+  const groups = groupChildrenByBirth(momId);
+  const dates = Object.keys(groups).filter(d => d && d !== 'غير مُسجّل');
+  if(!dates.length) return dstr();
+  dates.sort();
+  return dates[dates.length-1];
+}
+
+/* ======= إضافة مولود/توأم/دفعة ======= */
+function addChild(momId){
+  const mom = DB.sheep[momId];
+  if(!mom){ alert('لم يتم العثور على الأم'); return; }
+  const next = getChildren(momId).length + 1;
+  const suggested = momId + '-' + String(next).padStart(2,'0');
+  go('tab-add');
+  byId('f_id').value    = suggested;
+  byId('f_sex').value   = 'أنثى';
+  byId('f_group').value = 'مواليد';
+  byId('f_dob').value   = dstr();
+  byId('f_w').value     = '';
+  byId('f_mom').value   = momId;
+  byId('f_dad').value   = mom.fatherId || '';
+  byId('f_notes').value = 'مولود من الأم '+momId;
+  byId('f_id').focus();
+}
+function addTwin(momId){
+  const mom = DB.sheep[momId];
+  if(!mom){ alert('لم يتم العثور على الأم'); return; }
+  const next = getChildren(momId).length + 1;
+  const suggested = momId + '-' + String(next).padStart(2,'0');
+  go('tab-add');
+  byId('f_id').value    = suggested;
+  byId('f_sex').value   = 'أنثى';
+  byId('f_group').value = 'مواليد';
+  byId('f_dob').value   = latestBirthDate(momId);
+  byId('f_w').value     = '';
+  byId('f_mom').value   = momId;
+  byId('f_dad').value   = mom.fatherId || '';
+  byId('f_notes').value = 'توأم للأم '+momId;
+  byId('f_id').focus();
+}
+function addMany(momId){
+  const mom = DB.sheep[momId];
+  if(!mom){ alert('لم يتم العثور على الأم'); return; }
+  let n = parseInt(prompt('كم عدد المواليد؟', '2')||'0', 10);
+  if(!Number.isFinite(n) || n<=0){ alert('عدد غير صالح'); return; }
+  const sexAns = (prompt('الجنس: اكتب "أنثى" أو "ذكر" أو "مختلط"', 'مختلط')||'').trim();
+  const mode = /ذكر/i.test(sexAns) ? 'M' : (/أنث/i.test(sexAns) ? 'F' : 'X');
+  const sameBatch = (prompt('نفس تاريخ آخر دفعة؟ (نعم/لا)', 'نعم')||'نعم').trim();
+  const date = /^ن|^y|^Y|^yes|^نعم/.test(sameBatch) ? latestBirthDate(momId) : dstr();
+
+  let next = getChildren(momId).length + 1;
+  const nowISO = new Date().toISOString();
+  for(let i=0;i<n;i++){
+    const id = momId + '-' + String(next++).padStart(2,'0');
+    let sex = 'أنثى';
+    if(mode==='M') sex = 'ذكر';
+    else if(mode==='X') sex = (i%2===0 ? 'أنثى' : 'ذكر');
+    DB.sheep[id] = {
+      id, sex, group:'مواليد', dob:date, lastWeight:null,
+      motherId:momId, fatherId:mom.fatherId||'',
+      notes:'مضاف كدفعة', status:'حية', createdAt:nowISO, updatedAt:nowISO
+    };
+  }
+  DB.events.push({type:'birth', ids:[momId], date, details:`${n} مولود`});
+  save(); renderList(); statsToUI(); renderEvents?.();
+  const kidsBox = document.getElementById('kids-'+momId); if(kidsBox) kidsBox.classList.remove('hidden');
+  alert('تمت إضافة '+n+' مواليد ✅');
+}
+
 /* ======= القطيع ======= */
 function renderList(){
   const q=(byId('q')?.value||'').toLowerCase();
   const sort=byId('sort')?.value||'created';
   let arr=Object.values(DB.sheep);
-  if(q){arr=arr.filter(s=>(s.id||'').toLowerCase().includes(q)||(s.group||'').toLowerCase().includes(q)||(s.status||'').toLowerCase().includes(q))}
+
+  if(q){
+    arr=arr.filter(s=>(s.id||'').toLowerCase().includes(q)
+      ||(s.group||'').toLowerCase().includes(q)
+      ||(s.status||'').toLowerCase().includes(q));
+  }
   arr.sort((a,b)=>{
     if(sort==='id') return (a.id||'').localeCompare(b.id||'');
     if(sort==='dob') return (b.dob||'').localeCompare(a.dob||'');
     if(sort==='group') return (a.group||'').localeCompare(b.group||'');
     return (b.createdAt||'').localeCompare(a.createdAt||'');
   });
+
   const box=byId('list'); box.innerHTML='';
   if(!arr.length){ box.innerHTML='<div class="item"><div>لا توجد سجلات.. اضغط + لإضافة أول رأس</div></div>'; return; }
+
   arr.forEach(s=>{
+    const isEwe = (s.sex||'').includes('أنث');
+    const birthsGrouped = isEwe ? groupChildrenByBirth(s.id) : {};
+    const birthsCount   = isEwe ? Object.keys(birthsGrouped).length : 0;
+
     const el=document.createElement('div'); el.className='item';
     el.innerHTML=`
       <div style="flex:1">
-        <div class="row"><b>${s.id||''}</b> <span class="badge">${s.group||'—'}</span></div>
+        <div class="row">
+          <b>${s.id||''}</b>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+            <span class="badge">${s.group||'—'}</span>
+            ${isEwe ? `
+              <span class="badge birth toggle" title="عرض الأبناء" onclick="toggleKids('${s.id}')">🍼 ${birthsCount}</span>
+              <button class="mini-btn solid" onclick="addChild('${s.id}')">＋ مولود</button>
+              <button class="mini-btn" onclick="addTwin('${s.id}')">＋ توأم</button>
+              <button class="mini-btn" onclick="addMany('${s.id}')">＋ مواليد متعدد</button>
+            `:''}
+          </div>
+        </div>
         <div class="k">${s.sex||''} • ${s.status||'حية'} • ${fmt(s.dob)} ${s.lastWeight!=null?('• '+s.lastWeight+' كجم'):''}</div>
+
+        ${isEwe ? `
+          <div id="kids-${s.id}" class="kids hidden">
+            ${
+              Object.keys(birthsGrouped).length
+              ? Object.entries(birthsGrouped).map(([date,list])=>`
+                <div class="group">
+                  <h4>دفعة ${date==='غير مُسجّل'?'بدون تاريخ':fmt(date)} — ${list.length} ${list.length>1?'مواليد':'مولود'}</h4>
+                  ${list.map(ch=>`
+                    <div class="kid">
+                      <div><b>${ch.id||''}</b> • ${ch.sex||''} ${ch.lastWeight!=null?('• '+ch.lastWeight+' كجم'):''}</div>
+                      <div class="k">${ch.group||''}</div>
+                    </div>
+                  `).join('')}
+                </div>
+              `).join('')
+              : `<div class="k">لا يوجد أبناء مسجّلين لهذه الأم بعد.</div>`
+            }
+          </div>
+        `:''}
       </div>
+
       <div class="row" style="gap:8px">
         <button class="btn" onclick="edit('${s.id}')">تعديل</button>
         <button class="btn" onclick="weight('${s.id}')">⚖️</button>
-      </div>`;
+      </div>
+    `;
     box.appendChild(el);
   });
 }
