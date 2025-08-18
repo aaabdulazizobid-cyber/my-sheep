@@ -4,50 +4,100 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>دفتر الغنم — شامل</title>
-<meta name="theme-color" content="#10b981">
+<meta name="theme-color" content="#FFD400">
 <style>
+/* لوحة ألوان رايقة مستوحاة من البونيكام */
 :root{
-  --brand:#10b981;--brand2:#34d399;--ink:#0f172a;--muted:#6b7280;--bg:#f6f7fb;--card:#fff;--line:#e5e7eb;--warn:#f59e0b;
-  --danger:#ef4444;--dead:#925;--chip:#ecfeff;--chipb:#a5f3fc;--chips:#155e75
+  --brand:#FFD400;      /* أصفر رئيسي */
+  --brand2:#FFB800;     /* أصفر غامق للجراديانت */
+  --ink:#0f172a;        /* نص */
+  --muted:#6b7280;      /* نص ثانوي */
+  --bg:#FFFDF5;         /* خلفية عامة دافئة */
+  --card:#ffffff;       /* بطاقات */
+  --line:#efe4c4;       /* حدود ناعمة */
+
+  --warn:#f59e0b;       /* أزرار تحذير */
+  --danger:#ef4444;     /* أزرار خطر */
+
+  /* شارات */
+  --chip:#fff7cc;       /* شارة فاتحة */
+  --chipb:#ffe58a;
+  --chips:#7a5b00;
+
+  /* رؤوس الجداول */
+  --thead:#FFF3BF;
+  --row:#fffaf0;
+  --row2:#fffef8;
 }
-*{box-sizing:border-box} html,body{margin:0;background:var(--bg);color:var(--ink);
+
+/* الأساسيات */
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);
 font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto Sans Arabic",Tahoma,sans-serif}
-.top{position:sticky;top:0;z-index:9;background:linear-gradient(90deg,var(--brand),var(--brand2));color:#fff;padding:12px}
+
+/* شريط علوي */
+.top{position:sticky;top:0;z-index:9;
+  background:linear-gradient(90deg,var(--brand),var(--brand2));
+  color:#000;padding:12px}
 .top h1{margin:0;font-size:18px;font-weight:800}
+
+/* الحاوية */
 .wrap{max-width:1040px;margin:auto;padding:12px}
+
+/* بطاقات وكي بي آي */
 .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center;box-shadow:0 6px 16px #00000010}
 .kpi b{display:block;font-size:20px}
 .kpi span{font-size:12px;color:var(--muted)}
-.kpi.click{cursor:pointer;transition:.15s transform}.kpi.click:active{transform:scale(.98)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 16px #0b1a4411}
+.kpi.click{cursor:pointer;transition:.15s transform, .15s box-shadow}
+.kpi.click:hover{box-shadow:0 10px 20px #00000014}
+.kpi.click:active{transform:scale(.98)}
+
+/* بطاقات عامة */
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 16px #00000010}
 .section{padding:10px}
+
+/* شريط أدوات */
 .searchbar{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
 .searchbar input,.searchbar select{padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff}
 .btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:8px 12px;cursor:pointer;font-size:13px}
-.btn.solid{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.solid{background:var(--brand);border-color:var(--brand);color:#000}
 .btn.warn{background:var(--warn);border-color:var(--warn);color:#fff}
 .btn.danger{background:var(--danger);border-color:var(--danger);color:#fff}
-.btn.gray{background:#f3f4f6}
-.list .item{display:flex;gap:10px;padding:12px;border-bottom:1px solid var(--line)}
+.btn.gray{background:#f9f5e7}
+
+/* قائمة الرؤوس */
+.list .item{display:flex;gap:10px;padding:12px;border-bottom:1px solid var(--line);background:linear-gradient(180deg, #ffffff 0%, #fffdf3 100%)}
 .item:last-child{border-bottom:0}
 .name{font-weight:800}
 .meta{font-size:12px;color:var(--muted)}
 .badge{font-size:12px;background:var(--chip);border:1px solid var(--chipb);padding:2px 8px;border-radius:999px;color:var(--chips);margin-inline-start:6px}
 .badge.sold{background:#fee2e2;border-color:#fecaca;color:#991b1b}
-.badge.np{background:#e5e7eb;border-color:#d1d5db;color:#374151}
+.badge.np{background:#ffe9b6;border-color:#ffd56a;color:#7a5b00}
 .badge.dead{background:#fde68a;border-color:#fcd34d;color:#92400e}
+
 .controls{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.children{margin-top:10px;background:#f9fafb;border:1px dashed var(--line);border-radius:12px;padding:8px}
-.children h4{margin:0 0 6px 0;font-size:13px;color:#0f766e}
+
+/* أولاد الأم */
+.children{margin-top:10px;background:#fffaf0;border:1px dashed var(--line);border-radius:12px;padding:8px}
+.children h4{margin:0 0 6px 0;font-size:13px;color:#8a6a00}
 .kids{display:flex;flex-wrap:wrap;gap:6px}
 .kid{background:#fff;border:1px solid var(--line);padding:4px 8px;border-radius:999px;font-size:12px}
+
+/* الجداول */
 .table{width:100%;border-collapse:collapse}
 .table th,.table td{border-bottom:1px solid var(--line);padding:8px;text-align:center;font-size:13px}
+.table thead th{background:var(--thead)}
+.table tbody tr:nth-child(odd){background:var(--row)}
+.table tbody tr:nth-child(even){background:var(--row2)}
+
+/* مودالات */
 .modal{position:fixed;inset:0;background:#0006;display:none;align-items:flex-end;justify-content:center;z-index:50}
 .modal.open{display:flex}
 .sheet{background:#fff;width:min(760px,100%);border-radius:16px 16px 0 0;padding:14px;border:1px solid var(--line)}
 .sheet h3{margin:0 0 8px 0}
+
+/* نموذج */
 .form{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .row{display:flex;flex-direction:column}
 .row label{font-size:12px;color:var(--muted);margin-bottom:4px}
@@ -55,9 +105,11 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .form textarea{grid-column:1 / span 2;min-height:70px}
 .sheet .bar{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
 @media(max-width:640px){.form{grid-template-columns:1fr}}
+
+/* تبويبات */
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
-.tab{padding:6px 10px;border-radius:999px;border:1px solid var(--line);cursor:pointer}
-.tab.active{background:var(--brand);border-color:var(--brand);color:#fff}
+.tab{padding:6px 10px;border-radius:999px;border:1px solid var(--line);cursor:pointer;background:#fff}
+.tab.active{background:var(--brand);border-color:var(--brand);color:#000}
 </style>
 </head>
 <body>
@@ -74,10 +126,15 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
     <div class="kpi click" id="kpi_birthYear"><b id="s_birthYear">0</b><span>مواليد سنة</span></div>
     <div class="kpi"><b id="s_feedYear">0</b><span>تكلفة العلف سنة</span></div>
   </div>
+
   <div class="grid4" style="margin-top:8px">
+    <div class="kpi click" id="kpi_npEwes"><b id="s_npEwes">0</b><span>أمهات غير منتِجة</span></div>
     <div class="kpi"><b id="s_treatYear">0</b><span>تكلفة العلاجات سنة</span></div>
     <div class="kpi"><b id="s_soldYear">0</b><span>مباعة سنة</span></div>
     <div class="kpi"><b id="s_revYear">0</b><span>إيراد سنة</span></div>
+  </div>
+
+  <div class="grid4" style="margin-top:8px">
     <div class="kpi"><b id="s_deathYear">0</b><span>النفوق سنة</span></div>
   </div>
 
@@ -215,14 +272,11 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 <script>
 /*** التخزين ***/
 const KEY='sheep-db-v11';
-const BKKEY=KEY+'-backups';     // قائمة النسخ
-const BKMAX=12;                 // نحفظ آخر 12 نسخة
+const BKKEY=KEY+'-backups';
+const BKMAX=12;
 let DB=load();
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||seed()}catch(e){return seed()}}
-function save(){
-  localStorage.setItem(KEY,JSON.stringify(DB));
-  autoBackup();
-}
+function save(){ localStorage.setItem(KEY,JSON.stringify(DB)); autoBackup(); }
 function seed(){return{sheep:{},events:[],finance:[],treatments:[],vaccines:[],deaths:[]}}
 /*
 events: [{type:'birth'|'movement'|'weight', ids:[], date, details, amount?}]
@@ -241,7 +295,7 @@ function autoBackup(){
   const list=JSON.parse(localStorage.getItem(BKKEY)||'[]');
   const last=(list[0]||{}).hash;
   const cur=JSON.stringify(DB);
-  const hash=cur.length+':'+(cur.charCodeAt(0)||0); // بسيطة تكفي للتمييز
+  const hash=cur.length+':'+(cur.charCodeAt(0)||0);
   if(hash!==last){
     list.unshift({ts:Date.now(), date:dstr(), hash, size:cur.length, data:cur});
     while(list.length>BKMAX) list.pop();
@@ -367,14 +421,13 @@ function sellSheep(id){
 function deleteSale(evId){
   if(!confirm('حذف عملية البيع؟'))return;
   DB.events=DB.events.filter(e=>e._id!==evId);
-  // قد يكون تغيّر حالة الرأس لمباعة، نرجّعه حي إن كان لا يزال موجود
   const sale=SALE_CACHE[evId];
   if(sale && DB.sheep[sale.sid] && DB.sheep[sale.sid].status==='مباعة'){
     DB.sheep[sale.sid].status='حية'; DB.sheep[sale.sid].soldPrice=null; DB.sheep[sale.sid].soldDate='';
   }
   save(); renderAll();
 }
-let SALE_CACHE={}; // يخزّن ربط الحدث بالرأس للرجوع عند حذف البيع
+let SALE_CACHE={};
 
 /*** العلف ***/
 function addFeed(){
@@ -387,7 +440,7 @@ function addFeed(){
 }
 function deleteFeed(id){ if(!confirm('حذف سجل العلف؟'))return; DB.finance=DB.finance.filter(r=>r.id!==id); save(); renderAll(); }
 
-/*** العلاجات — منفصلة ***/
+/*** العلاجات ***/
 function addTreatment(id){
   if(!DB.sheep[id]) return alert('الرأس غير موجود');
   const date=prompt('تاريخ العلاج (YYYY-MM-DD):', dstr()); if(date===null) return;
@@ -423,23 +476,25 @@ function markDead(id){
   save(); renderAll();
 }
 
-/*** إحصاءات ***/
+/*** إحصاءات (تتضمن خانة غير المنتِجات) ***/
 function getStats(){
   const since=new Date(); since.setDate(since.getDate()-365);
   const alive=Object.values(DB.sheep).filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
   const ewes=alive.filter(s=>s.sex==='أنثى').length;
+  const npEwes=alive.filter(s=>s.sex==='أنثى'&&!!s.nonProductive).length; /* الجديد */
   const birthYear=Object.values(DB.sheep).filter(s=>s.dob&&new Date(s.dob)>=since).length;
   const feedYear=DB.finance.filter(f=>f.type==='feed'&&new Date(f.date)>=since).reduce((a,b)=>a+(+b.cost||0),0);
   const soldYearEv=DB.events.filter(e=>e.type==='movement'&&/بيع/.test(e.details||'')&&new Date(e.date)>=since);
   const soldYear=soldYearEv.length; const revYear=soldYearEv.reduce((a,e)=>a+(+e.amount||0),0);
   const treatYear=DB.treatments.filter(t=>new Date(t.date)>=since).reduce((a,b)=>a+(+b.cost||0),0);
   const deathYear=DB.deaths.filter(d=>new Date(d.date)>=since).length;
-  return {total:alive.length, ewes, birthYear, feedYear, soldYear, revYear, treatYear, deathYear};
+  return {total:alive.length, ewes, npEwes, birthYear, feedYear, soldYear, revYear, treatYear, deathYear};
 }
 function statsToUI(){
   const s=getStats();
   $('s_total').textContent=s.total;
   $('s_ewes').textContent=s.ewes;
+  $('s_npEwes').textContent=s.npEwes;        /* الجديد */
   $('s_birthYear').textContent=s.birthYear;
   $('s_feedYear').textContent=money(s.feedYear);
   $('s_soldYear').textContent=s.soldYear;
@@ -453,6 +508,7 @@ function setView(m){$('viewMode').value=m;renderList();window.scrollTo({top:docu
 document.addEventListener('DOMContentLoaded',()=>{
   $('kpi_birthYear').onclick=()=>setView('newborns');
   $('kpi_ewes').onclick=()=>setView('ewes');
+  $('kpi_npEwes').onclick=()=>setView('np');   /* الجديد */
 });
 
 /*** عرض القائمة ***/
@@ -563,7 +619,7 @@ function renderLogs(){
   const tbT=$('tblTreat').querySelector('tbody'); tbT.innerHTML='';
   DB.treatments.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(t=>{
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${fmt(t.date)}</td><td>${t.sheepId}</td><td>${t.diagnosis||'—'}</td><td>${t.drug||'—'}</td><td>${t.dose||'—'}</td><td>${money(+t.cost||0)}</td>`;
+    tr.innerHTML=`<td>${fmt(t.date)}</td><td>${t.sheepId}</td><td>${t.diagnosis||'—'}</td><td>${t.drug||'—'}</td><td>${t.dose||'ُ—'}</td><td>${money(+t.cost||0)}</td>`;
     const td=document.createElement('td'); const b=document.createElement('button'); b.className='btn danger'; b.textContent='🗑'; b.onclick=()=>deleteTreatment(t.id);
     td.appendChild(b); tr.appendChild(td); tbT.appendChild(tr);
   });
@@ -629,7 +685,7 @@ function importDB(ev){
 function quickDemo(){
   if(!confirm('تعبئة بيانات تجربة؟'))return;
   DB=seed();
-  DB.sheep['600']={id:'600',sex:'أنثى',group:'حري',dob:'2024-10-10',status:'حية',nonProductive:false};
+  DB.sheep['600']={id:'600',sex:'أنثى',group:'حري',dob:'2024-10-10',status:'حية',nonProductive:true};
   DB.sheep['600-01']={id:'600-01',sex:'أنثى',group:'مواليد',dob:dstr(),motherId:'600',status:'حية'};
   DB.events.push({type:'birth',ids:['600','600-01'],date:dstr(),details:'1 مولود'});
   DB.finance.push({id:'feed_'+Date.now(),type:'feed',date:dstr(),desc:'شعير',qty:120,cost:160});
@@ -663,8 +719,8 @@ renderAll();
 (function injectPWA(){
   const manifest = {
     "name":"دفتر الغنم — شامل","short_name":"دفتر الغنم","start_url":"./","display":"standalone",
-    "background_color":"#10b981","theme_color":"#10b981",
-    "icons":[{"src":"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Ccircle cx='128' cy='128' r='120' fill='%2310b981'/%3E%3Ctext x='50%25' y='57%25' text-anchor='middle' font-size='120' fill='white'%3E%F0%9F%90%91%3C/text%3E%3C/svg%3E","sizes":"256x256","type":"image/svg+xml"}]
+    "background_color":"#FFD400","theme_color":"#FFD400",
+    "icons":[{"src":"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Ccircle cx='128' cy='128' r='120' fill='%23FFD400'/%3E%3Ctext x='50%25' y='57%25' text-anchor='middle' font-size='120'%3E%F0%9F%90%91%3C/text%3E%3C/svg%3E","sizes":"256x256","type":"image/svg+xml"}]
   };
   const mBlob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
   const mUrl=URL.createObjectURL(mBlob); const link=document.createElement('link'); link.rel='manifest'; link.href=mUrl; document.head.appendChild(link);
