@@ -287,7 +287,7 @@ function load(){try{return JSON.parse(localStorage.getItem(KEY))||seed()}catch(e
 function save(){ localStorage.setItem(KEY,JSON.stringify(DB)); autoBackup(); }
 function seed(){return{sheep:{},events:[],finance:[],treatments:[],vaccines:[],deaths:[]}}
 /*
-events: [{type:'birth'|'movement'|'weight', ids:[], date, details, amount?}]
+events: [{_id?,type:'birth'|'movement'|'weight', ids:[], date, details, amount?}]
 finance: [{id,type:'feed',date,desc,qty,cost}]
 treatments: [{id,date,sheepId,diagnosis,drug,dose,cost}]
 */
@@ -421,17 +421,17 @@ function addMany(m){const n=+prompt('كم مولود؟','3'); if(!n||n<=0)return
 
 /*** البيع ***/
 function sellSheep(id){
-  const s=DB.sheep[id]; if(!س)return;
+  const s=DB.sheep[id]; if(!s)return;
   const price=+prompt('سعر البيع (ريال):','0'); if(isNaN(price))return;
   const date=prompt('تاريخ البيع (YYYY-MM-DD):',dstr()); if(date===null)return;
   s.status='مباعة'; s.soldPrice=price; s.soldDate=date; s.updatedAt=new Date().toISOString();
-  DB.events.push({type:'movement',ids:[id],date,details:'بيع',amount:price});
+  const eid='sale_'+Date.now();
+  DB.events.push({_id:eid,type:'movement',ids:[id],date,details:'بيع',amount:price});
   save(); renderAll();
 }
 function deleteSale(evId){
   if(!confirm('حذف عملية البيع؟'))return;
-  const key=String(evId).replace(/^_sale_/,'');
-  DB.events=DB.events.filter(e=>e._id!==key);
+  DB.events=DB.events.filter(e=>e._id!==evId);
   const sale=SALE_CACHE[evId];
   if(sale && DB.sheep[sale.sid] && DB.sheep[sale.sid].status==='مباعة'){
     DB.sheep[sale.sid].status='حية'; DB.sheep[sale.sid].soldPrice=null; DB.sheep[sale.sid].soldDate='';
@@ -518,7 +518,7 @@ function markDead(id){
 function getStats(){
   const since=new Date(); since.setDate(since.getDate()-365);
   const all=Object.values(DB.sheep);
-  const alive=all.filter(s=>س.status!=='مباعة'&&س.status!=='نافقة');
+  const alive=all.filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
   const ewes=alive.filter(s=>s.sex==='أنثى').length;
   const prodEwes=alive.filter(s=>s.sex==='أنثى'&&!s.nonProductive).length;
   const npEwes=alive.filter(s=>s.sex==='أنثى'&&!!s.nonProductive).length;
@@ -614,7 +614,7 @@ function renderList(){
       ${s.sex==='أنثى'?'<span class="badge">أم</span>':''}
       ${s.nonProductive?'<span class="badge np">🛑 غير منتجة</span>':''}
       ${s.status==='نافقة'?'<span class="badge dead">نافقة</span>':''}
-      ${(س.status!=='حية'&&س.status!=='نافقة')?`<span class="badge sold">${s.status}${s.soldPrice!=null?' • '+s.soldPrice+' ر.س':''}</span>`:''}`;
+      ${(s.status!=='حية'&&s.status!=='نافقة')?`<span class="badge sold">${s.status}${s.soldPrice!=null?' • '+s.soldPrice+' ر.س':''}</span>`:''}`;
     info.appendChild(title);
 
     const meta=document.createElement('div'); meta.className='meta';
@@ -673,7 +673,8 @@ function renderLogs(){
   DB.events.filter(e=>e.type==='movement'&&/بيع/.test(e.details||''))
     .sort((a,b)=>(b.date||'').localeCompare(a.date||''))
     .forEach(e=>{
-      const sid=(e.ids||[])[0]||'—'; const id='_sale_'+(e._id||(e._id=String(Math.random()).slice(2)));
+      const sid=(e.ids||[])[0]||'—';
+      const id=e._id||(e._id='sale_'+Date.now()+Math.random().toString(16).slice(2));
       SALE_CACHE[id]={sid};
       const tr=document.createElement('tr');
       tr.innerHTML=`<td>${fmt(e.date)}</td><td>${sid}</td><td>بيع</td><td>${money(+e.amount||0)}</td>`;
@@ -681,7 +682,7 @@ function renderLogs(){
       td.appendChild(b); tr.appendChild(td); tbS.appendChild(tr);
     });
 
-  // علف  (تم إصلاح forEach)
+  // علف
   const tbF=$('tblFeed').querySelector('tbody'); tbF.innerHTML='';
   DB.finance.filter(f=>f.type==='feed').sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(r=>{
     const tr=document.createElement('tr');
@@ -737,7 +738,7 @@ function setNewbornSub(el){
 function renderNewbornList(){
   const arr=Object.values(DB.sheep).filter(s=>s.motherId&&s.motherId!=='');
   const f=arr.filter(s=>s.sex==='أنثى');
-  const m=arr.filter(s=>s.sex==='ذكر'); /* تم إصلاح س→s */
+  const m=arr.filter(s=>s.sex==='ذكر');
   $('nb_f_count').textContent=f.length;
   $('nb_m_count').textContent=m.length;
   const show=NEWBORN_SUB==='f'?f:m;
