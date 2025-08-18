@@ -21,7 +21,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .top h1{margin:0;font-size:18px;font-weight:800}
 .wrap{max-width:1040px;margin:auto;padding:12px}
 
-/* مربعات KPI — شكل قديم أبيض */
+/* مربعات KPI */
 .grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 @media(max-width:640px){.grid4{grid-template-columns:repeat(2,1fr)}}
 .kpi{background:#fff;border:1px solid #d9f5ea;border-radius:12px;padding:10px;text-align:center;cursor:pointer}
@@ -80,9 +80,13 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 @media(max-width:640px){.form{grid-template-columns:1fr}}
 
 /* تبويبات */
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;align-items:center;justify-content:space-between}
 .tab{padding:6px 10px;border-radius:999px;border:1px solid var(--line);cursor:pointer;background:#fff}
 .tab.active{background:var(--brand);border-color:var(--brand);color:#fff}
+
+/* زر الرجوع */
+.backbar{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.backbar .btn{padding:6px 10px}
 
 /* تبويبات فرعية للمواليد */
 .subtabs{display:flex;gap:6px;margin:6px 0}
@@ -96,7 +100,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 </div>
 
 <div class="wrap">
-  <!-- KPIs أعلى (مربعات) -->
+  <!-- KPIs أعلى -->
   <div class="grid4">
     <div class="kpi click" id="kpi_totalAll"><b id="s_totalAll">0</b><span>إجمالي (الكل)</span></div>
     <div class="kpi click" id="kpi_total"><b id="s_total">0</b><span>إجمالي (حية)</span></div>
@@ -146,6 +150,10 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 
   <!-- السجلات -->
   <div class="card section" style="margin-top:12px">
+    <div class="backbar">
+      <button class="btn gray" onclick="goHome()">⬅︎ رجوع للوحة</button>
+    </div>
+
     <div class="tabs">
       <div class="tab active" data-tab="births" onclick="setTab(this)">👶 سجلات الولادات</div>
       <div class="tab" data-tab="newbornList" onclick="setTab(this)">🍼 قائمة المواليد</div>
@@ -395,7 +403,7 @@ function addChild(m){
   const i=kidsOf(m).length+1; const id=m+'-'+String(i).padStart(2,'0'); const date=dstr();
   DB.sheep[id]={id,sex:'أنثى',group:'مواليد',dob:date,motherId:m,fatherId:mom.fatherId||'',notes:'مولود',status:'حية',soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
   DB.events.push({type:'birth',ids:[m,id],date,details:'1 مولود'});
-  if(mom.nonProductive){ mom.nonProductive=false; mom.updatedAt=new Date().toISOString(); } // تتحول منتجة تلقائي
+  if(mom.nonProductive){ mom.nonProductive=false; mom.updatedAt=new Date().toISOString(); }
   save(); renderAll();
 }
 function addTwin(m){
@@ -505,33 +513,38 @@ function statsToUI(){
   $('s_vaccYear').textContent=s.vaccYear;
 }
 
+/*** تحكم إظهار/إخفاء قائمة الغنم والسجلات ***/
+function showList(flag){ $('list').style.display = flag ? '' : 'none'; }
+
+/*** زر الرجوع للوحة ***/
+function goHome(){
+  showList(true);
+  window.scrollTo({top:document.querySelector('.wrap').offsetTop,behavior:'smooth'});
+}
+
 /*** فتح صفحات داخلية من المربعات ***/
 function openSection(name, sub){
-  // افتح التبويب المناسب
-  const map={
-    sales:'sales', death:'death', feed:'feed', treat:'treat',
-    vacc:'vacc', summary:'summary', newborns:'newbornList'
-  };
+  const recordNames=['sales','death','feed','treat','vacc','summary','newborns'];
+  if(recordNames.includes(name)){ showList(false); } else { showList(true); }
+  const map={ sales:'sales', death:'death', feed:'feed', treat:'treat', vacc:'vacc', summary:'summary', newborns:'newbornList' };
   const tab=document.querySelector(`.tab[data-tab="${map[name]||'summary'}"]`);
   if(tab) setTab(tab);
-  // تبويب فرعي للمواليد
   if(name==='newborns'){
     const target=sub==='m'
       ? document.querySelector('#pane_newbornList .tab[data-sub="m"]')
       : document.querySelector('#pane_newbornList .tab[data-sub="f"]');
     if(target) setNewbornSub(target);
   }
-  // مرّر للأسفل
   document.querySelector('.tabs').scrollIntoView({behavior:'smooth'});
 }
 
 /*** ربط الضغط على المربعات ***/
 document.addEventListener('DOMContentLoaded',()=>{
   $('kpi_totalAll').onclick =()=> openSection('summary');
-  $('kpi_total').onclick   =()=>{ $('fltStatus').value='alive'; $('viewMode').value='all'; renderList(); document.getElementById('list').scrollIntoView({behavior:'smooth'}); };
-  $('kpi_ewes').onclick    =()=>{ $('viewMode').value='ewes'; renderList(); document.getElementById('list').scrollIntoView({behavior:'smooth'}); };
-  $('kpi_prodEwes').onclick=()=>{ $('viewMode').value='productive'; renderList(); document.getElementById('list').scrollIntoView({behavior:'smooth'}); };
-  $('kpi_npEwes').onclick  =()=>{ $('viewMode').value='np'; renderList(); document.getElementById('list').scrollIntoView({behavior:'smooth'}); };
+  $('kpi_total').onclick   =()=>{ showList(true); $('fltStatus').value='alive'; $('viewMode').value='all'; renderList(); document.getElementById('list').scrollIntoView({behavior:'smooth'}); };
+  $('kpi_ewes').onclick    =()=>{ showList(true); $('viewMode').value='ewes'; renderList(); document.getElementById('list').scrollIntoView({behavior:'smooth'}); };
+  $('kpi_prodEwes').onclick=()=>{ showList(true); $('viewMode').value='productive'; renderList(); document.getElementById('list').scrollIntoView({behavior:'smooth'}); };
+  $('kpi_npEwes').onclick  =()=>{ showList(true); $('viewMode').value='np'; renderList(); document.getElementById('list').scrollIntoView({behavior:'smooth'}); };
   $('kpi_birthYear').onclick=()=> openSection('newborns','f');
   $('kpi_soldYear').onclick =()=> openSection('sales');
   $('kpi_deathYear').onclick=()=> openSection('death');
@@ -572,7 +585,7 @@ function renderList(){
       ${s.sex==='أنثى'?'<span class="badge">أم</span>':''}
       ${s.nonProductive?'<span class="badge np">🛑 غير منتجة</span>':''}
       ${s.status==='نافقة'?'<span class="badge dead">نافقة</span>':''}
-      ${(s.status!=='حية'&&s.status!=='نافقة')?`<span class="badge sold">${s.status}${s.soldPrice!=null?' • '+s.soldPrice+' ر.س':''}</span>`:''}`;
+      ${(s.status!=='حية'&&س.status!=='نافقة')?`<span class="badge sold">${s.status}${s.soldPrice!=null?' • '+s.soldPrice+' ر.س':''}</span>`:''}`;
     info.appendChild(title);
 
     const meta=document.createElement('div'); meta.className='meta';
@@ -623,7 +636,7 @@ function renderLogs(){
     tbB.insertAdjacentHTML('beforeend',`<tr><td>${fmt(e.date)}</td><td>${mom}</td><td>${kids||'—'}</td><td>${e.details||''}</td></tr>`);
   });
 
-  // قائمة المواليد (إناث/ذكور)
+  // قائمة المواليد
   renderNewbornList();
 
   // مبيعات
@@ -639,7 +652,7 @@ function renderLogs(){
       td.appendChild(b); tr.appendChild(td); tbS.appendChild(tr);
     });
 
-  // العلف (تاريخ + قيمة فقط)
+  // علف
   const tbF=$('tblFeed').querySelector('tbody'); tbF.innerHTML='';
   DB.finance.filter(f=>f.type==='feed').sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(r=>{
     const tr=document.createElement('tr');
@@ -648,7 +661,7 @@ function renderLogs(){
     td.appendChild(b); tr.appendChild(td); tbF.appendChild(tr);
   });
 
-  // العلاج (تاريخ + قيمة فقط)
+  // علاج
   const tbT=$('tblTreat').querySelector('tbody'); tbT.innerHTML='';
   DB.treatments.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(t=>{
     const tr=document.createElement('tr');
@@ -657,7 +670,7 @@ function renderLogs(){
     td.appendChild(b); tr.appendChild(td); tbT.appendChild(tr);
   });
 
-  // التحصينات (اسم + تاريخ)
+  // التحصينات
   const tbV=$('tblVacc').querySelector('tbody'); tbV.innerHTML='';
   DB.vaccines.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(v=>{
     const tr=document.createElement('tr');
@@ -665,7 +678,7 @@ function renderLogs(){
     tbV.appendChild(tr);
   });
 
-  // النفوق
+  // نفوق
   const tbD=$('tblDeath').querySelector('tbody'); tbD.innerHTML='';
   DB.deaths.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(d=>{
     const tr=document.createElement('tr');
@@ -731,7 +744,7 @@ function exportDB(){
   a.download='sheep-backup-'+dstr()+'.json'; a.click(); URL.revokeObjectURL(a.href);
 }
 function importDB(ev){
-  const f=ev.target.files[0]; if(!f)return;
+  const f=ev.target.files[0]; if(!ف)return;
   const r=new FileReader();
   r.onload=()=>{ try{ DB=JSON.parse(r.result); save(); renderAll(); alert('تم الاستيراد ✅') }catch{ alert('ملف غير صالح') } };
   r.readAsText(f);
@@ -756,7 +769,7 @@ function quickDemo(){
   const buckets={};
   Object.values(DB.sheep).forEach(s=>{
     if(s.motherId&&s.dob){
-      const k=s.motherId+'@'+s.dob; (buckets[k]??={mom:s.motherId,date:s.dob,kids:[]}).kids.push(s.id)
+      const k=s.motherId+'@'+س.dob; (buckets[k]??={mom:s.motherId,date:s.dob,kids:[]}).kids.push(s.id)
     }
   });
   Object.values(buckets).forEach(b=>{
@@ -770,7 +783,7 @@ function quickDemo(){
 function renderAll(){ renderList(); statsToUI(); renderLogs(); }
 renderAll();
 
-/*** PWA (Manifest + Service Worker داخل الصفحة) ***/
+/*** PWA ***/
 (function injectPWA(){
   const manifest = {
     "name":"دفتر الغنم — شامل","short_name":"دفتر الغنم","start_url":"./","display":"standalone",
