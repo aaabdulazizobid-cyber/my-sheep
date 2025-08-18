@@ -21,7 +21,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .top h1{margin:0;font-size:18px;font-weight:800}
 .wrap{max-width:1040px;margin:auto;padding:12px}
 
-/* مربعات KPI */
+/* KPIs */
 .grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 @media(max-width:640px){.grid4{grid-template-columns:repeat(2,1fr)}}
 .kpi{background:#fff;border:1px solid #d9f5ea;border-radius:12px;padding:10px;text-align:center;cursor:pointer}
@@ -79,12 +79,10 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .sheet .bar{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
 @media(max-width:640px){.form{grid-template-columns:1fr}}
 
-/* تبويبات */
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;align-items:center;justify-content:space-between}
+/* تبويبات + رجوع */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
 .tab{padding:6px 10px;border-radius:999px;border:1px solid var(--line);cursor:pointer;background:#fff}
 .tab.active{background:var(--brand);border-color:var(--brand);color:#fff}
-
-/* زر الرجوع */
 .backbar{display:flex;gap:8px;align-items:center;margin-bottom:6px}
 .backbar .btn{padding:6px 10px}
 
@@ -100,7 +98,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 </div>
 
 <div class="wrap">
-  <!-- KPIs أعلى -->
+  <!-- KPIs -->
   <div class="grid4">
     <div class="kpi click" id="kpi_totalAll"><b id="s_totalAll">0</b><span>إجمالي (الكل)</span></div>
     <div class="kpi click" id="kpi_total"><b id="s_total">0</b><span>إجمالي (حية)</span></div>
@@ -346,7 +344,7 @@ let editingId=null;
 function openForm(id=null){
   editingId=id||null;
   if(id){
-    const s=DB.sheep[id]; if(!س) return;
+    const s=DB.sheep[id]; if(!s) return;
     $('formTitle').textContent='تعديل رأس';
     $('f_id').value=s.id; $('f_id').disabled=true;
     $('f_sex').value=s.sex||'أنثى'; $('f_group').value=s.group||'';
@@ -471,7 +469,7 @@ function addVaccine(id){
 
 /*** نفوق ***/
 function markDead(id){
-  const s=DB.sheep[id]; if(!s) return alert('غير موجود');
+  const s=DB.sheep[id]; if(!س) return alert('غير موجود');
   const date=prompt('تاريخ النفوق (YYYY-MM-DD):', dstr()); if(date===null) return;
   const cause=prompt('سبب النفوق — اختياري:',''); if(cause===null) return;
   s.status='نافقة'; s.updatedAt=new Date().toISOString();
@@ -513,14 +511,9 @@ function statsToUI(){
   $('s_vaccYear').textContent=s.vaccYear;
 }
 
-/*** تحكم إظهار/إخفاء قائمة الغنم والسجلات ***/
+/*** إظهار/إخفاء قائمة الغنم عند فتح صفحات داخلية ***/
 function showList(flag){ $('list').style.display = flag ? '' : 'none'; }
-
-/*** زر الرجوع للوحة ***/
-function goHome(){
-  showList(true);
-  window.scrollTo({top:document.querySelector('.wrap').offsetTop,behavior:'smooth'});
-}
+function goHome(){ showList(true); window.scrollTo({top:document.querySelector('.wrap').offsetTop,behavior:'smooth'}); }
 
 /*** فتح صفحات داخلية من المربعات ***/
 function openSection(name, sub){
@@ -538,7 +531,7 @@ function openSection(name, sub){
   document.querySelector('.tabs').scrollIntoView({behavior:'smooth'});
 }
 
-/*** ربط الضغط على المربعات ***/
+/*** ربط الـ KPIs ***/
 document.addEventListener('DOMContentLoaded',()=>{
   $('kpi_totalAll').onclick =()=> openSection('summary');
   $('kpi_total').onclick   =()=>{ showList(true); $('fltStatus').value='alive'; $('viewMode').value='all'; renderList(); document.getElementById('list').scrollIntoView({behavior:'smooth'}); };
@@ -585,7 +578,7 @@ function renderList(){
       ${s.sex==='أنثى'?'<span class="badge">أم</span>':''}
       ${s.nonProductive?'<span class="badge np">🛑 غير منتجة</span>':''}
       ${s.status==='نافقة'?'<span class="badge dead">نافقة</span>':''}
-      ${(s.status!=='حية'&&س.status!=='نافقة')?`<span class="badge sold">${s.status}${s.soldPrice!=null?' • '+s.soldPrice+' ر.س':''}</span>`:''}`;
+      ${(s.status!=='حية'&&s.status!=='نافقة')?`<span class="badge sold">${s.status}${s.soldPrice!=null?' • '+s.soldPrice+' ر.س':''}</span>`:''}`;
     info.appendChild(title);
 
     const meta=document.createElement('div'); meta.className='meta';
@@ -606,7 +599,7 @@ function renderList(){
     }
 
     const ctr=document.createElement('div'); ctr.className='controls';
-    if(s.sex==='أنثى'&&s.status!=='مباعة'&&s.status!=='نافقة'){
+    if(s.sex==='أنثى'&&s.status!=='مباعة'&&س.status!=='نافقة'){
       const b1=btn('+ مولود',()=>addChild(s.id));
       const b2=btn('توأم +',()=>addTwin(s.id));
       const b3=btn('+ متعدد',()=>addMany(s.id));
@@ -707,7 +700,7 @@ function renderNewbornList(){
   const show=NEWBORN_SUB==='f'?f:m;
   const tb=$('tblNewborns').querySelector('tbody'); tb.innerHTML='';
   show.sort((a,b)=>a.id>b.id?1:-1).forEach(s=>{
-    tb.insertAdjacentHTML('beforeend',`<tr><td>${s.id}</td><td>${s.sex||'—'}</td><td>${s.motherId||'—'}</td><td>${fmt(s.dob)}</td><td>${s.status||'—'}</td></tr>`);
+    tb.insertAdjacentHTML('beforeend',`<tr><td>${s.id}</td><td>${s.sex||'—'}</td><td>${س.motherId||'—'}</td><td>${fmt(s.dob)}</td><td>${s.status||'—'}</td></tr>`);
   });
 }
 
@@ -744,7 +737,7 @@ function exportDB(){
   a.download='sheep-backup-'+dstr()+'.json'; a.click(); URL.revokeObjectURL(a.href);
 }
 function importDB(ev){
-  const f=ev.target.files[0]; if(!ف)return;
+  const f=ev.target.files[0]; if(!f)return;
   const r=new FileReader();
   r.onload=()=>{ try{ DB=JSON.parse(r.result); save(); renderAll(); alert('تم الاستيراد ✅') }catch{ alert('ملف غير صالح') } };
   r.readAsText(f);
@@ -769,7 +762,7 @@ function quickDemo(){
   const buckets={};
   Object.values(DB.sheep).forEach(s=>{
     if(s.motherId&&s.dob){
-      const k=s.motherId+'@'+س.dob; (buckets[k]??={mom:s.motherId,date:s.dob,kids:[]}).kids.push(s.id)
+      const k=s.motherId+'@'+s.dob; (buckets[k]??={mom:s.motherId,date:s.dob,kids:[]}).kids.push(s.id)
     }
   });
   Object.values(buckets).forEach(b=>{
