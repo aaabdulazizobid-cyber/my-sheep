@@ -737,7 +737,7 @@ function exportDB(){
   a.download='sheep-backup-'+dstr()+'.json'; a.click(); URL.revokeObjectURL(a.href);
 }
 function importDB(ev){
-  const f=ev.target.files[0]; if(!ف)return;
+  const f=ev.target.files[0]; if(!f)return;
   const r=new FileReader();
   r.onload=()=>{ try{ DB=JSON.parse(r.result); save(); renderAll(); alert('تم الاستيراد ✅') }catch{ alert('ملف غير صالح') } };
   r.readAsText(f);
