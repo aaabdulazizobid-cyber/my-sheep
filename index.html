@@ -421,7 +421,7 @@ function addMany(m){const n=+prompt('كم مولود؟','3'); if(!n||n<=0)return
 
 /*** البيع ***/
 function sellSheep(id){
-  const s=DB.sheep[id]; if(!s)return;
+  const s=DB.sheep[id]; if(!س)return;
   const price=+prompt('سعر البيع (ريال):','0'); if(isNaN(price))return;
   const date=prompt('تاريخ البيع (YYYY-MM-DD):',dstr()); if(date===null)return;
   s.status='مباعة'; s.soldPrice=price; s.soldDate=date; s.updatedAt=new Date().toISOString();
@@ -430,7 +430,8 @@ function sellSheep(id){
 }
 function deleteSale(evId){
   if(!confirm('حذف عملية البيع؟'))return;
-  DB.events=DB.events.filter(e=>e._id!==evId);
+  const key=String(evId).replace(/^_sale_/,'');
+  DB.events=DB.events.filter(e=>e._id!==key);
   const sale=SALE_CACHE[evId];
   if(sale && DB.sheep[sale.sid] && DB.sheep[sale.sid].status==='مباعة'){
     DB.sheep[sale.sid].status='حية'; DB.sheep[sale.sid].soldPrice=null; DB.sheep[sale.sid].soldDate='';
@@ -517,7 +518,7 @@ function markDead(id){
 function getStats(){
   const since=new Date(); since.setDate(since.getDate()-365);
   const all=Object.values(DB.sheep);
-  const alive=all.filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
+  const alive=all.filter(s=>س.status!=='مباعة'&&س.status!=='نافقة');
   const ewes=alive.filter(s=>s.sex==='أنثى').length;
   const prodEwes=alive.filter(s=>s.sex==='أنثى'&&!s.nonProductive).length;
   const npEwes=alive.filter(s=>s.sex==='أنثى'&&!!s.nonProductive).length;
@@ -613,7 +614,7 @@ function renderList(){
       ${s.sex==='أنثى'?'<span class="badge">أم</span>':''}
       ${s.nonProductive?'<span class="badge np">🛑 غير منتجة</span>':''}
       ${s.status==='نافقة'?'<span class="badge dead">نافقة</span>':''}
-      ${(s.status!=='حية'&&s.status!=='نافقة')?`<span class="badge sold">${s.status}${s.soldPrice!=null?' • '+s.soldPrice+' ر.س':''}</span>`:''}`;
+      ${(س.status!=='حية'&&س.status!=='نافقة')?`<span class="badge sold">${s.status}${s.soldPrice!=null?' • '+s.soldPrice+' ر.س':''}</span>`:''}`;
     info.appendChild(title);
 
     const meta=document.createElement('div'); meta.className='meta';
@@ -680,9 +681,9 @@ function renderLogs(){
       td.appendChild(b); tr.appendChild(td); tbS.appendChild(tr);
     });
 
-  // علف
+  // علف  (تم إصلاح forEach)
   const tbF=$('tblFeed').querySelector('tbody'); tbF.innerHTML='';
-  DB.finance.filter(f=>f.type==='feed').sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach	r=>{
+  DB.finance.filter(f=>f.type==='feed').sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(r=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`<td>${fmt(r.date)}</td><td>${money(r.cost||0)}</td>`;
     const td=document.createElement('td'); const b=document.createElement('button'); b.className='btn danger'; b.textContent='🗑'; b.onclick=()=>deleteFeed(r.id);
@@ -736,7 +737,7 @@ function setNewbornSub(el){
 function renderNewbornList(){
   const arr=Object.values(DB.sheep).filter(s=>s.motherId&&s.motherId!=='');
   const f=arr.filter(s=>s.sex==='أنثى');
-  const m=arr.filter(s=>س.sex==='ذكر');
+  const m=arr.filter(s=>s.sex==='ذكر'); /* تم إصلاح س→s */
   $('nb_f_count').textContent=f.length;
   $('nb_m_count').textContent=m.length;
   const show=NEWBORN_SUB==='f'?f:m;
