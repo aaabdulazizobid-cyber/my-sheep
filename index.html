@@ -469,7 +469,7 @@ function addVaccine(id){
 
 /*** نفوق ***/
 function markDead(id){
-  const s=DB.sheep[id]; if(!س) return alert('غير موجود');
+  const s=DB.sheep[id]; if(!s) return alert('غير موجود');
   const date=prompt('تاريخ النفوق (YYYY-MM-DD):', dstr()); if(date===null) return;
   const cause=prompt('سبب النفوق — اختياري:',''); if(cause===null) return;
   s.status='نافقة'; s.updatedAt=new Date().toISOString();
@@ -599,7 +599,7 @@ function renderList(){
     }
 
     const ctr=document.createElement('div'); ctr.className='controls';
-    if(s.sex==='أنثى'&&s.status!=='مباعة'&&س.status!=='نافقة'){
+    if (s.sex==='أنثى' && s.status!=='مباعة' && s.status!=='نافقة') {
       const b1=btn('+ مولود',()=>addChild(s.id));
       const b2=btn('توأم +',()=>addTwin(s.id));
       const b3=btn('+ متعدد',()=>addMany(s.id));
@@ -700,7 +700,7 @@ function renderNewbornList(){
   const show=NEWBORN_SUB==='f'?f:m;
   const tb=$('tblNewborns').querySelector('tbody'); tb.innerHTML='';
   show.sort((a,b)=>a.id>b.id?1:-1).forEach(s=>{
-    tb.insertAdjacentHTML('beforeend',`<tr><td>${s.id}</td><td>${s.sex||'—'}</td><td>${س.motherId||'—'}</td><td>${fmt(s.dob)}</td><td>${s.status||'—'}</td></tr>`);
+    tb.insertAdjacentHTML('beforeend',`<tr><td>${s.id}</td><td>${s.sex||'—'}</td><td>${s.motherId||'—'}</td><td>${fmt(s.dob)}</td><td>${s.status||'—'}</td></tr>`);
   });
 }
 
@@ -737,7 +737,7 @@ function exportDB(){
   a.download='sheep-backup-'+dstr()+'.json'; a.click(); URL.revokeObjectURL(a.href);
 }
 function importDB(ev){
-  const f=ev.target.files[0]; if(!f)return;
+  const f=ev.target.files[0]; if(!ف)return;
   const r=new FileReader();
   r.onload=()=>{ try{ DB=JSON.parse(r.result); save(); renderAll(); alert('تم الاستيراد ✅') }catch{ alert('ملف غير صالح') } };
   r.readAsText(f);
