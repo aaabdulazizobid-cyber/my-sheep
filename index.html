@@ -136,6 +136,8 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
       </select>
       <button class="btn solid" onclick="openForm()">＋ إضافة رأس</button>
       <button class="btn" onclick="addFeed()">🌾 علف</button>
+      <button class="btn" onclick="addTreatmentGeneral()">💊 علاج عام</button>
+      <button class="btn" onclick="addVaccineGeneral()">💉 تحصين عام</button>
       <button class="btn" onclick="exportDB()">⬇️ تصدير</button>
       <label class="btn">⬆️ استيراد<input type="file" accept="application/json" style="display:none" onchange="importDB(event)"></label>
       <button class="btn gray" onclick="openRestore()">⏪ استرجاع</button>
@@ -216,7 +218,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
     <div id="pane_vacc" style="display:none">
       <div style="overflow:auto;">
         <table class="table" id="tblVacc">
-          <thead><tr><th>التاريخ</th><th>اسم التحصين</th></tr></thead><tbody></tbody>
+          <thead><tr><th>التاريخ</th><th>اسم التحصين</th><th></th></tr></thead><tbody></tbody>
         </table>
       </div>
     </div>
@@ -447,7 +449,7 @@ function addFeed(){
 }
 function deleteFeed(id){ if(!confirm('حذف سجل العلف؟'))return; DB.finance=DB.finance.filter(r=>r.id!==id); save(); renderAll(); }
 
-/*** العلاجات — تاريخ + قيمة فقط ***/
+/*** العلاجات — عام + تعديل/حذف ***/
 function addTreatment(id){
   if(!DB.sheep[id]) return alert('الرأس غير موجود');
   const date=prompt('تاريخ العلاج (YYYY-MM-DD):', dstr()); if(date===null) return;
@@ -456,9 +458,26 @@ function addTreatment(id){
   DB.treatments.push({id:'treat_'+Date.now(), date, sheepId:id, diagnosis:'', drug:'', dose:'', cost});
   save(); renderAll(); alert('تم تسجيل العلاج ✅');
 }
+function addTreatmentGeneral(){
+  const date=prompt('تاريخ العلاج (YYYY-MM-DD):', dstr()); if(date===null) return;
+  const costV=prompt('القيمة (ريال):','0'); if(costV===null) return;
+  const sid=prompt('وسم الرأس (اختياري):','')||'';
+  const cost=+costV; if(!isFinite(cost)) return alert('قيمة غير صالحة');
+  DB.treatments.push({id:'treat_'+Date.now(), date, sheepId:sid, diagnosis:'', drug:'', dose:'', cost});
+  save(); renderAll(); alert('تم تسجيل العلاج ✅');
+}
+function editTreatment(recId){
+  const t=DB.treatments.find(x=>x.id===recId); if(!t) return;
+  const nd=prompt('تاريخ العلاج:', t.date)||t.date;
+  const nc=prompt('القيمة (ريال):', String(t.cost??0)); if(nc===null) return;
+  const ns=prompt('وسم الرأس (اختياري):', t.sheepId||'')||'';
+  const cost=+nc; if(!isFinite(cost)) return alert('قيمة غير صالحة');
+  t.date=nd; t.cost=cost; t.sheepId=ns;
+  save(); renderAll();
+}
 function deleteTreatment(id){ if(!confirm('حذف سجل العلاج؟'))return; DB.treatments=DB.treatments.filter(x=>x.id!==id); save(); renderAll(); }
 
-/*** التحصينات — اسم + تاريخ فقط ***/
+/*** التحصينات — عام + تعديل/حذف ***/
 function addVaccine(id){
   if(!DB.sheep[id]) return alert('الرأس غير موجود');
   const date=prompt('تاريخ التحصين (YYYY-MM-DD):', dstr()); if(date===null) return;
@@ -466,6 +485,22 @@ function addVaccine(id){
   DB.vaccines.push({id:'vac_'+Date.now(), date, sheepId:id, vaccine, dose:'', notes:''});
   save(); renderAll(); alert('تم تسجيل التحصين ✅');
 }
+function addVaccineGeneral(){
+  const date=prompt('تاريخ التحصين (YYYY-MM-DD):', dstr()); if(date===null) return;
+  const vaccine=prompt('اسم التحصين:',''); if(vaccine===null) return;
+  const sid=prompt('وسم الرأس (اختياري):','')||'';
+  DB.vaccines.push({id:'vac_'+Date.now(), date, sheepId:sid, vaccine, dose:'', notes:''});
+  save(); renderAll(); alert('تم تسجيل التحصين ✅');
+}
+function editVaccine(recId){
+  const v=DB.vaccines.find(x=>x.id===recId); if(!v) return;
+  const nd=prompt('تاريخ التحصين:', v.date)||v.date;
+  const nv=prompt('اسم التحصين:', v.vaccine||''); if(nv===null) return;
+  const ns=prompt('وسم الرأس (اختياري):', v.sheepId||'')||'';
+  v.date=nd; v.vaccine=nv; v.sheepId=ns;
+  save(); renderAll();
+}
+function deleteVaccine(id){ if(!confirm('حذف سجل التحصين؟'))return; DB.vaccines=DB.vaccines.filter(x=>x.id!==id); save(); renderAll(); }
 
 /*** نفوق ***/
 function markDead(id){
@@ -647,28 +682,35 @@ function renderLogs(){
 
   // علف
   const tbF=$('tblFeed').querySelector('tbody'); tbF.innerHTML='';
-  DB.finance.filter(f=>f.type==='feed').sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(r=>{
+  DB.finance.filter(f=>f.type==='feed').sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach	r=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`<td>${fmt(r.date)}</td><td>${money(r.cost||0)}</td>`;
     const td=document.createElement('td'); const b=document.createElement('button'); b.className='btn danger'; b.textContent='🗑'; b.onclick=()=>deleteFeed(r.id);
     td.appendChild(b); tr.appendChild(td); tbF.appendChild(tr);
   });
 
-  // علاج
+  // علاج (مع تعديل/حذف)
   const tbT=$('tblTreat').querySelector('tbody'); tbT.innerHTML='';
   DB.treatments.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(t=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`<td>${fmt(t.date)}</td><td>${money(+t.cost||0)}</td>`;
-    const td=document.createElement('td'); const b=document.createElement('button'); b.className='btn danger'; b.textContent='🗑'; b.onclick=()=>deleteTreatment(t.id);
-    td.appendChild(b); tr.appendChild(td); tbT.appendChild(tr);
+    const td=document.createElement('td');
+    const be=document.createElement('button'); be.className='btn'; be.textContent='✏️'; be.onclick=()=>editTreatment(t.id);
+    const bd=document.createElement('button'); bd.className='btn danger'; bd.textContent='🗑'; bd.onclick=()=>deleteTreatment(t.id);
+    td.appendChild(be); td.appendChild(bd);
+    tr.appendChild(td); tbT.appendChild(tr);
   });
 
-  // التحصينات
+  // التحصينات (مع تعديل/حذف)
   const tbV=$('tblVacc').querySelector('tbody'); tbV.innerHTML='';
   DB.vaccines.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(v=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`<td>${fmt(v.date)}</td><td>${v.vaccine||''}</td>`;
-    tbV.appendChild(tr);
+    const td=document.createElement('td');
+    const be=document.createElement('button'); be.className='btn'; be.textContent='✏️'; be.onclick=()=>editVaccine(v.id);
+    const bd=document.createElement('button'); bd.className='btn danger'; bd.textContent='🗑'; bd.onclick=()=>deleteVaccine(v.id);
+    td.appendChild(be); td.appendChild(bd);
+    tr.appendChild(td); tbV.appendChild(tr);
   });
 
   // نفوق
@@ -694,7 +736,7 @@ function setNewbornSub(el){
 function renderNewbornList(){
   const arr=Object.values(DB.sheep).filter(s=>s.motherId&&s.motherId!=='');
   const f=arr.filter(s=>s.sex==='أنثى');
-  const m=arr.filter(s=>s.sex==='ذكر');
+  const m=arr.filter(s=>س.sex==='ذكر');
   $('nb_f_count').textContent=f.length;
   $('nb_m_count').textContent=m.length;
   const show=NEWBORN_SUB==='f'?f:m;
