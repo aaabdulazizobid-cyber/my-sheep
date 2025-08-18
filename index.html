@@ -6,7 +6,6 @@
 <title>دفتر الغنم — شامل</title>
 <meta name="theme-color" content="#10b981">
 <style>
-/* ألوان نعناعية رايقة */
 :root{
   --brand:#10b981; --brand2:#34d399;
   --ink:#0f172a; --muted:#6b7280;
@@ -22,7 +21,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .top h1{margin:0;font-size:18px;font-weight:800}
 .wrap{max-width:1040px;margin:auto;padding:12px}
 
-/* --- الخانات بشكلها القديم المضغوط --- */
+/* مربعات KPI — شكل قديم أبيض */
 .grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 @media(max-width:640px){.grid4{grid-template-columns:repeat(2,1fr)}}
 .kpi{background:#fff;border:1px solid #d9f5ea;border-radius:12px;padding:10px;text-align:center;cursor:pointer}
@@ -85,12 +84,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .tab{padding:6px 10px;border-radius:999px;border:1px solid var(--line);cursor:pointer;background:#fff}
 .tab.active{background:var(--brand);border-color:var(--brand);color:#fff}
 
-/* وضع صفحة قسم (عند ?view=...) */
-.hide-on-section{display:block}
-.only-section .hide-on-section{display:none}
-.backbar{display:none;justify-content:space-between;align-items:center;margin:8px 0}
-.backbar .title{font-weight:800}
-.only-section #backbar{display:flex}
+/* تبويبات فرعية للمواليد */
 .subtabs{display:flex;gap:6px;margin:6px 0}
 .subtabs .tab{padding:4px 10px}
 </style>
@@ -102,20 +96,20 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 </div>
 
 <div class="wrap">
-  <!-- KPIs -->
-  <div class="grid4 hide-on-section">
+  <!-- KPIs أعلى (مربعات) -->
+  <div class="grid4">
     <div class="kpi click" id="kpi_totalAll"><b id="s_totalAll">0</b><span>إجمالي (الكل)</span></div>
     <div class="kpi click" id="kpi_total"><b id="s_total">0</b><span>إجمالي (حية)</span></div>
     <div class="kpi click" id="kpi_ewes"><b id="s_ewes">0</b><span>أمهات</span></div>
     <div class="kpi click" id="kpi_prodEwes"><b id="s_prodEwes">0</b><span>أمهات مُنتِجة</span></div>
   </div>
-  <div class="grid4 hide-on-section" style="margin-top:6px">
+  <div class="grid4" style="margin-top:6px">
     <div class="kpi click" id="kpi_npEwes"><b id="s_npEwes">0</b><span>أمهات غير مُنتِجة</span></div>
     <div class="kpi click" id="kpi_birthYear"><b id="s_birthYear">0</b><span>مواليد سنة</span></div>
     <div class="kpi click" id="kpi_soldYear"><b id="s_soldYear">0</b><span>مباعة سنة</span></div>
     <div class="kpi click" id="kpi_deathYear"><b id="s_deathYear">0</b><span>النفوق سنة</span></div>
   </div>
-  <div class="grid4 hide-on-section" style="margin-top:6px">
+  <div class="grid4" style="margin-top:6px">
     <div class="kpi click" id="kpi_feedYear"><b id="s_feedYear">0</b><span>تكلفة العلف سنة</span></div>
     <div class="kpi click" id="kpi_treatYear"><b id="s_treatYear">0</b><span>تكلفة العلاجات سنة</span></div>
     <div class="kpi click" id="kpi_vaccYear"><b id="s_vaccYear">0</b><span>التحصينات سنة</span></div>
@@ -123,7 +117,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
   </div>
 
   <!-- الأدوات -->
-  <div class="card section hide-on-section" style="margin:12px 0;">
+  <div class="card section" style="margin:12px 0;">
     <div class="searchbar">
       <input id="q" placeholder="بحث بالوسم/المجموعة/الحالة…" oninput="renderList()">
       <select id="viewMode" onchange="renderList()">
@@ -148,13 +142,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
   </div>
 
   <!-- القائمة -->
-  <div class="card list hide-on-section" id="list"></div>
-
-  <!-- شريط الرجوع عند فتح صفحة قسم -->
-  <div class="backbar" id="backbar">
-    <div class="title" id="sectionTitle">—</div>
-    <button class="btn" onclick="clearView()">رجوع</button>
-  </div>
+  <div class="card list" id="list"></div>
 
   <!-- السجلات -->
   <div class="card section" style="margin-top:12px">
@@ -169,7 +157,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
       <div class="tab" data-tab="summary" onclick="setTab(this)">📊 ملخص السنة</div>
     </div>
 
-    <!-- سجلات الولادات -->
+    <!-- الولادات -->
     <div id="pane_births">
       <div style="overflow:auto;">
         <table class="table" id="tblBirths">
@@ -236,7 +224,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
       </div>
     </div>
 
-    <!-- الملخص -->
+    <!-- ملخص السنة -->
     <div id="pane_summary" style="display:none">
       <div style="overflow:auto;">
         <table class="table" id="tblSummary">
@@ -332,7 +320,7 @@ function openRestore(){
 }
 function closeRestore(){$('restoreModal').classList.remove('open')}
 
-/*** التبويبات ***/
+/*** تبويب السجلات ***/
 function setTab(el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
@@ -350,7 +338,7 @@ let editingId=null;
 function openForm(id=null){
   editingId=id||null;
   if(id){
-    const s=DB.sheep[id]; if(!s) return;
+    const s=DB.sheep[id]; if(!س) return;
     $('formTitle').textContent='تعديل رأس';
     $('f_id').value=s.id; $('f_id').disabled=true;
     $('f_sex').value=s.sex||'أنثى'; $('f_group').value=s.group||'';
@@ -407,8 +395,7 @@ function addChild(m){
   const i=kidsOf(m).length+1; const id=m+'-'+String(i).padStart(2,'0'); const date=dstr();
   DB.sheep[id]={id,sex:'أنثى',group:'مواليد',dob:date,motherId:m,fatherId:mom.fatherId||'',notes:'مولود',status:'حية',soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
   DB.events.push({type:'birth',ids:[m,id],date,details:'1 مولود'});
-  // الأم غير منتجة → صارت منتِجة تلقائيًا
-  if(mom.nonProductive){ mom.nonProductive=false; mom.updatedAt=new Date().toISOString(); }
+  if(mom.nonProductive){ mom.nonProductive=false; mom.updatedAt=new Date().toISOString(); } // تتحول منتجة تلقائي
   save(); renderAll();
 }
 function addTwin(m){
@@ -485,7 +472,7 @@ function markDead(id){
   save(); renderAll();
 }
 
-/*** إحصاءات (تشمل مُنتِجات + إجمالي الكل + التحصينات سنة) ***/
+/*** إحصاءات ***/
 function getStats(){
   const since=new Date(); since.setDate(since.getDate()-365);
   const all=Object.values(DB.sheep);
@@ -513,93 +500,48 @@ function statsToUI(){
   $('s_birthYear').textContent=s.birthYear;
   $('s_feedYear').textContent=money(s.feedYear);
   $('s_soldYear').textContent=s.soldYear;
-  $('s_revYear').textContent=money(s.revYear);
   $('s_treatYear').textContent=money(s.treatYear);
   $('s_deathYear').textContent=s.deathYear;
   $('s_vaccYear').textContent=s.vaccYear;
 }
 
-/*** “فتح صفحة”: الروابط عبر ?view=... ***/
-function setURL(view, extra={}){
-  const url=new URL(location.href);
-  url.searchParams.set('view',view);
-  Object.entries(extra).forEach(([k,v])=>url.searchParams.set(k,v));
-  history.pushState({},'',url);
-  router();
-}
-function clearView(){
-  const url=new URL(location.href);
-  url.searchParams.delete('view'); url.searchParams.delete('sub');
-  history.pushState({},'',url);
-  router();
-}
-function router(){
-  const params=new URLSearchParams(location.search);
-  const view=params.get('view'); // death,sales,feed,treat,vacc,summary,newborns
-  const sub=params.get('sub');   // f/m للمواليد
-  const isSection=!!view;
-
-  document.body.classList.toggle('only-section',isSection);
-  $('sectionTitle').textContent = isSection ? titleFor(view,sub) : '—';
-
-  if(!isSection){
-    document.querySelectorAll('.hide-on-section').forEach(el=>el.style.display='');
-    $('backbar').style.display='none';
-    return;
+/*** فتح صفحات داخلية من المربعات ***/
+function openSection(name, sub){
+  // افتح التبويب المناسب
+  const map={
+    sales:'sales', death:'death', feed:'feed', treat:'treat',
+    vacc:'vacc', summary:'summary', newborns:'newbornList'
+  };
+  const tab=document.querySelector(`.tab[data-tab="${map[name]||'summary'}"]`);
+  if(tab) setTab(tab);
+  // تبويب فرعي للمواليد
+  if(name==='newborns'){
+    const target=sub==='m'
+      ? document.querySelector('#pane_newbornList .tab[data-sub="m"]')
+      : document.querySelector('#pane_newbornList .tab[data-sub="f"]');
+    if(target) setNewbornSub(target);
   }
-
-  document.querySelectorAll('.hide-on-section').forEach(el=>el.style.display='none');
-  $('backbar').style.display='flex';
-
-  const openTab=(name)=>{ const t=document.querySelector(`.tab[data-tab="${name}"]`); if(t) setTab(t); };
-  switch(view){
-    case 'death': openTab('death'); break;
-    case 'sales': openTab('sales'); break;
-    case 'feed':  openTab('feed');  break;
-    case 'treat': openTab('treat'); break;
-    case 'vacc':  openTab('vacc');  break;
-    case 'summary': openTab('summary'); break;
-    case 'newborns':
-      openTab('newbornList');
-      const target = sub==='m' ? document.querySelector('#pane_newbornList .tab[data-sub="m"]')
-                               : document.querySelector('#pane_newbornList .tab[data-sub="f"]');
-      if(target) setNewbornSub(target);
-      break;
-    default: clearView();
-  }
-}
-function titleFor(view,sub){
-  if(view==='death') return 'صفحة النفوق';
-  if(view==='sales') return 'صفحة المبيعات';
-  if(view==='feed')  return 'صفحة العلف';
-  if(view==='treat') return 'صفحة العلاجات';
-  if(view==='vacc')  return 'صفحة التحصينات';
-  if(view==='summary') return 'ملخص السنة';
-  if(view==='newborns') return sub==='m'?'مواليد الذكور':'مواليد الإناث';
-  return '—';
+  // مرّر للأسفل
+  document.querySelector('.tabs').scrollIntoView({behavior:'smooth'});
 }
 
-/*** ضغط الخانات (KPIs) ***/
-function setView(m){$('viewMode').value=m;renderList();document.getElementById('list').scrollIntoView({behavior:'smooth'})}
+/*** ربط الضغط على المربعات ***/
 document.addEventListener('DOMContentLoaded',()=>{
-  $('kpi_totalAll').onclick=()=> setURL('summary');
-  $('kpi_total').onclick =()=>{ clearView(); $('fltStatus').value='alive'; $('viewMode').value='all'; renderList(); document.getElementById('list').scrollIntoView({behavior:'smooth'}); };
-  $('kpi_ewes').onclick   =()=>{ clearView(); setView('ewes'); };
-  $('kpi_prodEwes').onclick=()=>{ clearView(); setView('productive'); };
-  $('kpi_npEwes').onclick =()=>{ clearView(); setView('np'); };
-  $('kpi_birthYear').onclick=()=> setURL('newborns',{sub:'f'});
-  $('kpi_soldYear').onclick =()=> setURL('sales');
-  $('kpi_deathYear').onclick=()=> setURL('death');
-  $('kpi_feedYear').onclick =()=> setURL('feed');
-  $('kpi_treatYear').onclick=()=> setURL('treat');
-  $('kpi_vaccYear').onclick =()=> setURL('vacc');
-  $('kpi_summary').onclick  =()=> setURL('summary');
-
-  window.addEventListener('popstate',router);
-  router();
+  $('kpi_totalAll').onclick =()=> openSection('summary');
+  $('kpi_total').onclick   =()=>{ $('fltStatus').value='alive'; $('viewMode').value='all'; renderList(); document.getElementById('list').scrollIntoView({behavior:'smooth'}); };
+  $('kpi_ewes').onclick    =()=>{ $('viewMode').value='ewes'; renderList(); document.getElementById('list').scrollIntoView({behavior:'smooth'}); };
+  $('kpi_prodEwes').onclick=()=>{ $('viewMode').value='productive'; renderList(); document.getElementById('list').scrollIntoView({behavior:'smooth'}); };
+  $('kpi_npEwes').onclick  =()=>{ $('viewMode').value='np'; renderList(); document.getElementById('list').scrollIntoView({behavior:'smooth'}); };
+  $('kpi_birthYear').onclick=()=> openSection('newborns','f');
+  $('kpi_soldYear').onclick =()=> openSection('sales');
+  $('kpi_deathYear').onclick=()=> openSection('death');
+  $('kpi_feedYear').onclick =()=> openSection('feed');
+  $('kpi_treatYear').onclick=()=> openSection('treat');
+  $('kpi_vaccYear').onclick =()=> openSection('vacc');
+  $('kpi_summary').onclick  =()=> openSection('summary');
 });
 
-/*** عرض القائمة الرئيسية ***/
+/*** عرض القائمة ***/
 function renderList(){
   const q=($('q').value||'').trim().toLowerCase();
   const mode=$('viewMode').value, flt=$('fltStatus').value;
@@ -741,8 +683,6 @@ function setNewbornSub(el){
   document.querySelectorAll('#pane_newbornList .subtabs .tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   NEWBORN_SUB=el.dataset.sub;
-  const params=new URLSearchParams(location.search);
-  if(params.get('view')==='newborns'){ setURL('newborns',{sub:NEWBORN_SUB}); return; }
   renderNewbornList();
 }
 function renderNewbornList(){
@@ -791,7 +731,7 @@ function exportDB(){
   a.download='sheep-backup-'+dstr()+'.json'; a.click(); URL.revokeObjectURL(a.href);
 }
 function importDB(ev){
-  const f=ev.target.files[0]; if(!ف)return;
+  const f=ev.target.files[0]; if(!f)return;
   const r=new FileReader();
   r.onload=()=>{ try{ DB=JSON.parse(r.result); save(); renderAll(); alert('تم الاستيراد ✅') }catch{ alert('ملف غير صالح') } };
   r.readAsText(f);
@@ -827,10 +767,10 @@ function quickDemo(){
 })();
 
 /*** تشغيل شامل ***/
-function renderAll(){ renderList(); statsToUI(); renderLogs(); router(); }
+function renderAll(){ renderList(); statsToUI(); renderLogs(); }
 renderAll();
 
-/*** PWA (Manifest + Service Worker) ***/
+/*** PWA (Manifest + Service Worker داخل الصفحة) ***/
 (function injectPWA(){
   const manifest = {
     "name":"دفتر الغنم — شامل","short_name":"دفتر الغنم","start_url":"./","display":"standalone",
