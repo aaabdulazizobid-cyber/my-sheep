@@ -31,7 +31,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .kpi.click:hover{box-shadow:0 8px 18px #00000010}
 .kpi.click:active{transform:scale(.98)}
 
-/* ألوان الكروت (نفس روح بونيكام) */
+/* ألوان الكروت */
 .kpi.col{color:#fff;border:0}
 .kpi.col b,.kpi.col span{color:#fff}
 .kpi.c1{background:linear-gradient(180deg,#ff8bd1,#ff78a7)}
@@ -357,7 +357,7 @@ function setTab(el){
 function kidsOf(m){return Object.values(DB.sheep).filter(s=>s.motherId===m).sort((a,b)=>a.id>b.id?1:-1)}
 function packByDate(m){const map={};kidsOf(m).forEach(k=>{const d=k.dob||'غير معروف';(map[d]??=[]).push(k)});return Object.entries(map).sort((a,b)=>a[0]>b[0]?-1:1)}
 
-/*** إعادة تسمية الوسم وتحديث كل المراجع ***/
+/*** إعادة تسمية الوسم وتحديث كل المراجع (لتعديل أرقام المواليد) ***/
 function renameSheepId(oldId,newId){
   if(!DB.sheep[oldId]) return true;
   if(newId!==oldId && DB.sheep[newId]){ alert('الوسم موجود'); return false; }
@@ -382,7 +382,7 @@ function openForm(id=null){
   if(id){
     const s=DB.sheep[id]; if(!s) return;
     $('formTitle').textContent='تعديل رأس';
-    $('f_id').value=s.id; $('f_id').disabled=false; // مسموح تعديل الوسم
+    $('f_id').value=s.id; $('f_id').disabled=false; // تعديل الوسم مسموح
     $('f_sex').value=s.sex||'أنثى'; $('f_group').value=s.group||'';
     $('f_dob').value=s.dob||''; $('f_mother').value=s.motherId||''; $('f_father').value=s.fatherId||'';
     $('f_weight').value=s.lastWeight??''; $('f_status').value=s.status||'حية';
@@ -410,8 +410,7 @@ function submitForm(){
     if(DB.sheep[rec.id]){alert('الوسم موجود');return}
     DB.sheep[rec.id]=Object.assign(rec,{soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});
   }
-  save(); renderAll();
-  closeForm();
+  save(); renderAll(); closeForm();
 }
 
 /*** عمليات على الرؤوس ***/
@@ -458,7 +457,7 @@ function addMany(m){const n=+prompt('كم مولود؟','3'); if(!n||n<=0)return
 
 /*** البيع ***/
 function sellSheep(id){
-  const s=DB.sheep[id]; if(!س)return;
+  const s=DB.sheep[id]; if(!s)return;
   const price=+prompt('سعر البيع (ريال):','0'); if(isNaN(price))return;
   const date=prompt('تاريخ البيع (YYYY-MM-DD):',dstr()); if(date===null)return;
   s.status='مباعة'; s.soldPrice=price; s.soldDate=date; s.updatedAt=new Date().toISOString();
@@ -486,7 +485,7 @@ function addFeed(){
 }
 function deleteFeed(id){ if(!confirm('حذف سجل العلف؟'))return; DB.finance=DB.finance.filter(r=>r.id!==id); save(); renderAll(); }
 
-/*** العلاجات — تاريخ + قيمة فقط (زر علوي) ***/
+/*** العلاجات — زر علوي (تاريخ + قيمة) ***/
 function addTreatCost(){
   const date=prompt('تاريخ (YYYY-MM-DD):', dstr()); if(date===null) return;
   const costV=prompt('القيمة (ريال):','0'); if(costV===null) return;
@@ -494,7 +493,7 @@ function addTreatCost(){
   DB.treatments.push({id:'treat_'+Date.now(), date, sheepId:'', diagnosis:'', drug:'', dose:'', cost});
   save(); renderAll(); alert('تم تسجيل العلاج ✅');
 }
-/*** العلاجات — حسب الرأس ***/
+/*** العلاجات — من بطاقة الرأس ***/
 function addTreatment(id){
   if(!DB.sheep[id]) return alert('الرأس غير موجود');
   const date=prompt('تاريخ العلاج (YYYY-MM-DD):', dstr()); if(date===null) return;
@@ -515,14 +514,14 @@ function editTreatment(id){
 }
 function deleteTreatment(id){ if(!confirm('حذف سجل العلاج؟'))return; DB.treatments=DB.treatments.filter(x=>x.id!==id); save(); renderAll(); }
 
-/*** التحصينات — زر علوي ***/
+/*** التحصينات — زر علوي (تاريخ + اسم) ***/
 function addVaccGlobal(){
   const date=prompt('تاريخ التحصين (YYYY-MM-DD):', dstr()); if(date===null) return;
   const vaccine=prompt('اسم التحصين:',''); if(vaccine===null) return;
   DB.vaccines.push({id:'vac_'+Date.now(), date, sheepId:'', vaccine, dose:'', notes:''});
   save(); renderAll(); alert('تم تسجيل التحصين ✅');
 }
-/*** التحصينات — حسب الرأس ***/
+/*** التحصينات — من بطاقة الرأس ***/
 function addVaccine(id){
   if(!DB.sheep[id]) return alert('الرأس غير موجود');
   const date=prompt('تاريخ التحصين (YYYY-MM-DD):', dstr()); if(date===null) return;
@@ -530,7 +529,7 @@ function addVaccine(id){
   DB.vaccines.push({id:'vac_'+Date.now(), date, sheepId:id, vaccine, dose:'', notes:''});
   save(); renderAll(); alert('تم تسجيل التحصين ✅');
 }
-/*** التحصينات — تعديل + حذف (جديد) ***/
+/*** التحصينات — تعديل + حذف (بنفس أسلوب العلف/العلاج) ***/
 function editVaccine(id){
   const v=DB.vaccines.find(x=>x.id===id);
   if(!v) return;
@@ -635,7 +634,7 @@ function renderList(){
     arr=arr.filter(s=>(s.id||'').toLowerCase().includes(q)||(s.group||'').toLowerCase().includes(q)||(s.status||'').toLowerCase().includes(q));
   }
   if(mode==='ewes'){arr=arr.filter(s=>s.sex==='أنثى')}
-  else if(mode==='productive'){arr=arr.filter(s=>س.sex==='أنثى'&&!s.nonProductive)}
+  else if(mode==='productive'){arr=arr.filter(s=>s.sex==='أنثى'&&!s.nonProductive)}
   else if(mode==='np'){arr=arr.filter(s=>s.sex==='أنثى'&&!!s.nonProductive)}
   else if(mode==='newborns'){arr=arr.filter(s=>s.motherId&&s.motherId!=='')}
 
