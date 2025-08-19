@@ -355,6 +355,27 @@ function setTab(el){
 function kidsOf(m){return Object.values(DB.sheep).filter(s=>s.motherId===m).sort((a,b)=>a.id>b.id?1:-1)}
 function packByDate(m){const map={};kidsOf(m).forEach(k=>{const d=k.dob||'غير معروف';(map[d]??=[]).push(k)});return Object.entries(map).sort((a,b)=>a[0]>b[0]?-1:1)}
 
+/*** إعادة تسمية الوسم وتحديث كل المراجع (لسماح تعديل أرقام المواليد) ***/
+function renameSheepId(oldId,newId){
+  if(!DB.sheep[oldId]) return true;
+  if(newId!==oldId && DB.sheep[newId]){ alert('الوسم موجود'); return false; }
+  const src=DB.sheep[oldId];
+  DB.sheep[newId]=Object.assign({}, src, {id:newId, updatedAt:new Date().toISOString()});
+  if(newId!==oldId) delete DB.sheep[oldId];
+  // تحديث مراجع الأم/الأب في باقي الرؤوس
+  Object.values(DB.sheep).forEach(s=>{
+    if(s.motherId===oldId){ s.motherId=newId; s.updatedAt=new Date().toISOString(); }
+    if(s.fatherId===oldId){ s.fatherId=newId; s.updatedAt=new Date().toISOString(); }
+  });
+  // تحديث الأحداث
+  DB.events.forEach(e=>{ if(e.ids) e.ids=e.ids.map(x=>x===oldId?newId:x); });
+  // تحديث جداول أخرى
+  DB.treatments.forEach(t=>{ if(t.sheepId===oldId) t.sheepId=newId; });
+  DB.vaccines.forEach(v=>{ if(v.sheepId===oldId) v.sheepId=newId; });
+  DB.deaths.forEach(d=>{ if(d.sheepId===oldId) d.sheepId=newId; });
+  return true;
+}
+
 /*** نموذج الرأس ***/
 let editingId=null;
 function openForm(id=null){
@@ -362,7 +383,7 @@ function openForm(id=null){
   if(id){
     const s=DB.sheep[id]; if(!s) return;
     $('formTitle').textContent='تعديل رأس';
-    $('f_id').value=s.id; $('f_id').disabled=true;
+    $('f_id').value=s.id; $('f_id').disabled=false; // ← السماح بتعديل الوسم
     $('f_sex').value=s.sex||'أنثى'; $('f_group').value=s.group||'';
     $('f_dob').value=s.dob||''; $('f_mother').value=s.motherId||''; $('f_father').value=s.fatherId||'';
     $('f_weight').value=s.lastWeight??''; $('f_status').value=s.status||'حية';
@@ -383,12 +404,14 @@ function submitForm(){
     notes:$('f_notes').value.trim(), nonProductive:$('f_np').checked
   };
   if(!rec.id){alert('الوسم مطلوب');return}
-  if(editingId){Object.assign(DB.sheep[editingId],rec,{updatedAt:new Date().toISOString()})}
-  else{
+  if(editingId){
+    if(rec.id!==editingId){ if(!renameSheepId(editingId, rec.id)) return; }
+    DB.sheep[rec.id]=Object.assign(DB.sheep[rec.id]||{}, rec, {updatedAt:new Date().toISOString()});
+  }else{
     if(DB.sheep[rec.id]){alert('الوسم موجود');return}
-    DB.sheep[rec.id]=Object.assign(rec,{soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()})
+    DB.sheep[rec.id]=Object.assign(rec,{soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});
   }
-  save(); closeForm(); renderAll();
+  save(); renderAll(); closeForm();
 }
 
 /*** عمليات على الرؤوس ***/
@@ -502,7 +525,8 @@ function getStats(){
   const ewes=alive.filter(s=>s.sex==='أنثى').length;
   const prodEwes=alive.filter(s=>s.sex==='أنثى'&&!s.nonProductive).length;
   const npEwes=alive.filter(s=>s.sex==='أنثى'&&!!s.nonProductive).length;
-  const birthYear=all.filter(s=>s.dob&&new Date(s.dob)>=since).length;
+  // ← تعديل: عدد الولادات من أحداث الولادة خلال سنة
+  const birthYear=DB.events.filter(e=>e.type==='birth'&&e.date&&new Date(e.date)>=since).length;
   const feedYear=DB.finance.filter(f=>f.type==='feed'&&new Date(f.date)>=since).reduce((a,b)=>a+(+b.cost||0),0);
   const soldYearEv=DB.events.filter(e=>e.type==='movement'&&/بيع/.test(e.details||'')&&new Date(e.date)>=since);
   const soldYear=soldYearEv.length; const revYear=soldYearEv.reduce((a,e)=>a+(+e.amount||0),0);
@@ -754,7 +778,7 @@ function exportDB(){
   a.download='sheep-backup-'+dstr()+'.json'; a.click(); URL.revokeObjectURL(a.href);
 }
 function importDB(ev){
-  const f=ev.target.files[0]; if(!f)return;          // ← إصلاح هنا (كان حرف عربي)
+  const f=ev.target.files[0]; if(!f)return;
   const r=new FileReader();
   r.onload=()=>{ try{ DB=JSON.parse(r.result); save(); renderAll(); alert('تم الاستيراد ✅') }catch{ alert('ملف غير صالح') } };
   r.readAsText(f);
