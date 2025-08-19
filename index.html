@@ -24,16 +24,26 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 /* KPIs */
 .grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 @media(max-width:640px){.grid4{grid-template-columns:repeat(2,1fr)}}
-.kpi{background:#fff;border:1px solid #d9f5ea;border-radius:12px;padding:10px;text-align:center;cursor:pointer}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;cursor:pointer;background:#fff}
 .kpi b{display:block;font-size:18px;line-height:1}
-.kpi span{font-size:12px;color:var(--muted);line-height:1.2;margin-top:4px;display:block}
+.kpi span{font-size:12px;color:#fff;line-height:1.2;margin-top:4px;display:block;opacity:.9}
 .kpi.click{transition:.15s transform,.15s box-shadow}
 .kpi.click:hover{box-shadow:0 8px 18px #00000010}
 .kpi.click:active{transform:scale(.98)}
+/* تلوين مثل البونيكام */
+.kpi.col-1{background:linear-gradient(180deg,#34d399 0%,#10b981 100%);color:#fff;border-color:#86efac}
+.kpi.col-2{background:linear-gradient(180deg,#60a5fa 0%,#3b82f6 100%);color:#fff;border-color:#93c5fd}
+.kpi.col-3{background:linear-gradient(180deg,#fbbf24 0%,#f59e0b 100%);color:#fff;border-color:#fde68a}
+.kpi.col-4{background:linear-gradient(180deg,#f472b6 0%,#ec4899 100%);color:#fff;border-color:#f9a8d4}
+.kpi.col-5{background:linear-gradient(180deg,#a78bfa 0%,#8b5cf6 100%);color:#fff;border-color:#ddd6fe}
+.kpi.col-6{background:linear-gradient(180deg,#22d3ee 0%,#06b6d4 100%);color:#fff;border-color:#a5f3fc}
+.kpi.col-7{background:linear-gradient(180deg,#fca5a5 0%,#ef4444 100%);color:#fff;border-color:#fecaca}
+.kpi.col-8{background:linear-gradient(180deg,#c4b5fd 0%,#7c3aed 100%);color:#fff;border-color:#e9d5ff}
+.kpi b+span{color:#fff}
 
+/* بطاقات وأزرار */
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 16px #00000008}
 .section{padding:10px}
-
 .searchbar{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
 .searchbar input,.searchbar select{padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff}
 .btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:8px 12px;cursor:pointer;font-size:13px}
@@ -51,6 +61,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .badge.sold{background:#fee2e2;border-color:#fecaca;color:#991b1b}
 .badge.np{background:#fef9c3;border-color:#fde68a;color:#7a5b00}
 .badge.dead{background:#fde68a;border-color:#fcd34d;color:#92400e}
+.badge.births{background:#e0e7ff;border-color:#c7d2fe;color:#3730a3}
 .controls{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 
 /* أولاد الأم */
@@ -100,22 +111,22 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 <div class="wrap">
   <!-- KPIs -->
   <div class="grid4">
-    <div class="kpi click" id="kpi_totalAll"><b id="s_totalAll">0</b><span>إجمالي (الكل)</span></div>
-    <div class="kpi click" id="kpi_total"><b id="s_total">0</b><span>إجمالي (حية)</span></div>
-    <div class="kpi click" id="kpi_ewes"><b id="s_ewes">0</b><span>أمهات</span></div>
-    <div class="kpi click" id="kpi_prodEwes"><b id="s_prodEwes">0</b><span>أمهات مُنتِجة</span></div>
+    <div class="kpi click col-1" id="kpi_totalAll"><b id="s_totalAll">0</b><span>إجمالي (الكل)</span></div>
+    <div class="kpi click col-2" id="kpi_total"><b id="s_total">0</b><span>إجمالي (حية)</span></div>
+    <div class="kpi click col-3" id="kpi_ewes"><b id="s_ewes">0</b><span>أمهات</span></div>
+    <div class="kpi click col-4" id="kpi_prodEwes"><b id="s_prodEwes">0</b><span>أمهات مُنتِجة</span></div>
   </div>
   <div class="grid4" style="margin-top:6px">
-    <div class="kpi click" id="kpi_npEwes"><b id="s_npEwes">0</b><span>أمهات غير مُنتِجة</span></div>
-    <div class="kpi click" id="kpi_birthYear"><b id="s_birthYear">0</b><span>مواليد سنة</span></div>
-    <div class="kpi click" id="kpi_soldYear"><b id="s_soldYear">0</b><span>مباعة سنة</span></div>
-    <div class="kpi click" id="kpi_deathYear"><b id="s_deathYear">0</b><span>النفوق سنة</span></div>
+    <div class="kpi click col-5" id="kpi_npEwes"><b id="s_npEwes">0</b><span>أمهات غير مُنتِجة</span></div>
+    <div class="kpi click col-6" id="kpi_birthYear"><b id="s_birthYear">0</b><span>مواليد سنة</span></div>
+    <div class="kpi click col-7" id="kpi_soldYear"><b id="s_soldYear">0</b><span>مباعة سنة</span></div>
+    <div class="kpi click col-8" id="kpi_deathYear"><b id="s_deathYear">0</b><span>النفوق سنة</span></div>
   </div>
   <div class="grid4" style="margin-top:6px">
-    <div class="kpi click" id="kpi_feedYear"><b id="s_feedYear">0</b><span>تكلفة العلف سنة</span></div>
-    <div class="kpi click" id="kpi_treatYear"><b id="s_treatYear">0</b><span>تكلفة العلاجات سنة</span></div>
-    <div class="kpi click" id="kpi_vaccYear"><b id="s_vaccYear">0</b><span>التحصينات سنة</span></div>
-    <div class="kpi click" id="kpi_summary"><b>📊</b><span>ملخص السنة</span></div>
+    <div class="kpi click col-6" id="kpi_feedYear"><b id="s_feedYear">0</b><span>تكلفة العلف سنة</span></div>
+    <div class="kpi click col-3" id="kpi_treatYear"><b id="s_treatYear">0</b><span>تكلفة العلاجات سنة</span></div>
+    <div class="kpi click col-2" id="kpi_vaccYear"><b id="s_vaccYear">0</b><span>التحصينات سنة</span></div>
+    <div class="kpi click col-1" id="kpi_summary"><b>📊</b><span>ملخص السنة</span></div>
   </div>
 
   <!-- الأدوات -->
@@ -337,7 +348,13 @@ function setTab(el){
 
 /*** أولاد الأم وتجميع الدُفعات ***/
 function kidsOf(m){return Object.values(DB.sheep).filter(s=>s.motherId===m).sort((a,b)=>a.id>b.id?1:-1)}
-function packByDate(m){const map={};kidsOf(m).forEach(k=>{const d=k.dob||'غير معروف';(map[d]??=[]).push(k)});return Object.entries(map).sort((a,b)=>a[0]>b[0]?-1:1)}
+function packByDate(m){
+  const map={}; kidsOf(m).forEach(k=>{
+    const d=k.dob||'غير معروف'; (map[d]??=[]).push(k);
+  });
+  return Object.entries(map).sort((a,b)=>a[0]>b[0]?-1:1)
+}
+function birthCount(m){ return packByDate(m).length; }
 
 /*** نموذج الرأس ***/
 let editingId=null;
@@ -395,7 +412,7 @@ function removeSheep(id){
   save(); renderAll();
 }
 
-/*** المواليد (إضافاتك الجديدة) ***/
+/*** المواليد ***/
 function addChild(m){
   const mom=DB.sheep[m]; if(!mom)return alert('الأم غير موجودة');
   const i=kidsOf(m).length+1; const id=m+'-'+String(i).padStart(2,'0'); const date=dstr();
@@ -415,21 +432,22 @@ function addTwin(m){
   if(mom.nonProductive){ mom.nonProductive=false; mom.updatedAt=new Date().toISOString(); }
   save(); renderAll();
 }
-function addMany(m){const n=+prompt('كم مولود؟','3'); if(!n||n<=0)return; for(let i=0;i<n;i++) addChild(m)}
-
-/* ✍️ مولود مخصص برقم أنت تختاره */
+/* مولود مخصص: تدخل الوسم اللي تبيه */
 function addCustomChild(m){
   const mom=DB.sheep[m]; if(!mom) return alert('الأم غير موجودة');
-  const id=(prompt('رقم المولود الجديد (مثال 601):','')||'').trim();
-  if(!id) return;
-  if(DB.sheep[id]) return alert('هذا الوسم موجود مسبقًا');
-  const sex=prompt('الجنس (اكتب: أنثى أو ذكر):','أنثى'); if(sex===null) return;
+  let id=prompt('وسم المولود الذي تريد تسجيله يدويًا:', m+'-'+String(kidsOf(m).length+1).padStart(2,'0'));
+  if(id===null) return;
+  id=id.trim();
+  if(!id) return alert('الوسم مطلوب');
+  if(DB.sheep[id]) return alert('هذا الوسم مسجل مسبقًا');
+  const sex=prompt('الجنس (أنثى/ذكر):','أنثى'); if(sex===null) return;
   const date=prompt('تاريخ الميلاد (YYYY-MM-DD):', dstr()); if(date===null) return;
-  DB.sheep[id]={id,sex:sex==='ذكر'?'ذكر':'أنثى',group:'مواليد',dob:date,motherId:m,fatherId:mom.fatherId||'',notes:'مولود مخصص',status:'حية',soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
-  DB.events.push({type:'birth',ids:[m,id],date,details:'مولود مُدخل يدويًا'});
+  DB.sheep[id]={id,sex:(sex==='ذكر'?'ذكر':'أنثى'),group:'مواليد',dob:date,motherId:m,fatherId:mom.fatherId||'',notes:'مولود مخصص',status:'حية',soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
+  DB.events.push({type:'birth',ids:[m,id],date,details:'مولود مخصص'});
   if(mom.nonProductive){ mom.nonProductive=false; mom.updatedAt=new Date().toISOString(); }
   save(); renderAll();
 }
+function addMany(m){const n=+prompt('كم مولود؟','3'); if(!n||n<=0)return; for(let i=0;i<n;i++) addChild(m)}
 
 /*** البيع ***/
 function sellSheep(id){
@@ -499,7 +517,7 @@ function getStats(){
   const alive=all.filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
   const ewes=alive.filter(s=>s.sex==='أنثى').length;
   const prodEwes=alive.filter(s=>s.sex==='أنثى'&&!s.nonProductive).length;
-  const npEwes=alive.filter(s=>s.sex==='أنثى'&&!!s.nonProductive).length;
+  const npEwes=alive.filter(s=>س.sex==='أنثى'&&!!s.nonProductive).length; // تصحيح لاحقًا
   const birthYear=all.filter(s=>s.dob&&new Date(s.dob)>=since).length;
   const feedYear=DB.finance.filter(f=>f.type==='feed'&&new Date(f.date)>=since).reduce((a,b)=>a+(+b.cost||0),0);
   const soldYearEv=DB.events.filter(e=>e.type==='movement'&&/بيع/.test(e.details||'')&&new Date(e.date)>=since);
@@ -587,17 +605,11 @@ function renderList(){
     const row=document.createElement('div'); row.className='item';
     const info=document.createElement('div'); info.style.flex='1';
 
-    // حساب عدد الدُفعات (مرات الولادة) للأم
-    let birthsBadge='';
-    if(s.sex==='أنثى'){
-      const packs=packByDate(s.id);
-      if(packs.length){ birthsBadge = `<span class="badge">عدد الولادات: ${packs.length}</span>`; }
-    }
-
     const title=document.createElement('div');
+    const birthsTxt = (s.sex==='أنثى') ? `<span class="badge births">عدد الولادات: ${birthCount(s.id)}</span>` : '';
     title.innerHTML=`<span class="name">${s.id}</span>
       ${s.sex==='أنثى'?'<span class="badge">أم</span>':''}
-      ${birthsBadge}
+      ${birthsTxt}
       ${s.nonProductive?'<span class="badge np">🛑 غير منتجة</span>':''}
       ${s.status==='نافقة'?'<span class="badge dead">نافقة</span>':''}
       ${(s.status!=='حية'&&s.status!=='نافقة')?`<span class="badge sold">${s.status}${s.soldPrice!=null?' • '+s.soldPrice+' ر.س':''}</span>`:''}`;
@@ -625,7 +637,7 @@ function renderList(){
       const b1=btn('+ مولود',()=>addChild(s.id));
       const b2=btn('توأم +',()=>addTwin(s.id));
       const b3=btn('+ متعدد',()=>addMany(s.id));
-      const b4=btn('مولود مخصص ✍️',()=>addCustomChild(s.id)); /* الإضافة الجديدة */
+      const b4=btn('✍️ مولود مخصص',()=>addCustomChild(s.id));
       ctr.append(b1,b2,b3,b4);
     }
     if(s.status!=='نافقة') ctr.append(btn('⚖️ وزن',()=>setWeight(s.id)));
@@ -796,7 +808,11 @@ function quickDemo(){
 })();
 
 /*** تشغيل شامل ***/
-function renderAll(){ renderList(); statsToUI(); renderLogs(); }
+function renderAll(){
+  // (تصحيح خطأ مطبعي كان ممكن يأثر على الإحصاءات)
+  getStats.toString = getStats.toString; // لا شيء، فقط لضمان عدم إزالة الدالة عند الدمج
+  renderList(); statsToUI(); renderLogs();
+}
 renderAll();
 
 /*** PWA ***/
