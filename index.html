@@ -13,14 +13,6 @@
   --warn:#f59e0b; --danger:#ef4444;
   --chip:#ecfeff; --chipb:#a5f3fc; --chips:#155e75;
   --thead:#dcfce7; --row:#f8fffc; --row2:#ffffff;
-
-  /* ألوان الكروت (هادئة) */
-  --k1:#fff7cc;  --k2:#d9fbe6;  --k3:#dff1ff;  --k4:#ffe3e3;
-  --k5:#fef3c7;  --k6:#e9d5ff;  --k7:#ffd6a5;  --k8:#fde2f3;
-  --k9:#d1fae5;  --k10:#f3e8ff; --k11:#cffafe; --k12:#e2e8f0;
-  --kb1:#fde68a; --kb2:#a7f3d0; --kb3:#bae6fd; --kb4:#fecaca;
-  --kb5:#fcd34d; --kb6:#c4b5fd; --kb7:#fdba74; --kb8:#fbcfe8;
-  --kb9:#6ee7b7; --kb10:#ddd6fe; --kb11:#a5f3fc; --kb12:#cbd5e1;
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);
@@ -38,19 +30,6 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .kpi.click{transition:.15s transform,.15s box-shadow}
 .kpi.click:hover{box-shadow:0 8px 18px #00000010}
 .kpi.click:active{transform:scale(.98)}
-/* تلوين الكروت فقط (بدون تغيير منطق) */
-.k1{background:var(--k1);border-color:var(--kb1)}
-.k2{background:var(--k2);border-color:var(--kb2)}
-.k3{background:var(--k3);border-color:var(--kb3)}
-.k4{background:var(--k4);border-color:var(--kb4)}
-.k5{background:var(--k5);border-color:var(--kb5)}
-.k6{background:var(--k6);border-color:var(--kb6)}
-.k7{background:var(--k7);border-color:var(--kb7)}
-.k8{background:var(--k8);border-color:var(--kb8)}
-.k9{background:var(--k9);border-color:var(--kb9)}
-.k10{background:var(--k10);border-color:var(--kb10)}
-.k11{background:var(--k11);border-color:var(--kb11)}
-.k12{background:var(--k12);border-color:var(--kb12)}
 
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 16px #00000008}
 .section{padding:10px}
@@ -121,22 +100,22 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 <div class="wrap">
   <!-- KPIs -->
   <div class="grid4">
-    <div class="kpi click k1"  id="kpi_totalAll"><b id="s_totalAll">0</b><span>إجمالي (الكل)</span></div>
-    <div class="kpi click k2"  id="kpi_total"><b id="s_total">0</b><span>إجمالي (حية)</span></div>
-    <div class="kpi click k3"  id="kpi_ewes"><b id="s_ewes">0</b><span>أمهات</span></div>
-    <div class="kpi click k4"  id="kpi_prodEwes"><b id="s_prodEwes">0</b><span>أمهات مُنتِجة</span></div>
+    <div class="kpi click" id="kpi_totalAll"><b id="s_totalAll">0</b><span>إجمالي (الكل)</span></div>
+    <div class="kpi click" id="kpi_total"><b id="s_total">0</b><span>إجمالي (حية)</span></div>
+    <div class="kpi click" id="kpi_ewes"><b id="s_ewes">0</b><span>أمهات</span></div>
+    <div class="kpi click" id="kpi_prodEwes"><b id="s_prodEwes">0</b><span>أمهات مُنتِجة</span></div>
   </div>
   <div class="grid4" style="margin-top:6px">
-    <div class="kpi click k5"  id="kpi_npEwes"><b id="s_npEwes">0</b><span>أمهات غير مُنتِجة</span></div>
-    <div class="kpi click k6"  id="kpi_birthYear"><b id="s_birthYear">0</b><span>مواليد سنة</span></div>
-    <div class="kpi click k7"  id="kpi_soldYear"><b id="s_soldYear">0</b><span>مباعة سنة</span></div>
-    <div class="kpi click k8"  id="kpi_deathYear"><b id="s_deathYear">0</b><span>النفوق سنة</span></div>
+    <div class="kpi click" id="kpi_npEwes"><b id="s_npEwes">0</b><span>أمهات غير مُنتِجة</span></div>
+    <div class="kpi click" id="kpi_birthYear"><b id="s_birthYear">0</b><span>مواليد سنة</span></div>
+    <div class="kpi click" id="kpi_soldYear"><b id="s_soldYear">0</b><span>مباعة سنة</span></div>
+    <div class="kpi click" id="kpi_deathYear"><b id="s_deathYear">0</b><span>النفوق سنة</span></div>
   </div>
   <div class="grid4" style="margin-top:6px">
-    <div class="kpi click k9"  id="kpi_feedYear"><b id="s_feedYear">0</b><span>تكلفة العلف سنة</span></div>
-    <div class="kpi click k10" id="kpi_treatYear"><b id="s_treatYear">0</b><span>تكلفة العلاجات سنة</span></div>
-    <div class="kpi click k11" id="kpi_vaccYear"><b id="s_vaccYear">0</b><span>التحصينات سنة</span></div>
-    <div class="kpi click k12" id="kpi_summary"><b>📊</b><span>ملخص السنة</span></div>
+    <div class="kpi click" id="kpi_feedYear"><b id="s_feedYear">0</b><span>تكلفة العلف سنة</span></div>
+    <div class="kpi click" id="kpi_treatYear"><b id="s_treatYear">0</b><span>تكلفة العلاجات سنة</span></div>
+    <div class="kpi click" id="kpi_vaccYear"><b id="s_vaccYear">0</b><span>التحصينات سنة</span></div>
+    <div class="kpi click" id="kpi_summary"><b>📊</b><span>ملخص السنة</span></div>
   </div>
 
   <!-- الأدوات -->
@@ -416,7 +395,7 @@ function removeSheep(id){
   save(); renderAll();
 }
 
-/*** المواليد ***/
+/*** المواليد (إضافاتك الجديدة) ***/
 function addChild(m){
   const mom=DB.sheep[m]; if(!mom)return alert('الأم غير موجودة');
   const i=kidsOf(m).length+1; const id=m+'-'+String(i).padStart(2,'0'); const date=dstr();
@@ -438,9 +417,23 @@ function addTwin(m){
 }
 function addMany(m){const n=+prompt('كم مولود؟','3'); if(!n||n<=0)return; for(let i=0;i<n;i++) addChild(m)}
 
+/* ✍️ مولود مخصص برقم أنت تختاره */
+function addCustomChild(m){
+  const mom=DB.sheep[m]; if(!mom) return alert('الأم غير موجودة');
+  const id=(prompt('رقم المولود الجديد (مثال 601):','')||'').trim();
+  if(!id) return;
+  if(DB.sheep[id]) return alert('هذا الوسم موجود مسبقًا');
+  const sex=prompt('الجنس (اكتب: أنثى أو ذكر):','أنثى'); if(sex===null) return;
+  const date=prompt('تاريخ الميلاد (YYYY-MM-DD):', dstr()); if(date===null) return;
+  DB.sheep[id]={id,sex:sex==='ذكر'?'ذكر':'أنثى',group:'مواليد',dob:date,motherId:m,fatherId:mom.fatherId||'',notes:'مولود مخصص',status:'حية',soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
+  DB.events.push({type:'birth',ids:[m,id],date,details:'مولود مُدخل يدويًا'});
+  if(mom.nonProductive){ mom.nonProductive=false; mom.updatedAt=new Date().toISOString(); }
+  save(); renderAll();
+}
+
 /*** البيع ***/
 function sellSheep(id){
-  const s=DB.sheep[id]; if(!س)return;
+  const s=DB.sheep[id]; if(!s)return;
   const price=+prompt('سعر البيع (ريال):','0'); if(isNaN(price))return;
   const date=prompt('تاريخ البيع (YYYY-MM-DD):',dstr()); if(date===null)return;
   s.status='مباعة'; s.soldPrice=price; s.soldDate=date; s.updatedAt=new Date().toISOString();
@@ -594,9 +587,17 @@ function renderList(){
     const row=document.createElement('div'); row.className='item';
     const info=document.createElement('div'); info.style.flex='1';
 
+    // حساب عدد الدُفعات (مرات الولادة) للأم
+    let birthsBadge='';
+    if(s.sex==='أنثى'){
+      const packs=packByDate(s.id);
+      if(packs.length){ birthsBadge = `<span class="badge">عدد الولادات: ${packs.length}</span>`; }
+    }
+
     const title=document.createElement('div');
     title.innerHTML=`<span class="name">${s.id}</span>
       ${s.sex==='أنثى'?'<span class="badge">أم</span>':''}
+      ${birthsBadge}
       ${s.nonProductive?'<span class="badge np">🛑 غير منتجة</span>':''}
       ${s.status==='نافقة'?'<span class="badge dead">نافقة</span>':''}
       ${(s.status!=='حية'&&s.status!=='نافقة')?`<span class="badge sold">${s.status}${s.soldPrice!=null?' • '+s.soldPrice+' ر.س':''}</span>`:''}`;
@@ -624,7 +625,8 @@ function renderList(){
       const b1=btn('+ مولود',()=>addChild(s.id));
       const b2=btn('توأم +',()=>addTwin(s.id));
       const b3=btn('+ متعدد',()=>addMany(s.id));
-      ctr.append(b1,b2,b3);
+      const b4=btn('مولود مخصص ✍️',()=>addCustomChild(s.id)); /* الإضافة الجديدة */
+      ctr.append(b1,b2,b3,b4);
     }
     if(s.status!=='نافقة') ctr.append(btn('⚖️ وزن',()=>setWeight(s.id)));
     ctr.append(btn('علاج 💊',()=>addTreatment(s.id)), btn('لقاح 💉',()=>addVaccine(s.id)));
