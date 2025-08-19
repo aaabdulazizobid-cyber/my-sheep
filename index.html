@@ -30,11 +30,22 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .kpi.click{transition:.15s transform,.15s box-shadow}
 .kpi.click:hover{box-shadow:0 8px 18px #00000010}
 .kpi.click:active{transform:scale(.98)}
-/* ألوان لطيفة للصناديق بدون تغيير التخطيط */
-.grid4 .kpi:nth-child(1){background:linear-gradient(180deg,#e8fff4,#ffffff)}
-.grid4 .kpi:nth-child(2){background:linear-gradient(180deg,#e8f7ff,#ffffff)}
-.grid4 .kpi:nth-child(3){background:linear-gradient(180deg,#fff2e6,#ffffff)}
-.grid4 .kpi:nth-child(4){background:linear-gradient(180deg,#f3e8ff,#ffffff)}
+
+/* ألوان الكروت (نفس روح بونيكام) */
+.kpi.col{color:#fff;border:0}
+.kpi.col b,.kpi.col span{color:#fff}
+.kpi.c1{background:linear-gradient(180deg,#ff8bd1,#ff78a7)}
+.kpi.c2{background:linear-gradient(180deg,#ffb84d,#ff9a00)}
+.kpi.c3{background:linear-gradient(180deg,#5da8ff,#2f6fff)}
+.kpi.c4{background:linear-gradient(180deg,#4ed69e,#1fb97e)}
+.kpi.c5{background:linear-gradient(180deg,#9c6bff,#7a44e6)}
+.kpi.c6{background:linear-gradient(180deg,#ff6b6b,#ff3e3e)}
+.kpi.c7{background:linear-gradient(180deg,#3cb5ff,#2578ff)}
+.kpi.c8{background:linear-gradient(180deg,#ffb659,#ffa12e)}
+.kpi.c9{background:linear-gradient(180deg,#3aa4ff,#2f6fff)}
+.kpi.c10{background:linear-gradient(180deg,#43d39e,#19b87b)}
+.kpi.c11{background:linear-gradient(180deg,#66c7ff,#2f7dff)}
+.kpi.c12{background:linear-gradient(180deg,#47d9b3,#1ebf95)}
 
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 16px #00000008}
 .section{padding:10px}
@@ -103,24 +114,24 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 </div>
 
 <div class="wrap">
-  <!-- KPIs -->
+  <!-- KPIs ملونة -->
   <div class="grid4">
-    <div class="kpi click" id="kpi_totalAll"><b id="s_totalAll">0</b><span>إجمالي (الكل)</span></div>
-    <div class="kpi click" id="kpi_total"><b id="s_total">0</b><span>إجمالي (حية)</span></div>
-    <div class="kpi click" id="kpi_ewes"><b id="s_ewes">0</b><span>أمهات</span></div>
-    <div class="kpi click" id="kpi_prodEwes"><b id="s_prodEwes">0</b><span>أمهات مُنتِجة</span></div>
+    <div class="kpi click col c4"  id="kpi_totalAll"><b id="s_totalAll">0</b><span>إجمالي (الكل)</span></div>
+    <div class="kpi click col c3"  id="kpi_total"><b id="s_total">0</b><span>إجمالي (حية)</span></div>
+    <div class="kpi click col c2"  id="kpi_ewes"><b id="s_ewes">0</b><span>أمهات</span></div>
+    <div class="kpi click col c1"  id="kpi_prodEwes"><b id="s_prodEwes">0</b><span>أمهات مُنتِجة</span></div>
   </div>
   <div class="grid4" style="margin-top:6px">
-    <div class="kpi click" id="kpi_npEwes"><b id="s_npEwes">0</b><span>أمهات غير مُنتِجة</span></div>
-    <div class="kpi click" id="kpi_birthYear"><b id="s_birthYear">0</b><span>مواليد سنة</span></div>
-    <div class="kpi click" id="kpi_soldYear"><b id="s_soldYear">0</b><span>مباعة سنة</span></div>
-    <div class="kpi click" id="kpi_deathYear"><b id="s_deathYear">0</b><span>النفوق سنة</span></div>
+    <div class="kpi click col c6"  id="kpi_npEwes"><b id="s_npEwes">0</b><span>أمهات غير مُنتِجة</span></div>
+    <div class="kpi click col c8"  id="kpi_birthYear"><b id="s_birthYear">0</b><span>مواليد سنة</span></div>
+    <div class="kpi click col c5"  id="kpi_soldYear"><b id="s_soldYear">0</b><span>مباعة سنة</span></div>
+    <div class="kpi click col c7"  id="kpi_deathYear"><b id="s_deathYear">0</b><span>النفوق سنة</span></div>
   </div>
   <div class="grid4" style="margin-top:6px">
-    <div class="kpi click" id="kpi_feedYear"><b id="s_feedYear">0</b><span>تكلفة العلف سنة</span></div>
-    <div class="kpi click" id="kpi_treatYear"><b id="s_treatYear">0</b><span>تكلفة العلاجات سنة</span></div>
-    <div class="kpi click" id="kpi_vaccYear"><b id="s_vaccYear">0</b><span>التحصينات سنة</span></div>
-    <div class="kpi click" id="kpi_summary"><b>📊</b><span>ملخص السنة</span></div>
+    <div class="kpi click col c12" id="kpi_feedYear"><b id="s_feedYear">0</b><span>تكلفة العلف سنة</span></div>
+    <div class="kpi click col c10" id="kpi_treatYear"><b id="s_treatYear">0</b><span>تكلفة العلاجات سنة</span></div>
+    <div class="kpi click col c9"  id="kpi_vaccYear"><b id="s_vaccYear">0</b><span>التحصينات سنة</span></div>
+    <div class="kpi click col c11" id="kpi_summary"><b>📊</b><span>ملخص السنة</span></div>
   </div>
 
   <!-- الأدوات -->
@@ -221,7 +232,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
     <div id="pane_vacc" style="display:none">
       <div style="overflow:auto;">
         <table class="table" id="tblVacc">
-          <thead><tr><th>التاريخ</th><th>اسم التحصين</th><th></th></tr></thead><tbody></tbody>
+          <thead><tr><th>التاريخ</th><th>اسم التحصين</th></tr></thead><tbody></tbody>
         </table>
       </div>
     </div>
@@ -351,50 +362,29 @@ function openForm(id=null){
   if(id){
     const s=DB.sheep[id]; if(!s) return;
     $('formTitle').textContent='تعديل رأس';
-    $('f_id').value=s.id;          // قابل للتعديل الآن
+    $('f_id').value=s.id; $('f_id').disabled=true;
     $('f_sex').value=s.sex||'أنثى'; $('f_group').value=s.group||'';
     $('f_dob').value=s.dob||''; $('f_mother').value=s.motherId||''; $('f_father').value=s.fatherId||'';
     $('f_weight').value=s.lastWeight??''; $('f_status').value=s.status||'حية';
     $('f_notes').value=s.notes||''; $('f_np').checked=!!s.nonProductive;
   }else{
     ['f_id','f_group','f_dob','f_mother','f_father','f_weight','f_notes'].forEach(k=>$(k).value='');
-    $('f_sex').value='أنثى'; $('f_status').value='حية'; $('f_np').checked=false;
+    $('f_id').disabled=false; $('f_sex').value='أنثى'; $('f_status').value='حية'; $('f_np').checked=false;
     $('formTitle').textContent='إضافة رأس';
   }
   $('modal').classList.add('open');
 }
 function closeForm(){$('modal').classList.remove('open')}
-
 function submitForm(){
   const rec={
-    id:($('f_id').value||'').trim(), sex:$('f_sex').value, group:($('f_group').value||'').trim(),
-    dob:$('f_dob').value||'', motherId:($('f_mother').value||'').trim(), fatherId:($('f_father').value||'').trim(),
+    id:$('f_id').value.trim(), sex:$('f_sex').value, group:$('f_group').value.trim(),
+    dob:$('f_dob').value||'', motherId:$('f_mother').value.trim(), fatherId:$('f_father').value.trim(),
     lastWeight:$('f_weight').value?+$('f_weight').value:null, status:$('f_status').value,
-    notes:($('f_notes').value||'').trim(), nonProductive:$('f_np').checked
+    notes:$('f_notes').value.trim(), nonProductive:$('f_np').checked
   };
   if(!rec.id){alert('الوسم مطلوب');return}
-
-  if(editingId){ // تعديل
-    if(rec.id!==editingId){ // تغيير الوسم مع الحفاظ على المراجع
-      if(DB.sheep[rec.id]){ alert('الوسم الجديد موجود مسبقًا'); return; }
-      const old=DB.sheep[editingId];
-      // انسخ القيم الجديدة فوق القديمة
-      const merged=Object.assign({}, old, rec, {updatedAt:new Date().toISOString()});
-      delete DB.sheep[editingId];
-      DB.sheep[rec.id]=merged;
-      // حدّث كل المراجع
-      Object.values(DB.sheep).forEach(s=>{
-        if(s.motherId===editingId) s.motherId=rec.id;
-        if(s.fatherId===editingId) s.fatherId=rec.id;
-      });
-      DB.events.forEach(e=>{ if(e.ids) e.ids=e.ids.map(x=>x===editingId?rec.id:x); });
-      DB.treatments.forEach(t=>{ if(t.sheepId===editingId) t.sheepId=rec.id; });
-      DB.vaccines.forEach(v=>{ if(v.sheepId===editingId) v.sheepId=rec.id; });
-      DB.deaths.forEach(d=>{ if(d.sheepId===editingId) d.sheepId=rec.id; });
-    }else{
-      Object.assign(DB.sheep[editingId],rec,{updatedAt:new Date().toISOString()});
-    }
-  }else{ // إضافة
+  if(editingId){Object.assign(DB.sheep[editingId],rec,{updatedAt:new Date().toISOString()})}
+  else{
     if(DB.sheep[rec.id]){alert('الوسم موجود');return}
     DB.sheep[rec.id]=Object.assign(rec,{soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()})
   }
@@ -473,7 +463,7 @@ function addFeed(){
 }
 function deleteFeed(id){ if(!confirm('حذف سجل العلف؟'))return; DB.finance=DB.finance.filter(r=>r.id!==id); save(); renderAll(); }
 
-/*** العلاجات — تاريخ + قيمة فقط ***/
+/*** العلاجات — تاريخ + قيمة فقط (مثل السابق) ***/
 function addTreatment(id){
   if(!DB.sheep[id]) return alert('الرأس غير موجود');
   const date=prompt('تاريخ العلاج (YYYY-MM-DD):', dstr()); if(date===null) return;
@@ -508,7 +498,7 @@ function markDead(id){
 function getStats(){
   const since=new Date(); since.setDate(since.getDate()-365);
   const all=Object.values(DB.sheep);
-  const alive=all.filter(s=>s.status!=='مباعة'&&س.status!=='نافقة');
+  const alive=all.filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
   const ewes=alive.filter(s=>s.sex==='أنثى').length;
   const prodEwes=alive.filter(s=>s.sex==='أنثى'&&!s.nonProductive).length;
   const npEwes=alive.filter(s=>s.sex==='أنثى'&&!!s.nonProductive).length;
@@ -584,7 +574,7 @@ function renderList(){
   }
   if(mode==='ewes'){arr=arr.filter(s=>s.sex==='أنثى')}
   else if(mode==='productive'){arr=arr.filter(s=>s.sex==='أنثى'&&!s.nonProductive)}
-  else if(mode==='np'){arr=arr.filter(s=>s.sex==='أنثى'&&!!س.nonProductive)}
+  else if(mode==='np'){arr=arr.filter(s=>s.sex==='أنثى'&&!!s.nonProductive)}
   else if(mode==='newborns'){arr=arr.filter(s=>s.motherId&&s.motherId!=='')}
 
   if(flt==='alive')arr=arr.filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
@@ -600,11 +590,8 @@ function renderList(){
     const info=document.createElement('div'); info.style.flex='1';
 
     const title=document.createElement('div');
-    // عدد الولادات (دفعات) يُعرض كشارة صغيرة بجانب الأم
-    const birthsCount = (s.sex==='أنثى') ? packByDate(s.id).length : 0;
     title.innerHTML=`<span class="name">${s.id}</span>
       ${s.sex==='أنثى'?'<span class="badge">أم</span>':''}
-      ${birthsCount?`<span class="badge">عدد الولادات: ${birthsCount}</span>`:''}
       ${s.nonProductive?'<span class="badge np">🛑 غير منتجة</span>':''}
       ${s.status==='نافقة'?'<span class="badge dead">نافقة</span>':''}
       ${(s.status!=='حية'&&s.status!=='نافقة')?`<span class="badge sold">${s.status}${s.soldPrice!=null?' • '+s.soldPrice+' ر.س':''}</span>`:''}`;
@@ -689,14 +676,15 @@ function renderLogs(){
     const tr=document.createElement('tr');
     tr.innerHTML=`<td>${fmt(t.date)}</td><td>${money(+t.cost||0)}</td>`;
     const td=document.createElement('td'); const bd=document.createElement('button'); bd.className='btn danger'; bd.textContent='🗑'; bd.onclick=()=>deleteTreatment(t.id);
-    td.appendChild(bd); tr.appendChild(td); tbT.appendChild(tr);
+    td.appendChild(bd);
+    tr.appendChild(td); tbT.appendChild(tr);
   });
 
   // التحصينات
   const tbV=$('tblVacc').querySelector('tbody'); tbV.innerHTML='';
   DB.vaccines.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(v=>{
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${fmt(v.date)}</td><td>${v.vaccine||''}</td><td></td>`;
+    tr.innerHTML=`<td>${fmt(v.date)}</td><td>${v.vaccine||''}</td>`;
     tbV.appendChild(tr);
   });
 
@@ -766,7 +754,7 @@ function exportDB(){
   a.download='sheep-backup-'+dstr()+'.json'; a.click(); URL.revokeObjectURL(a.href);
 }
 function importDB(ev){
-  const f=ev.target.files[0]; if(!f)return;
+  const f=ev.target.files[0]; if(!f)return;          // ← إصلاح هنا (كان حرف عربي)
   const r=new FileReader();
   r.onload=()=>{ try{ DB=JSON.parse(r.result); save(); renderAll(); alert('تم الاستيراد ✅') }catch{ alert('ملف غير صالح') } };
   r.readAsText(f);
