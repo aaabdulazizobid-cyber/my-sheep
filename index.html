@@ -20,25 +20,58 @@
 html,body{margin:0;background:var(--bg);color:var(--ink);
 font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto Sans Arabic",Tahoma,sans-serif}
 
-/* ===== الهيدر (صورة بانر كاملة) ===== */
-.top{
-  position:sticky; top:0; z-index:9;
-  padding:0;                     /* لا قص */
-  border-top:6px solid #000;
-  border-bottom:6px solid #000;
-  background:#0b5139;            /* لون خلفية يغطي فراغ إن وُجد */
-}
-.top .banner{
-  display:block;
-  width:100%;
-  height:auto;                   /* تُعرض الصورة كاملة */
-  max-height:360px;              /* حد أقصى للارتفاع لئلا تصير طويلة */
-  margin:0 auto;
-}
-@media (max-width:640px){
-  .top .banner{max-height:260px;}
+/* ===== ضغط الهيدر على مساحة الخطين وإلغاء أي فراغ داخله ===== */
+:root{
+  --hero-h: 230px;         /* عدّلها لنفس ارتفاع الخطّين */
+  --hero-fit: contain;     /* نعرض الصورة كاملة بدون قص */
+  --hero-pos: center center;
 }
 
+/* عنصر الهيدر نفسه (نقفل الارتفاع ونلغي الحشوات/الهوامش) */
+header, header.hero, .hero, .banner, .masthead{
+  height: var(--hero-h) !important;
+  min-height: var(--hero-h) !important;
+  max-height: var(--hero-h) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  line-height: 0 !important;   /* يمنع فراغ سطر تحت الصور */
+}
+
+/* أي حاويات داخل الهيدر ما تزيد ارتفاع */
+header > *, .hero > *, .banner > *, .masthead > *{
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* لو الصورة داخل <img> */
+header img, .hero img, .banner img, .masthead img{
+  width: 100% !important;
+  height: 100% !important;         /* تملأ ارتفاع الهيدر بالكامل */
+  object-fit: var(--hero-fit) !important;  /* contain = بدون قص */
+  object-position: var(--hero-pos) !important;
+  display: block !important;        /* يشيل فراغ البايسلاين */
+  vertical-align: middle !important;
+}
+
+/* لو الصورة على شكل خلفية للعنصر (بدون <img>) */
+header, .hero, .banner, .masthead{
+  background-size: var(--hero-fit) !important;   /* contain/cover */
+  background-position: var(--hero-pos) !important;
+}
+
+/* لو فيه كرت/حاوية للصورة داخل الهيدر */
+header .card, .hero .card, .banner .card, .masthead .card{
+  height: 100% !important;
+  margin: 0 !important;
+}
+
+/* عناوين داخل الهيدر لا ترفع الارتفاع */
+header h1, .hero h1, .banner h1, .masthead h1,
+header p,  .hero p,  .banner p,  .masthead p{
+  margin: 0 !important;
+}
 /* ===== بقية التنسيقات كما هي ===== */
 .wrap{max-width:1040px;margin:auto;padding:12px}
 .grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
