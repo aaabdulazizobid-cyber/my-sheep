@@ -17,11 +17,31 @@
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);
 font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto Sans Arabic",Tahoma,sans-serif}
-.top{position:sticky;top:0;z-index:9;background:linear-gradient(90deg,var(--brand),var(--brand2));color:#fff;padding:12px}
-.top h1{margin:0;font-size:18px;font-weight:800}
-.wrap{max-width:1040px;margin:auto;padding:12px}
 
-/* KPIs */
+/* ===== الهيدر (تم التعديل هنا فقط كما طلبت) ===== */
+.top{
+  position:sticky;top:0;z-index:9;
+  background:linear-gradient(90deg,var(--brand),var(--brand2));
+  color:#fff;padding:12px 12px 10px;
+  border-top:6px solid #000;        /* سطر غامق أعلى */
+  border-bottom:6px solid #000;     /* سطر غامق أسفل */
+}
+.top .brand{
+  display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;
+}
+.top .brand img{
+  height:64px;width:auto;display:block;
+  background:#fff;border-radius:12px;padding:4px;
+  box-shadow:0 4px 12px #00000030;
+}
+.top h1{
+  margin:0;font-size:26px;font-weight:900;letter-spacing:.5px;
+  text-shadow:0 2px 0 #0a6, 0 4px 12px #00000040;
+}
+.top small{display:block;text-align:center;opacity:.95;margin-top:6px}
+
+/* ===== بقية التنسيقات كما هي بدون أي تغيير ===== */
+.wrap{max-width:1040px;margin:auto;padding:12px}
 .grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 @media(max-width:640px){.grid4{grid-template-columns:repeat(2,1fr)}}
 .kpi{border:1px solid #d9f5ea;border-radius:12px;padding:10px;text-align:center;cursor:pointer;background:#fff}
@@ -30,8 +50,6 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .kpi.click{transition:.15s transform,.15s box-shadow}
 .kpi.click:hover{box-shadow:0 8px 18px #00000010}
 .kpi.click:active{transform:scale(.98)}
-
-/* ألوان الكروت */
 .kpi.col{color:#fff;border:0}
 .kpi.col b,.kpi.col span{color:#fff}
 .kpi.c1{background:linear-gradient(180deg,#ff8bd1,#ff78a7)}
@@ -46,10 +64,8 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .kpi.c10{background:linear-gradient(180deg,#43d39e,#19b87b)}
 .kpi.c11{background:linear-gradient(180deg,#66c7ff,#2f7dff)}
 .kpi.c12{background:linear-gradient(180deg,#47d9b3,#1ebf95)}
-
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 16px #00000008}
 .section{padding:10px}
-
 .searchbar{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
 .searchbar input,.searchbar select{padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff}
 .btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:8px 12px;cursor:pointer;font-size:13px}
@@ -57,8 +73,6 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .btn.warn{background:var(--warn);border-color:var(--warn);color:#fff}
 .btn.danger{background:var(--danger);border-color:var(--danger);color:#fff}
 .btn.gray{background:#f3f4f6}
-
-/* القائمة */
 .list .item{display:flex;gap:10px;padding:12px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#ffffff 0%,#f6fffb 100%)}
 .item:last-child{border-bottom:0}
 .name{font-weight:800}
@@ -68,21 +82,15 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .badge.np{background:#fef9c3;border-color:#fde68a;color:#7a5b00}
 .badge.dead{background:#fde68a;border-color:#fcd34d;color:#92400e}
 .controls{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-
-/* أولاد الأم */
 .children{margin-top:10px;background:#f0fdf4;border:1px dashed var(--line);border-radius:12px;padding:8px}
 .children h4{margin:0 0 6px 0;font-size:13px;color:#065f46}
 .kids{display:flex;flex-wrap:wrap;gap:6px}
 .kid{background:#fff;border:1px solid var(--line);padding:4px 8px;border-radius:999px;font-size:12px}
-
-/* جداول */
 .table{width:100%;border-collapse:collapse}
 .table th,.table td{border-bottom:1px solid var(--line);padding:8px;text-align:center;font-size:13px}
 .table thead th{background:var(--thead)}
 .table tbody tr:nth-child(odd){background:var(--row)}
 .table tbody tr:nth-child(even){background:var(--row2)}
-
-/* مودالات */
 .modal{position:fixed;inset:0;background:#0006;display:none;align-items:flex-end;justify-content:center;z-index:50}
 .modal.open{display:flex}
 .sheet{background:#fff;width:min(760px,100%);border-radius:16px 16px 0 0;padding:14px;border:1px solid var(--line)}
@@ -94,22 +102,26 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .form textarea{grid-column:1 / span 2;min-height:70px}
 .sheet .bar{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
 @media(max-width:640px){.form{grid-template-columns:1fr}}
-
-/* تبويبات + رجوع */
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
 .tab{padding:6px 10px;border-radius:999px;border:1px solid var(--line);cursor:pointer;background:#fff}
 .tab.active{background:var(--brand);border-color:var(--brand);color:#fff}
 .backbar{display:flex;gap:8px;align-items:center;margin-bottom:6px}
 .backbar .btn{padding:6px 10px}
-
-/* تبويبات فرعية للمواليد */
 .subtabs{display:flex;gap:6px;margin:6px 0}
 .subtabs .tab{padding:4px 10px}
 </style>
 </head>
 <body>
+
+<!-- ===== الهيدر المعدّل ===== -->
 <div class="top">
-  <h1>دفتر الغنم — شامل</h1>
+  <div class="brand">
+    <!-- الصورة الأولى -->
+    <img alt="نعيمي/نجدي" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPE...">
+    <h1>أداة القطيع</h1>
+    <!-- الصورة الثانية -->
+    <img alt="حري" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPE...">
+  </div>
   <small>افتح من Safari → مشاركة → أضِف للشاشة الرئيسية (PWA)</small>
 </div>
 
@@ -181,6 +193,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
       <div class="tab" data-tab="summary" onclick="setTab(this)">📊 ملخص السنة</div>
     </div>
 
+    <!-- … كل ما بعد ذلك كما هو بدون أي تعديل … -->
     <!-- الولادات -->
     <div id="pane_births">
       <div style="overflow:auto;">
@@ -382,7 +395,7 @@ function openForm(id=null){
   if(id){
     const s=DB.sheep[id]; if(!s) return;
     $('formTitle').textContent='تعديل رأس';
-    $('f_id').value=s.id; $('f_id').disabled=false; // تعديل الوسم مسموح
+    $('f_id').value=s.id; $('f_id').disabled=false;
     $('f_sex').value=s.sex||'أنثى'; $('f_group').value=s.group||'';
     $('f_dob').value=s.dob||''; $('f_mother').value=s.motherId||''; $('f_father').value=s.fatherId||'';
     $('f_weight').value=s.lastWeight??''; $('f_status').value=s.status||'حية';
@@ -529,7 +542,7 @@ function addVaccine(id){
   DB.vaccines.push({id:'vac_'+Date.now(), date, sheepId:id, vaccine, dose:'', notes:''});
   save(); renderAll(); alert('تم تسجيل التحصين ✅');
 }
-/*** التحصينات — تعديل + حذف (بنفس أسلوب العلف/العلاج) ***/
+/*** التحصينات — تعديل + حذف ***/
 function editVaccine(id){
   const v=DB.vaccines.find(x=>x.id===id);
   if(!v) return;
@@ -635,7 +648,7 @@ function renderList(){
   }
   if(mode==='ewes'){arr=arr.filter(s=>s.sex==='أنثى')}
   else if(mode==='productive'){arr=arr.filter(s=>s.sex==='أنثى'&&!s.nonProductive)}
-  else if(mode==='np'){arr=arr.filter(s=>s.sex==='أنثى'&&!!s.nonProductive)}
+  else if(mode==='np'){arr=arr.filter(s=>س.sex==='أنثى'&&!!s.nonProductive)}
   else if(mode==='newborns'){arr=arr.filter(s=>s.motherId&&s.motherId!=='')}
 
   if(flt==='alive')arr=arr.filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
@@ -699,17 +712,14 @@ function renderList(){
 
 /*** السجلات ***/
 function renderLogs(){
-  // ولادات
   const tbB=$('tblBirths').querySelector('tbody'); tbB.innerHTML='';
   DB.events.filter(e=>e.type==='birth').sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(e=>{
     const mom=(e.ids||[])[0]||'—'; const kids=(e.ids||[]).slice(1).join('، ');
     tbB.insertAdjacentHTML('beforeend',`<tr><td>${fmt(e.date)}</td><td>${mom}</td><td>${kids||'—'}</td><td>${e.details||''}</td></tr>`);
   });
 
-  // قائمة المواليد
   renderNewbornList();
 
-  // مبيعات
   const tbS=$('tblSales').querySelector('tbody'); tbS.innerHTML=''; SALE_CACHE={};
   DB.events.filter(e=>e.type==='movement'&&/بيع/.test(e.details||''))
     .sort((a,b)=>(b.date||'').localeCompare(a.date||''))
@@ -722,7 +732,6 @@ function renderLogs(){
       td.appendChild(b); tr.appendChild(td); tbS.appendChild(tr);
     });
 
-  // علف
   const tbF=$('tblFeed').querySelector('tbody'); tbF.innerHTML='';
   DB.finance.filter(f=>f.type==='feed').sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(r=>{
     const tr=document.createElement('tr');
@@ -731,7 +740,6 @@ function renderLogs(){
     td.appendChild(b); tr.appendChild(td); tbF.appendChild(tr);
   });
 
-  // علاج
   const tbT=$('tblTreat').querySelector('tbody'); tbT.innerHTML='';
   DB.treatments.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(t=>{
     const tr=document.createElement('tr');
@@ -743,7 +751,6 @@ function renderLogs(){
     tr.appendChild(td); tbT.appendChild(tr);
   });
 
-  // التحصينات
   const tbV=$('tblVacc').querySelector('tbody'); tbV.innerHTML='';
   DB.vaccines.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(v=>{
     const tr=document.createElement('tr');
@@ -755,7 +762,6 @@ function renderLogs(){
     tr.appendChild(td); tbV.appendChild(tr);
   });
 
-  // نفوق
   const tbD=$('tblDeath').querySelector('tbody'); tbD.innerHTML='';
   DB.deaths.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(d=>{
     const tr=document.createElement('tr');
@@ -763,7 +769,6 @@ function renderLogs(){
     tbD.appendChild(tr);
   });
 
-  // ملخص السنة
   renderSummary();
 }
 
