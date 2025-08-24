@@ -23,36 +23,49 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);
-font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto Sans Arabic",Tahoma,sans-serif}
-
-/* ===== الهيدر بصورة البنر فقط (كاملة بدون قص) ===== */
-.top{
-  position:sticky; top:0; z-index:9;
-  background:linear-gradient(90deg,var(--brand),var(--brand2));
-  border-top:6px solid #000; border-bottom:6px solid #000;
-  padding:0;
+font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto Sans Arabic",Tahoma,sans-/* ===== دمج الفراغات مع صورة الهيدر ===== */
+:root{
+  /* نفس رابط صورة الهيدر الحالية */
+  --hero-src: url('https://raw.githubusercontent.com/aaabdulazizobid-cyber/my-sheep/main/0DA24235-8DCE-4D50-96AE-EF503D697019.png');
 }
-.top .hero{max-width:1040px;margin:auto;padding:8px 12px}
+
+/* نخلي الصندوق قابل للطبقات */
 .top .hero-box{
-  height:var(--hero-h);               /* ارتفاع الهيدر مقفول */
-  min-height:var(--hero-h);
-  max-height:var(--hero-h);
-  background:linear-gradient(135deg,#065f46 0%,#0ea5a3 50%,#10b981 100%);
-  border:3px solid #000; border-radius:16px;
-  box-shadow:0 8px 18px #00000022, inset 0 0 0 1px #ffffff22;
-  display:flex; align-items:center; justify-content:center;
-  overflow:hidden; line-height:0; padding:0; /* يمنع أي فراغ (XXX) */
-}
-.top .hero-box img{
-  width:100%; height:100%;
-  object-fit:var(--hero-fit);      /* contain = الصورة كاملة */
-  object-position:var(--hero-pos);
-  display:block;                   /* يلغي فراغ خط الأساس */
+  position: relative;
+  isolation: isolate; /* يمنع التداخل مع باقي العناصر */
 }
 
-/* ضبط الارتفاع للجوال */
-@media (max-width:640px){
-  :root{ --hero-h: 140px; }
+/* خلفية ممتدة من نفس الصورة (مغبّشة) تملأ الجوانب */
+.top .hero-box::before{
+  content:"";
+  position:absolute; inset:-24px;   /* نطلع شوي برا عشان البلور ما يقصّ */
+  background-image: var(--hero-src);
+  background-size: cover;           /* تعبّي كامل الصندوق */
+  background-position: center 50%;
+  filter: blur(22px) saturate(1.2) brightness(0.95);
+  transform: scale(1.08);           /* يكبّر الخلفية عشان البلور */
+  z-index:0;                         /* تحت الصورة الأصلية */
+  border-radius: inherit;
+}
+
+/* تظليل خفيف من الأطراف (فينيت) يعطي عمق ويركّز على الصورة */
+.top .hero-box::after{
+  content:"";
+  position:absolute; inset:0;
+  background:
+    radial-gradient(80% 100% at 50% 50%, transparent 60%, rgba(0,0,0,.18) 100%),
+    linear-gradient(90deg, rgba(0,0,0,.20), transparent 20%, transparent 80%, rgba(0,0,0,.20));
+  z-index:1;                         /* فوق الخلفية وتحت الصورة */
+  border-radius: inherit;
+}
+
+/* الصورة الأصلية تبقى كاملة داخل الإطار بدون قص */
+.top .hero-box img{
+  position: relative; z-index:2;
+  width:100%; height:100%;
+  object-fit: contain;               /* ما نقص أي تفاصيل */
+  object-position: center 50%;
+  display:block;
 }
 
 /* ===== بقية الستايلات كما هي ===== */
