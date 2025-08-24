@@ -21,20 +21,19 @@ html,body{margin:0;background:var(--bg);color:var(--ink);
 font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto Sans Arabic",Tahoma,sans-serif}
 
 /* ===== الهيدر: نفس مقاسات القديم لكن بصورة واحدة كخلفية ===== */
+/* ===== الهيدر صورة كاملة ===== */
 .top{
-  position:sticky; top:0; z-index:9;
-  height:110px;                      /* ارتفاع الهيدر مثل القديم */
-  background: var(--brand);          /* لون احتياطي قبل تحميل الصورة */
-  background-image:url("https://raw.githubusercontent.com/aaabdulazizobid-cyber/my-sheep/main/0DA24235-8DCE-4D50-96AE-EF503D697019.png");
-  background-size:cover;
-  background-position:center;        /* قص ذكي حتى يطلع جميل */
-  background-repeat:no-repeat;
-  box-shadow:0 1px 0 #e5e7eb;        /* خط سفلي خفيف مثل القديم */
+  position:sticky; 
+  top:0; 
+  z-index:9;
+  height:220px;                       /* رفعت الارتفاع عشان تبان الصورة كاملة */
+  background:#fff url("https://raw.githubusercontent.com/aaabdulazizobid-cyber/my-sheep/main/0DA24235-8DCE-4D50-96AE-EF503D697019.png") no-repeat center;
+  background-size:contain;            /* يخلي الصورة كاملة بدون قص */
+  box-shadow:0 1px 0 #e5e7eb;
 }
 @media (max-width:640px){
-  .top{height:84px;}                 /* موبايل نفس إحساس القديم */
+  .top{height:180px;}                 /* موبايل يكون شوي أقل */
 }
-
 /* ==== بقية التنسيقات بدون تعديل ==== */
 .wrap{max-width:1040px;margin:auto;padding:12px}
 .grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
