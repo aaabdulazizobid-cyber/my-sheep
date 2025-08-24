@@ -99,7 +99,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .sheet h3{margin:0 0 8px 0}
 .form{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .row{display:flex;flex-direction:column}
-.row label{font-size:12px;color:var(--muted);margin-bottom:4px}
+.row label{font-size:12px;color:#6b7280;margin-bottom:4px}
 .form input,.form select,.form textarea{padding:10px;border:1px solid var(--line);border-radius:10px}
 .form textarea{grid-column:1 / span 2;min-height:70px}
 .sheet .bar{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
@@ -118,9 +118,10 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 <!-- ===== الهيدر بعد التعديل ===== -->
 <div class="top">
   <div class="brand">
-    <img alt="IMG_0917" src="IMG_0917.jpg">
+    <!-- فقط تم تغيير src للصورتين -->
+    <img alt="IMG_0917" src="4E01AA13-AA06-4E4C-B0B8-E9BF9C5256D7.PNG">
     <h1>إدارة القطيع</h1>
-    <img alt="IMG_0918" src="IMG_0918.jpg">
+    <img alt="IMG_0918" src="4E01AA13-AA06-4E4C-B0B8-E9BF9C5256D7.PNG">
   </div>
   <!-- تم حذف سطر (افتح من Safari …) حسب طلبك -->
 </div>
@@ -457,7 +458,7 @@ function addTwin(m){
   if(mom.nonProductive){ mom.nonProductive=false; mom.updatedAt=new Date().toISOString(); }
   save(); renderAll();
 }
-function addMany(m){const n=+prompt('كم مولود؟','3'); if(!n||n<=0)return; for(let i=0;i<n;i++) addChild(m)}
+function addMany(m){const n=+prompt('كم مولود؟','3'); if(!ن||ن<=0)return; for(let i=0;i<n;i++) addChild(m)}
 
 /*** البيع ***/
 function sellSheep(id){
@@ -546,7 +547,7 @@ function deleteVaccine(id){
 
 /*** نفوق ***/
 function markDead(id){
-  const s=DB.sheep[id]; if(!s) return alert('غير موجود');
+  const s=DB.sheep[id]; if(!س) return alert('غير موجود');
   const date=prompt('تاريخ النفوق (YYYY-MM-DD):', dstr()); if(date===null) return;
   const cause=prompt('سبب النفوق — اختياري:',''); if(cause===null) return;
   s.status='نافقة'; s.updatedAt=new Date().toISOString();
@@ -560,9 +561,9 @@ function getStats(){
   const since=new Date(); since.setDate(since.getDate()-365);
   const all=Object.values(DB.sheep);
   const alive=all.filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
-  const ewes=alive.filter(s=>s.sex==='أنثى').length;
-  const prodEwes=alive.filter(s=>s.sex==='أنثى'&&!s.nonProductive).length;
-  const npEwes=alive.filter(s=>s.sex==='أنثى'&&!!s.nonProductive).length;
+  const ewes=alive.filter(s=>س.sex==='أنثى').length;
+  const prodEwes=alive.filter(s=>س.sex==='أنثى'&&!س.nonProductive).length;
+  const npEwes=alive.filter(s=>س.sex==='أنثى'&&!!س.nonProductive).length;
   const birthYear=DB.events.filter(e=>e.type==='birth'&&e.date&&new Date(e.date)>=since).length;
   const feedYear=DB.finance.filter(f=>f.type==='feed'&&new Date(f.date)>=since).reduce((a,b)=>a+(+b.cost||0),0);
   const soldYearEv=DB.events.filter(e=>e.type==='movement'&&/بيع/.test(e.details||'')&&new Date(e.date)>=since);
@@ -626,10 +627,10 @@ function renderList(){
   }
   if(mode==='ewes'){arr=arr.filter(s=>s.sex==='أنثى')}
   else if(mode==='productive'){arr=arr.filter(s=>s.sex==='أنثى'&&!s.nonProductive)}
-  else if(mode==='np'){arr=arr.filter(s=>s.sex==='أنثى'&&!!s.nonProductive)}
-  else if(mode==='newborns'){arr=arr.filter(s=>s.motherId&&s.motherId!=='')}
-  if(flt==='alive')arr=arr.filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
-  else if(flt==='sold')arr=arr.filter(s=>s.status==='مباعة');
+  else if(mode==='np'){arr=arr.filter(s=>س.sex==='أنثى'&&!!س.nonProductive)}
+  else if(mode==='newborns'){arr=arr.filter(s=>س.motherId&&س.motherId!=='')}
+  if(flt==='alive')arr=arr.filter(s=>س.status!=='مباعة'&&س.status!=='نافقة');
+  else if(flt==='sold')arr=arr.filter(s=>س.status==='مباعة');
   arr.sort((a,b)=>{if(a.sex!==b.sex)return a.sex==='أنثى'?-1:1;return a.id>b.id?1:-1});
   const box=$('list'); box.innerHTML='';
   if(!arr.length){box.innerHTML='<div class="item">لا توجد سجلات..</div>';return}
