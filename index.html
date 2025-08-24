@@ -10,9 +10,9 @@
   --brand:#10b981; --brand2:#34d399;
   --ink:#0f172a; --muted:#6b7280;
   --bg:#f6f7fb; --card:#ffffff; 
-  --line:#000000;                 /* حدود سوداء عميقة */
+  --line:#000000;
   --warn:#f59e0b; --danger:#ef4444;
-  --chip:#ecfeff; --chipb:#000000; /* حدود الشارات سوداء */
+  --chip:#ecfeff; --chipb:#000000;
   --chips:#155e75;
   --thead:#dcfce7; --row:#f8fffc; --row2:#ffffff;
 }
@@ -20,26 +20,22 @@
 html,body{margin:0;background:var(--bg);color:var(--ink);
 font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto Sans Arabic",Tahoma,sans-serif}
 
-/* ===== الهيدر: صورة فقط من رابطك وبنفس مقاسات البرنامج ===== */
+/* ===== الهيدر: نفس مقاسات القديم لكن بصورة واحدة كخلفية ===== */
 .top{
-  position:sticky;top:0;z-index:9;
-  background:var(--bg);
-  border-top:6px solid #000;
-  border-bottom:6px solid #000;
-}
-.top .banner-wrap{max-width:1040px;margin:auto;padding:8px 12px}
-.top .banner{
-  width:100%; height:120px;       /* ارتفاع الهيدر (مثل المقاسات القديمة) */
-  display:block; object-fit:cover;
-  border-radius:16px;
-  border:3px solid #000;
-  box-shadow:0 6px 16px #00000020;
+  position:sticky; top:0; z-index:9;
+  height:110px;                      /* ارتفاع الهيدر مثل القديم */
+  background: var(--brand);          /* لون احتياطي قبل تحميل الصورة */
+  background-image:url("https://raw.githubusercontent.com/aaabdulazizobid-cyber/my-sheep/main/0DA24235-8DCE-4D50-96AE-EF503D697019.png");
+  background-size:cover;
+  background-position:center;        /* قص ذكي حتى يطلع جميل */
+  background-repeat:no-repeat;
+  box-shadow:0 1px 0 #e5e7eb;        /* خط سفلي خفيف مثل القديم */
 }
 @media (max-width:640px){
-  .top .banner{height:92px}
+  .top{height:84px;}                 /* موبايل نفس إحساس القديم */
 }
 
-/* ===== بقية التنسيقات كما هي ===== */
+/* ==== بقية التنسيقات بدون تعديل ==== */
 .wrap{max-width:1040px;margin:auto;padding:12px}
 .grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 @media(max-width:640px){.grid4{grid-template-columns:repeat(2,1fr)}}
@@ -112,13 +108,8 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 </head>
 <body>
 
-<!-- ===== الهيدر (صورة فقط من رابطك) ===== -->
-<div class="top">
-  <div class="banner-wrap">
-    <img class="banner" alt="هيدر البرنامج"
-         src="https://raw.githubusercontent.com/aaabdulazizobid-cyber/my-sheep/main/0DA24235-8DCE-4D50-96AE-EF503D697019.png">
-  </div>
-</div>
+<!-- ===== الهيدر صورة فقط (بنفس مقاسات القديم) ===== -->
+<div class="top" role="banner" aria-label="هيدر البرنامج"></div>
 
 <div class="wrap">
   <!-- KPIs ملونة -->
@@ -258,7 +249,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
   </div>
 </div>
 
-<!-- النوافذ والنصوص البرمجية كما هي (بدون أي تعديل وظيفي) -->
+<!-- النوافذ والنصوص البرمجية كما هي -->
 <div class="modal" id="modal">
   <div class="sheet">
     <h3 id="formTitle">إضافة/تعديل رأس</h3>
@@ -451,7 +442,7 @@ function addTwin(m){
   if(mom.nonProductive){ mom.nonProductive=false; mom.updatedAt=new Date().toISOString(); }
   save(); renderAll();
 }
-function addMany(m){const n=+prompt('كم مولود؟','3'); if(!ن||n<=0)return; for(let i=0;i<n;i++) addChild(m)}
+function addMany(m){const n=+prompt('كم مولود؟','3'); if(!n||n<=0)return; for(let i=0;i<n;i++) addChild(m)}
 
 /*** البيع ***/
 function sellSheep(id){
@@ -481,7 +472,7 @@ function addFeed(){
   DB.finance.push({id:'feed_'+Date.now(),type:'feed',date,desc:'',qty:null,cost});
   save(); renderAll(); alert('تم تسجيل العلف ✅');
 }
-function deleteFeed(id){ if(!confirm('حذف سجل العلف؟'))return; DB.finance=DB.finance.filter(r=>ر.id!==id); save(); renderAll(); }
+function deleteFeed(id){ if(!confirm('حذف سجل العلف؟'))return; DB.finance=DB.finance.filter(r=>r.id!==id); save(); renderAll(); }
 
 /*** العلاجات ***/
 function addTreatCost(){
@@ -555,7 +546,7 @@ function getStats(){
   const all=Object.values(DB.sheep);
   const alive=all.filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
   const ewes=alive.filter(s=>s.sex==='أنثى').length;
-  const prodEwes=alive.filter(s=>س.sex==='أنثى'&&!s.nonProductive).length;
+  const prodEwes=alive.filter(s=>s.sex==='أنثى'&&!s.nonProductive).length;
   const npEwes=alive.filter(s=>س.sex==='أنثى'&&!!s.nonProductive).length;
   const birthYear=DB.events.filter(e=>e.type==='birth'&&e.date&&new Date(e.date)>=since).length;
   const feedYear=DB.finance.filter(f=>f.type==='feed'&&new Date(f.date)>=since).reduce((a,b)=>a+(+b.cost||0),0);
@@ -607,7 +598,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   $('kpi_soldYear').onclick =()=> openSection('sales');
   $('kpi_deathYear').onclick=()=> openSection('death');
   $('kpi_feedYear').onclick =()=> openSection('feed');
-  $('kpi_treatYear').onclick=()=> openSection('treat');
+  $('kpi_treatYear').onclick=()=> open Section('treat');
   $('kpi_vaccYear').onclick =()=> openSection('vacc');
   $('kpi_summary').onclick  =()=> openSection('summary');
 });
@@ -622,7 +613,7 @@ function renderList(){
   else if(mode==='productive'){arr=arr.filter(s=>s.sex==='أنثى'&&!s.nonProductive)}
   else if(mode==='np'){arr=arr.filter(s=>s.sex==='أنثى'&&!!s.nonProductive)}
   else if(mode==='newborns'){arr=arr.filter(s=>s.motherId&&s.motherId!=='')}
-  if(flt==='alive')arr=arr.filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
+  if(flt==='alive')arr=arr.filter(s=>s.status!=='مباعة'&&س.status!=='نافقة');
   else if(flt==='sold')arr=arr.filter(s=>s.status==='مباعة');
   arr.sort((a,b)=>{if(a.sex!==b.sex)return a.sex==='أنثى'?-1:1;return a.id>b.id?1:-1});
   const box=$('list'); box.innerHTML='';
@@ -638,7 +629,7 @@ function renderList(){
       ${(s.status!=='حية'&&s.status!=='نافقة')?`<span class="badge sold">${s.status}${s.soldPrice!=null?' • '+s.soldPrice+' ر.س':''}</span>`:''}`;
     info.appendChild(title);
     const meta=document.createElement('div'); meta.className='meta';
-    meta.textContent=`${س.group||'–'} • ${س.sex||'–'} • ${fmt(s.dob)}${s.lastWeight!=null?' • '+s.lastWeight+' كجم':''}`;
+    meta.textContent=`${s.group||'–'} • ${s.sex||'–'} • ${fmt(s.dob)}${s.lastWeight!=null?' • '+s.lastWeight+' كجم':''}`;
     info.appendChild(meta);
     if(s.sex==='أنثى'){
       const packs=packByDate(s.id); const wrap=document.createElement('div'); wrap.className='children';
@@ -707,7 +698,7 @@ function renderLogs(){
     tr.appendChild(td); tbT.appendChild(tr);
   });
   const tbV=$('tblVacc').querySelector('tbody'); tbV.innerHTML='';
-  DB.vaccines.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach	v=>{
+  DB.vaccines.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(v=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`<td>${fmt(v.date)}</td><td>${v.vaccine||''}</td>`;
     const td=document.createElement('td');
@@ -737,7 +728,7 @@ function renderNewbornList(){
   const show=NEWBORN_SUB==='f'?f:m;
   const tb=$('tblNewborns').querySelector('tbody'); tb.innerHTML='';
   show.sort((a,b)=>a.id>b.id?1:-1).forEach(s=>{
-    tb.insertAdjacentHTML('beforeend',`<tr><td>${s.id}</td><td>${s.sex||'—'}</td><td>${s.motherId||'—'}</td><td>${fmt(s.dob)}</td><td>${s.status||'—'}</td></tr>`);
+    tb.insertAdjacentHTML('beforeend',`<tr><td>${s.id}</td><td>${س.sex||'—'}</td><td>${s.motherId||'—'}</td><td>${fmt(s.dob)}</td><td>${s.status||'—'}</td></tr>`);
   });
 }
 function renderSummary(){
