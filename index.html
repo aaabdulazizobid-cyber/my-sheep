@@ -111,34 +111,50 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 </style>
 </head>
 <body>
+/* ===== ضبط ارتفاع الهيدر بنفس قياس الخطوط الصفر ===== */
+:root{
+  /* غيّر هالقيمة لين تطابق الخطين تماماً */
+  --hero-h: 230px;      /* مثال: 230px للجوال/الآيباد */
+  --hero-fit: cover;    /* غيّرها إلى contain إذا تبي الغنم والكتابة كاملة 100% */
+  --hero-pos: center 40%; /* تموضع الصورة داخل الهيدر (عدّلها إذا تبي ترفع/تنزل الصورة) */
+}
 
-<!-- ===== الهيدر بصورة البانر كاملة ===== -->
-<div class="top">
-  <img class="banner" alt="إدارة القطيع - بانر"
-       src="https://raw.githubusercontent.com/aaabdulazizobid-cyber/my-sheep/main/0DA24235-8DCE-4D50-96AE-EF503D697019.png">
-</div>
+/* نحاول نغطي أشهر مسمّيات الهيدر عندك بدون لمس الـ HTML */
+header,
+header.hero,
+.hero,
+.banner,
+.masthead {
+  height: var(--hero-h);
+  overflow: hidden;           /* يمنع تمدّد الهيدر */
+  position: relative;
+}
 
-<div class="wrap">
-  <!-- KPIs ملونة -->
-  <div class="grid4">
-    <div class="kpi click col c4"  id="kpi_totalAll"><b id="s_totalAll">0</b><span>إجمالي (الكل)</span></div>
-    <div class="kpi click col c3"  id="kpi_total"><b id="s_total">0</b><span>إجمالي (حية)</span></div>
-    <div class="kpi click col c2"  id="kpi_ewes"><b id="s_ewes">0</b><span>أمهات</span></div>
-    <div class="kpi click col c1"  id="kpi_prodEwes"><b id="s_prodEwes">0</b><span>أمهات مُنتِجة</span></div>
-  </div>
-  <div class="grid4" style="margin-top:6px">
-    <div class="kpi click col c6"  id="kpi_npEwes"><b id="s_npEwes">0</b><span>أمهات غير مُنتِجة</span></div>
-    <div class="kpi click col c8"  id="kpi_birthYear"><b id="s_birthYear">0</b><span>مواليد سنة</span></div>
-    <div class="kpi click col c5"  id="kpi_soldYear"><b id="s_soldYear">0</b><span>مباعة سنة</span></div>
-    <div class="kpi click col c7"  id="kpi_deathYear"><b id="s_deathYear">0</b><span>النفوق سنة</span></div>
-  </div>
-  <div class="grid4" style="margin-top:6px">
-    <div class="kpi click col c12" id="kpi_feedYear"><b id="s_feedYear">0</b><span>تكلفة العلف سنة</span></div>
-    <div class="kpi click col c10" id="kpi_treatYear"><b id="s_treatYear">0</b><span>تكلفة العلاجات سنة</span></div>
-    <div class="kpi click col c9"  id="kpi_vaccYear"><b id="s_vaccYear">0</b><span>التحصينات سنة</span></div>
-    <div class="kpi click col c11" id="kpi_summary"><b>📊</b><span>ملخص السنة</span></div>
-  </div>
+/* لو الهيدر صورة داخل تاق <img> */
+header img,
+.hero img,
+.banner img,
+.masthead img {
+  width: 100%;
+  height: 100%;
+  object-fit: var(--hero-fit);   /* cover أو contain */
+  object-position: var(--hero-pos);
+  display: block;
+}
 
+/* لو الهيدر خلفية على ديف (اختياري؛ فعلّه إذا تستخدم background-image) */
+/*
+header, .hero, .banner, .masthead{
+  background-size: cover;          /* أو contain */
+  background-position: var(--hero-pos);
+}
+*/
+
+/* (اختياري جدًا) لو حسّيت العنوان كبير داخل الهيدر بعد الضغط */
+header h1, .hero h1, .banner h1, .masthead h1{
+  font-size: clamp(22px, 4vw, 38px);
+  margin: 0.2rem 0;
+}
   <!-- الأدوات -->
   <div class="card section" style="margin:12px 0;">
     <div class="searchbar">
