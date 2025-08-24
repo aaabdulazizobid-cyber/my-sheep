@@ -9,7 +9,7 @@
 :root{
   --brand:#10b981; --brand2:#34d399;
   --ink:#0f172a; --muted:#6b7280;
-  --bg:#f6f7fb; --card:#ffffff; 
+  --bg:#f6f7fb; --card:#ffffff;
   --line:#000000;
   --warn:#f59e0b; --danger:#ef4444;
   --chip:#ecfeff; --chipb:#000000;
@@ -20,59 +20,31 @@
 html,body{margin:0;background:var(--bg);color:var(--ink);
 font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto Sans Arabic",Tahoma,sans-serif}
 
-/* ===== ضغط الهيدر على مساحة الخطين وإلغاء أي فراغ داخله ===== */
-:root{
-  --hero-h: 230px;         /* عدّلها لنفس ارتفاع الخطّين */
-  --hero-fit: contain;     /* نعرض الصورة كاملة بدون قص */
-  --hero-pos: center center;
+/* ===== الهيدر بصورة البنر فقط (كاملة بدون قص) ===== */
+.top{
+  position:sticky; top:0; z-index:9;
+  background:linear-gradient(90deg,var(--brand),var(--brand2));
+  border-top:6px solid #000; border-bottom:6px solid #000;
+  padding:0;
+}
+.top .hero{max-width:1040px;margin:auto;padding:8px 12px}
+.top .hero-box{
+  height:170px;                          /* ارتفاع الهيدر (ديسكتوب) */
+  background:linear-gradient(135deg,#065f46 0%,#0ea5a3 50%,#10b981 100%);
+  border:3px solid #000; border-radius:16px;
+  box-shadow:0 8px 18px #00000022, inset 0 0 0 1px #ffffff22;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+}
+.top .hero-box img{
+  display:block; max-width:100%; max-height:100%;
+  width:auto; height:auto; object-fit:contain;   /* يضمن ظهور الصورة كاملة */
+}
+@media (max-width:640px){
+  .top .hero-box{height:140px;}          /* ارتفاع أصغر على الجوال */
 }
 
-/* عنصر الهيدر نفسه (نقفل الارتفاع ونلغي الحشوات/الهوامش) */
-header, header.hero, .hero, .banner, .masthead{
-  height: var(--hero-h) !important;
-  min-height: var(--hero-h) !important;
-  max-height: var(--hero-h) !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  overflow: hidden !important;
-  line-height: 0 !important;   /* يمنع فراغ سطر تحت الصور */
-}
-
-/* أي حاويات داخل الهيدر ما تزيد ارتفاع */
-header > *, .hero > *, .banner > *, .masthead > *{
-  height: 100% !important;
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-/* لو الصورة داخل <img> */
-header img, .hero img, .banner img, .masthead img{
-  width: 100% !important;
-  height: 100% !important;         /* تملأ ارتفاع الهيدر بالكامل */
-  object-fit: var(--hero-fit) !important;  /* contain = بدون قص */
-  object-position: var(--hero-pos) !important;
-  display: block !important;        /* يشيل فراغ البايسلاين */
-  vertical-align: middle !important;
-}
-
-/* لو الصورة على شكل خلفية للعنصر (بدون <img>) */
-header, .hero, .banner, .masthead{
-  background-size: var(--hero-fit) !important;   /* contain/cover */
-  background-position: var(--hero-pos) !important;
-}
-
-/* لو فيه كرت/حاوية للصورة داخل الهيدر */
-header .card, .hero .card, .banner .card, .masthead .card{
-  height: 100% !important;
-  margin: 0 !important;
-}
-
-/* عناوين داخل الهيدر لا ترفع الارتفاع */
-header h1, .hero h1, .banner h1, .masthead h1,
-header p,  .hero p,  .banner p,  .masthead p{
-  margin: 0 !important;
-}
-/* ===== بقية التنسيقات كما هي ===== */
+/* ===== بقية الستايلات كما هي ===== */
 .wrap{max-width:1040px;margin:auto;padding:12px}
 .grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
 @media(max-width:640px){.grid4{grid-template-columns:repeat(2,1fr)}}
@@ -144,50 +116,39 @@ header p,  .hero p,  .banner p,  .masthead p{
 </style>
 </head>
 <body>
-/* ===== ضبط ارتفاع الهيدر بنفس قياس الخطوط الصفر ===== */
-:root{
-  /* غيّر هالقيمة لين تطابق الخطين تماماً */
-  --hero-h: 230px;      /* مثال: 230px للجوال/الآيباد */
-  --hero-fit: cover;    /* غيّرها إلى contain إذا تبي الغنم والكتابة كاملة 100% */
-  --hero-pos: center 40%; /* تموضع الصورة داخل الهيدر (عدّلها إذا تبي ترفع/تنزل الصورة) */
-}
 
-/* نحاول نغطي أشهر مسمّيات الهيدر عندك بدون لمس الـ HTML */
-header,
-header.hero,
-.hero,
-.banner,
-.masthead {
-  height: var(--hero-h);
-  overflow: hidden;           /* يمنع تمدّد الهيدر */
-  position: relative;
-}
+<!-- ===== الهيدر بالصورة فقط ===== -->
+<div class="top">
+  <div class="hero">
+    <div class="hero-box">
+      <img
+        src="https://raw.githubusercontent.com/aaabdulazizobid-cyber/my-sheep/main/0DA24235-8DCE-4D50-96AE-EF503D697019.png"
+        alt="هيدر إدارة القطيع">
+    </div>
+  </div>
+</div>
 
-/* لو الهيدر صورة داخل تاق <img> */
-header img,
-.hero img,
-.banner img,
-.masthead img {
-  width: 100%;
-  height: 100%;
-  object-fit: var(--hero-fit);   /* cover أو contain */
-  object-position: var(--hero-pos);
-  display: block;
-}
+<div class="wrap">
+  <!-- KPIs -->
+  <div class="grid4">
+    <div class="kpi click col c4"  id="kpi_totalAll"><b id="s_totalAll">0</b><span>إجمالي (الكل)</span></div>
+    <div class="kpi click col c3"  id="kpi_total"><b id="s_total">0</b><span>إجمالي (حية)</span></div>
+    <div class="kpi click col c2"  id="kpi_ewes"><b id="s_ewes">0</b><span>أمهات</span></div>
+    <div class="kpi click col c1"  id="kpi_prodEwes"><b id="s_prodEwes">0</b><span>أمهات مُنتِجة</span></div>
+  </div>
+  <div class="grid4" style="margin-top:6px">
+    <div class="kpi click col c6"  id="kpi_npEwes"><b id="s_npEwes">0</b><span>أمهات غير مُنتِجة</span></div>
+    <div class="kpi click col c8"  id="kpi_birthYear"><b id="s_birthYear">0</b><span>مواليد سنة</span></div>
+    <div class="kpi click col c5"  id="kpi_soldYear"><b id="s_soldYear">0</b><span>مباعة سنة</span></div>
+    <div class="kpi click col c7"  id="kpi_deathYear"><b id="s_deathYear">0</b><span>النفوق سنة</span></div>
+  </div>
+  <div class="grid4" style="margin-top:6px">
+    <div class="kpi click col c12" id="kpi_feedYear"><b id="s_feedYear">0</b><span>تكلفة العلف سنة</span></div>
+    <div class="kpi click col c10" id="kpi_treatYear"><b id="s_treatYear">0</b><span>تكلفة العلاجات سنة</span></div>
+    <div class="kpi click col c9"  id="kpi_vaccYear"><b id="s_vaccYear">0</b><span>التحصينات سنة</span></div>
+    <div class="kpi click col c11" id="kpi_summary"><b>📊</b><span>ملخص السنة</span></div>
+  </div>
 
-/* لو الهيدر خلفية على ديف (اختياري؛ فعلّه إذا تستخدم background-image) */
-/*
-header, .hero, .banner, .masthead{
-  background-size: cover;          /* أو contain */
-  background-position: var(--hero-pos);
-}
-*/
-
-/* (اختياري جدًا) لو حسّيت العنوان كبير داخل الهيدر بعد الضغط */
-header h1, .hero h1, .banner h1, .masthead h1{
-  font-size: clamp(22px, 4vw, 38px);
-  margin: 0.2rem 0;
-}
   <!-- الأدوات -->
   <div class="card section" style="margin:12px 0;">
     <div class="searchbar">
@@ -305,7 +266,7 @@ header h1, .hero h1, .banner h1, .masthead h1{
   </div>
 </div>
 
-<!-- النوافذ والنصوص البرمجية كما هي (بدون أي تعديل وظيفي) -->
+<!-- ========== النوافذ والبرمجة ========== -->
 <div class="modal" id="modal">
   <div class="sheet">
     <h3 id="formTitle">إضافة/تعديل رأس</h3>
@@ -653,7 +614,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   $('kpi_birthYear').onclick=()=> openSection('newborns','f');
   $('kpi_soldYear').onclick =()=> openSection('sales');
   $('kpi_deathYear').onclick=()=> openSection('death');
-  $('kpi_feedYear').onclick =()=> openSection('feed');
+  $('kpi_feedYear').onclick =()=> open Section('feed');
   $('kpi_treatYear').onclick=()=> openSection('treat');
   $('kpi_vaccYear').onclick =()=> openSection('vacc');
   $('kpi_summary').onclick  =()=> openSection('summary');
@@ -666,8 +627,8 @@ function renderList(){
     arr=arr.filter(s=>(s.id||'').toLowerCase().includes(q)||(s.group||'').toLowerCase().includes(q)||(s.status||'').toLowerCase().includes(q));
   }
   if(mode==='ewes'){arr=arr.filter(s=>s.sex==='أنثى')}
-  else if(mode==='productive'){arr=arr.filter(s=>s.sex==='أنثى'&&!s.nonProductive)}
-  else if(mode==='np'){arr=arr.filter(s=>س.sex==='أنثى'&&!!s.nonProductive)}
+  else if(mode==='productive'){arr=arr.filter(s=>س.sex==='أنثى'&&!s.nonProductive)}
+  else if(mode==='np'){arr=arr.filter(s=>s.sex==='أنثى'&&!!s.nonProductive)}
   else if(mode==='newborns'){arr=arr.filter(s=>s.motherId&&s.motherId!=='')}
   if(flt==='alive')arr=arr.filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
   else if(flt==='sold')arr=arr.filter(s=>s.status==='مباعة');
@@ -737,7 +698,7 @@ function renderLogs(){
       td.appendChild(b); tr.appendChild(td); tbS.appendChild(tr);
     });
   const tbF=$('tblFeed').querySelector('tbody'); tbF.innerHTML='';
-  DB.finance.filter(f=>f.type==='feed').sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach*r=>{
+  DB.finance.filter(f=>f.type==='feed').sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(r=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`<td>${fmt(r.date)}</td><td>${money(r.cost||0)}</td>`;
     const td=document.createElement('td'); const b=document.createElement('button'); b.className='btn danger'; b.textContent='🗑'; b.onclick=()=>deleteFeed(r.id);
