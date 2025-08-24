@@ -20,26 +20,31 @@
 html,body{margin:0;background:var(--bg);color:var(--ink);
 font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto Sans Arabic",Tahoma,sans-serif}
 
-/* ===== الهيدر (تنسيق فقط بحسب طلبك) ===== */
+/* ===== الهيدر (صورة كبيرة يمين + العنوان يسار) ===== */
 .top{
   position:sticky;top:0;z-index:9;
   background:linear-gradient(90deg,var(--brand),var(--brand2));
   color:#fff;padding:12px 12px 10px;
-  border-top:6px solid #000;      /* سطر أسود أعلى */
-  border-bottom:6px solid #000;   /* سطر أسود أسفل */
+  border-top:6px solid #000;
+  border-bottom:6px solid #000;
 }
 .top .brand{
-  display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:nowrap;
-}
-.top .brand img{
-  height:64px;width:64px;object-fit:cover;display:block;
-  background:#fff;border-radius:12px;padding:3px;
-  border:3px solid #000;          /* إطار أسود عميق للصورة */
-  box-shadow:0 4px 12px #00000030;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
 }
 .top h1{
   margin:0 6px;font-size:26px;font-weight:900;letter-spacing:.5px;
   text-shadow:0 2px 0 #0a6, 0 4px 12px #00000040;
+  flex:1;text-align:left;        /* الكتابة يسار */
+}
+/* صورة الهيدر الكبيرة (يمين) */
+.top .brand .hero-img{
+  width:220px;height:110px;object-fit:cover;display:block;
+  background:#fff;border-radius:14px;padding:3px;
+  border:3px solid #000; box-shadow:0 4px 12px #00000030;
+}
+@media(max-width:640px){
+  .top .brand .hero-img{width:150px;height:90px}
+  .top h1{font-size:22px}
 }
 
 /* ===== بقية التنسيقات كما هي مع حدود سوداء عبر var(--line) ===== */
@@ -52,7 +57,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .kpi.click{transition:.15s transform,.15s box-shadow}
 .kpi.click:hover{box-shadow:0 8px 18px #00000010}
 .kpi.click:active{transform:scale(.98)}
-.kpi.col{color:#fff;border:1px solid var(--line)} /* كان 0 — الآن حدود سوداء */
+.kpi.col{color:#fff;border:1px solid var(--line)}
 .kpi.col b,.kpi.col span{color:#fff}
 .kpi.c1{background:linear-gradient(180deg,#ff8bd1,#ff78a7)}
 .kpi.c2{background:linear-gradient(180deg,#ffb84d,#ff9a00)}
@@ -99,7 +104,7 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 .sheet h3{margin:0 0 8px 0}
 .form{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .row{display:flex;flex-direction:column}
-.row label{font-size:12px;color:#6b7280;margin-bottom:4px}
+.row label{font-size:12px;color:var(--muted);margin-bottom:4px}
 .form input,.form select,.form textarea{padding:10px;border:1px solid var(--line);border-radius:10px}
 .form textarea{grid-column:1 / span 2;min-height:70px}
 .sheet .bar{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
@@ -115,13 +120,14 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 </head>
 <body>
 
-<!-- ===== الهيدر بعد التعديل ===== -->
+<!-- ===== الهيدر المعدّل: صورة واحدة كبيرة يمين + العنوان يسار ===== -->
 <div class="top">
   <div class="brand">
-    <img alt="شعار" src="https://aaabdulazizobid-cyber.github.io/my-sheep/4E01AA13-AA06-4E4C-B0B8-E9BF9C5256D7.PNG">
+    <!-- اجعل الصورة أول عنصر ليظهر في اليمين (بسبب RTL) -->
+    <img class="hero-img" alt="صورة القطيع"
+         src="https://aaabdulazizobid-cyber.github.io/my-sheep/4E01AA13-AA06-4E4C-B0B8-E9BF9C5256D7.PNG">
     <h1>إدارة القطيع</h1>
   </div>
-  <!-- تم حذف سطر (افتح من Safari …) حسب طلبك -->
 </div>
 
 <div class="wrap">
@@ -441,7 +447,7 @@ function addChild(m){
   const mom=DB.sheep[m]; if(!mom)return alert('الأم غير موجودة');
   const i=kidsOf(m).length+1; const id=m+'-'+String(i).padStart(2,'0'); const date=dstr();
   DB.sheep[id]={id,sex:'أنثى',group:'مواليد',dob:date,motherId:m,fatherId:mom.fatherId||'',notes:'مولود',status:'حية',soldPrice:null,soldDate:'',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
-  DB.events.push({type:'birth',ids:[م,id],date,details:'1 مولود'});
+  DB.events.push({type:'birth',ids:[m,id],date,details:'1 مولود'});
   if(mom.nonProductive){ mom.nonProductive=false; mom.updatedAt=new Date().toISOString(); }
   save(); renderAll();
 }
@@ -456,7 +462,7 @@ function addTwin(m){
   if(mom.nonProductive){ mom.nonProductive=false; mom.updatedAt=new Date().toISOString(); }
   save(); renderAll();
 }
-function addMany(m){const n=+prompt('كم مولود؟','3'); if(!ن||ن<=0)return; for(let i=0;i<n;i++) addChild(m)}
+function addMany(m){const n=+prompt('كم مولود؟','3'); if(!n||n<=0)return; for(let i=0;i<n;i++) addChild(m)}
 
 /*** البيع ***/
 function sellSheep(id){
@@ -545,7 +551,7 @@ function deleteVaccine(id){
 
 /*** نفوق ***/
 function markDead(id){
-  const s=DB.sheep[id]; if(!س) return alert('غير موجود');
+  const s=DB.sheep[id]; if(!s) return alert('غير موجود');
   const date=prompt('تاريخ النفوق (YYYY-MM-DD):', dstr()); if(date===null) return;
   const cause=prompt('سبب النفوق — اختياري:',''); if(cause===null) return;
   s.status='نافقة'; s.updatedAt=new Date().toISOString();
@@ -559,9 +565,9 @@ function getStats(){
   const since=new Date(); since.setDate(since.getDate()-365);
   const all=Object.values(DB.sheep);
   const alive=all.filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
-  const ewes=alive.filter(s=>س.sex==='أنثى').length;
-  const prodEwes=alive.filter(s=>س.sex==='أنثى'&&!س.nonProductive).length;
-  const npEwes=alive.filter(s=>س.sex==='أنثى'&&!!س.nonProductive).length;
+  const ewes=alive.filter(s=>s.sex==='أنثى').length;
+  const prodEwes=alive.filter(s=>s.sex==='أنثى'&&!s.nonProductive).length;
+  const npEwes=alive.filter(s=>s.sex==='أنثى'&&!!s.nonProductive).length;
   const birthYear=DB.events.filter(e=>e.type==='birth'&&e.date&&new Date(e.date)>=since).length;
   const feedYear=DB.finance.filter(f=>f.type==='feed'&&new Date(f.date)>=since).reduce((a,b)=>a+(+b.cost||0),0);
   const soldYearEv=DB.events.filter(e=>e.type==='movement'&&/بيع/.test(e.details||'')&&new Date(e.date)>=since);
@@ -625,10 +631,10 @@ function renderList(){
   }
   if(mode==='ewes'){arr=arr.filter(s=>s.sex==='أنثى')}
   else if(mode==='productive'){arr=arr.filter(s=>s.sex==='أنثى'&&!s.nonProductive)}
-  else if(mode==='np'){arr=arr.filter(s=>س.sex==='أنثى'&&!!س.nonProductive)}
-  else if(mode==='newborns'){arr=arr.filter(s=>س.motherId&&س.motherId!=='')}
-  if(flt==='alive')arr=arr.filter(s=>س.status!=='مباعة'&&س.status!=='نافقة');
-  else if(flt==='sold')arr=arr.filter(s=>س.status==='مباعة');
+  else if(mode==='np'){arr=arr.filter(s=>s.sex==='أنثى'&&!!s.nonProductive)}
+  else if(mode==='newborns'){arr=arr.filter(s=>s.motherId&&s.motherId!=='')}
+  if(flt==='alive')arr=arr.filter(s=>s.status!=='مباعة'&&s.status!=='نافقة');
+  else if(flt==='sold')arr=arr.filter(s=>s.status==='مباعة');
   arr.sort((a,b)=>{if(a.sex!==b.sex)return a.sex==='أنثى'?-1:1;return a.id>b.id?1:-1});
   const box=$('list'); box.innerHTML='';
   if(!arr.length){box.innerHTML='<div class="item">لا توجد سجلات..</div>';return}
@@ -695,7 +701,7 @@ function renderLogs(){
       td.appendChild(b); tr.appendChild(td); tbS.appendChild(tr);
     });
   const tbF=$('tblFeed').querySelector('tbody'); tbF.innerHTML='';
-  DB.finance.filter(f=>f.type==='feed').sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach	r=>{
+  DB.finance.filter(f=>f.type==='feed').sort((a,b)=>(b.date||'').localeCompare(a.date||'')).forEach(r=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`<td>${fmt(r.date)}</td><td>${money(r.cost||0)}</td>`;
     const td=document.createElement('td'); const b=document.createElement('button'); b.className='btn danger'; b.textContent='🗑'; b.onclick=()=>deleteFeed(r.id);
@@ -765,7 +771,7 @@ function renderSummary(){
     ['📈 الصافي', money(netYear), money(netAll)],
   ];
   const tb=$('tblSummary').querySelector('tbody'); tb.innerHTML='';
-  rows.forEach(r=> tb.insertAdjacentHTML('beforeend', `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${ر[2]}</td></tr>`));
+  rows.forEach(r=> tb.insertAdjacentHTML('beforeend', `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`));
 }
 
 /*** PWA ***/
