@@ -18,7 +18,7 @@
 html,body{margin:0;background:var(--bg);color:var(--ink);
 font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto Sans Arabic",Tahoma,sans-serif}
 
-/* ===== الهيدر (تم التعديل هنا فقط كما طلبت) ===== */
+/* ===== الهيدر (تعديل الصور فقط + بدون أي تغييرات أخرى) ===== */
 .top{
   position:sticky;top:0;z-index:9;
   background:linear-gradient(90deg,var(--brand),var(--brand2));
@@ -113,14 +113,12 @@ font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Kufi Arabic","Noto San
 </head>
 <body>
 
-<!-- ===== الهيدر المعدّل ===== -->
+<!-- ===== الهيدر المعدّل (مصادر الصور من ملفات المستودع) ===== -->
 <div class="top">
   <div class="brand">
-    <!-- الصورة الأولى -->
-    <img alt="نعيمي/نجدي" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPE...">
+    <img alt="IMG_0917" src="IMG_0917.jpg">
     <h1>أداة القطيع</h1>
-    <!-- الصورة الثانية -->
-    <img alt="حري" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPE...">
+    <img alt="IMG_0918" src="IMG_0918.jpg">
   </div>
   <small>افتح من Safari → مشاركة → أضِف للشاشة الرئيسية (PWA)</small>
 </div>
@@ -647,7 +645,7 @@ function renderList(){
     arr=arr.filter(s=>(s.id||'').toLowerCase().includes(q)||(s.group||'').toLowerCase().includes(q)||(s.status||'').toLowerCase().includes(q));
   }
   if(mode==='ewes'){arr=arr.filter(s=>s.sex==='أنثى')}
-  else if(mode==='productive'){arr=arr.filter(s=>s.sex==='أنثى'&&!s.nonProductive)}
+  else if(mode==='productive'){arr=arr.filter(s=>s.sex==='أنثى'&&!س.nonProductive)}
   else if(mode==='np'){arr=arr.filter(s=>س.sex==='أنثى'&&!!s.nonProductive)}
   else if(mode==='newborns'){arr=arr.filter(s=>s.motherId&&s.motherId!=='')}
 
@@ -789,7 +787,7 @@ function renderNewbornList(){
   const show=NEWBORN_SUB==='f'?f:m;
   const tb=$('tblNewborns').querySelector('tbody'); tb.innerHTML='';
   show.sort((a,b)=>a.id>b.id?1:-1).forEach(s=>{
-    tb.insertAdjacentHTML('beforeend',`<tr><td>${s.id}</td><td>${s.sex||'—'}</td><td>${s.motherId||'—'}</td><td>${fmt(s.dob)}</td><td>${s.status||'—'}</td></tr>`);
+    tb.insertAdjacentHTML('beforeend',`<tr><td>${s.id}</td><td>${س.sex||'—'}</td><td>${s.motherId||'—'}</td><td>${fmt(s.dob)}</td><td>${s.status||'—'}</td></tr>`);
   });
 }
 
@@ -826,7 +824,7 @@ function exportDB(){
   a.download='sheep-backup-'+dstr()+'.json'; a.click(); URL.revokeObjectURL(a.href);
 }
 function importDB(ev){
-  const f=ev.target.files[0]; if(!f)return;
+  const f=ev.target.files[0]; if(!ف)return;
   const r=new FileReader();
   r.onload=()=>{ try{ DB=JSON.parse(r.result); save(); renderAll(); alert('تم الاستيراد ✅') }catch{ alert('ملف غير صالح') } };
   r.readAsText(f);
